@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steering Neurons Explained</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fcfcfb;
+  --surface: #ffffff;
+  --surface-2: #f2f1ee;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #8a8984;
+  --line: #e2e1dc;
+  --pos: #2a78d6;
+  --neg: #e34948;
+  --accent: #eb6834;
+  --btn: #f2f1ee;
+  --btn-on: #0b0b0b;
+  --btn-on-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface: #1a1a19;
+    --surface-2: #262624;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --ink-3: #8f8e86;
+    --line: #34342f;
+    --pos: #3987e5;
+    --neg: #e66767;
+    --accent: #d95926;
+    --btn: #262624;
+    --btn-on: #f0efec;
+    --btn-on-ink: #121211;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211;
+  --surface: #1a1a19;
+  --surface-2: #262624;
+  --ink: #f0efec;
+  --ink-2: #c3c2b7;
+  --ink-3: #8f8e86;
+  --line: #34342f;
+  --pos: #3987e5;
+  --neg: #e66767;
+  --accent: #d95926;
+  --btn: #262624;
+  --btn-on: #f0efec;
+  --btn-on-ink: #121211;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+main { max-width: 1120px; margin: 0 auto; padding: 0 16px 80px; }
+header.hero { padding: 56px 0 24px; max-width: 760px; }
+h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.01em; }
+h2 { font-size: 24px; line-height: 1.25; margin: 0 0 12px; }
+h3 { font-size: 16px; margin: 20px 0 6px; }
+p { margin: 0 0 12px; color: var(--ink-2); }
+p strong, li strong { color: var(--ink); }
+a { color: var(--pos); }
+code { font: 0.9em ui-monospace, "SF Mono", Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+.lede { font-size: 18px; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+nav.toc a { text-decoration: none; color: var(--ink-2); background: var(--surface-2); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+nav.toc a:hover { color: var(--ink); }
+section.chapter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); gap: 32px; padding: 48px 0; border-top: 1px solid var(--line); align-items: start; }
+.num { font-size: 13px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.fig { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; position: sticky; top: 16px; }
+.fig svg { width: 100%; height: auto; display: block; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+button, .chip-btn {
+  font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--btn); color: var(--ink);
+  border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+button:disabled { opacity: 0.4; cursor: default; }
+button.on { background: var(--btn-on); color: var(--btn-on-ink); border-color: var(--btn-on); }
+label.check { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+input[type=range] { accent-color: var(--pos); width: 160px; }
+.readout { font-size: 14px; color: var(--ink-2); margin: 10px 2px 0; min-height: 2.8em; }
+.readout b { color: var(--ink); }
+.stepper .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.dots { display: flex; gap: 6px; flex: 1; justify-content: center; }
+.dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dots span.on { background: var(--pos); }
+.caption { font-size: 14px; color: var(--ink-2); margin: 10px 2px 0; min-height: 4.2em; }
+.caption b { color: var(--ink); }
+.note { font-size: 13px; color: var(--ink-3); margin-top: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-2); margin: 6px 2px 0; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 28px; }
+.chips span { font: 12px ui-monospace, Menlo, monospace; background: var(--surface-2); border-radius: 6px; padding: 3px 7px; color: var(--ink); }
+.formula { font: 15px ui-monospace, "SF Mono", Menlo, monospace; background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 10px 12px; margin: 8px 0 14px; overflow-x: auto; }
+
+/* SVG */
+.lbl { fill: var(--ink-2); font-size: 14px; }
+.ttl { fill: var(--ink); font-size: 15px; font-weight: 600; }
+.sm { fill: var(--ink-3); font-size: 13px; }
+.val { fill: var(--ink); font-size: 11px; font-family: ui-monospace, Menlo, monospace; }
+.cell { stroke: var(--line); stroke-width: 1; }
+.cpos { fill: var(--pos); }
+.cneg { fill: var(--neg); }
+.czero { fill: var(--surface-2); }
+.wire { stroke: var(--line); stroke-width: 1; }
+.axis { stroke: var(--ink-3); stroke-width: 1; }
+.glow { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+.node { fill: var(--surface-2); stroke: var(--ink-3); stroke-width: 1; }
+.hot { fill: var(--pos); }
+.stream { stroke: var(--line); stroke-width: 6; stroke-linecap: round; }
+.attn { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.shade { fill: var(--surface-2); }
+.ring { fill: none; stroke: var(--ink-3); stroke-dasharray: 5 5; }
+.pt-plain { fill: var(--ink-3); }
+.pt-philo { fill: var(--pos); }
+.pt-new { fill: var(--surface); stroke: var(--ink-2); stroke-width: 2; }
+.pt-shift { fill: var(--pos); fill-opacity: 0.25; stroke: var(--pos); stroke-width: 2; }
+.a-muted { stroke: var(--ink-3); stroke-width: 1.5; }
+.a-pos { stroke: var(--pos); stroke-width: 2; }
+.a-acc { stroke: var(--accent); stroke-width: 2.5; }
+.a-ink { stroke: var(--ink-2); stroke-width: 2; }
+.thick { stroke-width: 4; }
+.dash { stroke-dasharray: 5 4; }
+.mk-pos { fill: var(--pos); } .mk-acc { fill: var(--accent); } .mk-muted { fill: var(--ink-3); } .mk-ink { fill: var(--ink-2); }
+.bar-pos { fill: var(--pos); } .bar-acc { fill: var(--accent); } .bar-neg { fill: var(--neg); }
+.outline { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.clip { stroke: var(--ink); stroke-width: 2; }
+
+/* Results chart */
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.panel h4 { margin: 0 0 8px; font-size: 14px; }
+.brow { display: grid; grid-template-columns: 120px minmax(0, 1fr) 84px; gap: 8px; align-items: center; font-size: 12px; color: var(--ink-2); padding: 3px 0; cursor: default; }
+.brow:hover { background: var(--surface-2); border-radius: 6px; }
+.track { position: relative; height: 18px; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: calc(100% / 3) 100%; border-right: 1px solid var(--line); }
+.track .b { position: absolute; left: 0; top: 2px; height: 14px; background: var(--pos); border-radius: 0 4px 4px 0; transition: width 0.8s; }
+.track .rng { position: absolute; top: 5px; height: 8px; background: var(--ink-3); opacity: 0.55; border-radius: 4px; }
+.bv { font: 12px ui-monospace, Menlo, monospace; color: var(--ink); white-space: nowrap; }
+.axislbl { display: grid; grid-template-columns: 120px minmax(0, 1fr) 84px; gap: 8px; font-size: 11px; color: var(--ink-3); }
+.axislbl div { display: flex; justify-content: space-between; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 9px; border-radius: 6px; opacity: 0; transition: opacity .12s; max-width: 280px; z-index: 10; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; margin-top: 8px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--ink); font-weight: 600; }
+td { color: var(--ink-2); }
+details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; margin-top: 12px; }
+dl.gloss { display: grid; grid-template-columns: minmax(120px, 200px) 1fr; gap: 10px 24px; margin: 0; }
+dl.gloss dt { font-weight: 600; }
+dl.gloss dd { margin: 0; color: var(--ink-2); }
+section.wide { grid-template-columns: 1fr; }
+
+@media (max-width: 860px) {
+  section.chapter { grid-template-columns: 1fr; gap: 20px; padding: 36px 0; }
+  .fig { position: static; }
+  dl.gloss { grid-template-columns: 1fr; gap: 2px; }
+  dl.gloss dd { margin-bottom: 10px; }
+  .brow, .axislbl { grid-template-columns: 96px minmax(0, 1fr) 80px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <h1>How we steered Qwen3.5-4B toward philosophy</h1>
+    <p class="lede">An animated walkthrough of the ideas behind <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md">FINDINGS.md</a>: what a neuron reads and writes, what a "direction" is, how we picked 16 neurons that point toward philosophy, and why editing the weights alone can't add a behavior.</p>
+    <p class="note">Figures 1, 3, 5 and 6 are small toy examples, with 5–20 numbers standing in for the model's 2,560. The real numbers from our runs are labelled as such and come from FINDINGS.md.</p>
+    <nav class="toc">
+      <a href="#c1">1 · Read &amp; write</a>
+      <a href="#c2">2 · Residual stream</a>
+      <a href="#c3">3 · The direction</a>
+      <a href="#c4">4 · Cosine</a>
+      <a href="#c5">5 · 16 neurons</a>
+      <a href="#c6">6 · Weight edits</a>
+      <a href="#c7">7 · Results</a>
+      <a href="#c8">Glossary</a>
+    </nav>
+  </header>
+
+  <!-- 1 -->
+  <section class="chapter" id="c1">
+    <div>
+      <div class="num">Chapter 1</div>
+      <h2>A neuron reads, then writes a fixed column</h2>
+      <p>At every token, a layer receives the <strong>hidden state</strong>: 2,560 numbers that hold everything the model "knows" about this token so far. The layer's MLP (multi-layer perceptron) turns it into 9,216 <strong>neuron activations</strong> <code>a₁…a₉₂₁₆</code>, then <code>down_proj</code> maps them back to 2,560 numbers:</p>
+      <div class="formula">output = a₁·W_down[:,1] + … + a₉₂₁₆·W_down[:,9216]</div>
+      <p>So each neuron has two sides:</p>
+      <p><strong>Read side:</strong> <em>when</em> it fires. Its activation <code>aₙ</code> depends on the input, so it changes every token. It can be negative, because Qwen's MLP computes <code>silu(gate)·up</code> and <code>up</code> can be negative.</p>
+      <p><strong>Write side:</strong> <em>what</em> it writes. That is its column <code>W_down[:, n]</code>, which never changes. The activation is only the volume knob.</p>
+      <p>Click <strong>Next token</strong> and the activations change but the columns don't. Hover a column to see one neuron alone. Tick <strong>Push neuron 3</strong> to add that neuron's column on top, whatever it is doing at the time. That is what a neuron "push" is: the neuron doesn't fire harder, we inject its column directly.</p>
+    </div>
+    <div class="fig">
+      <svg id="s1" viewBox="0 0 720 360" role="img" aria-label="Animated MLP layer: input, neuron activations, W_down columns and output"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>positive value</span><span><i style="background:var(--neg)"></i>negative value</span><span><i style="background:none;border:2px solid var(--accent)"></i>column glows when its neuron fires</span></div>
+      <div class="controls">
+        <button id="s1-next">Next token →</button>
+        <label class="check"><input type="checkbox" id="s1-push"> Push neuron 3</label>
+      </div>
+      <p class="readout" id="s1-read"></p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="chapter" id="c2">
+    <div>
+      <div class="num">Chapter 2</div>
+      <h2>The residual stream is a running sum</h2>
+      <p>Each token has its own stream of hidden states running up through the 32 layers. Every layer <em>adds</em> to it:</p>
+      <div class="formula">h(L+1) = h(L) + attention_L + MLP_L</div>
+      <p>A write at layer 8 can only affect what comes <strong>after</strong> it:</p>
+      <p><strong>Later layers of the same token</strong>, which read the updated sum.</p>
+      <p><strong>Later tokens</strong>, through attention, which copies information from earlier tokens forward.</p>
+      <p>It can't reach earlier layers, which have already run, or earlier tokens, because the model only looks backward.</p>
+      <p>Steering adds its vector at <strong>every</strong> token at layer 8, so every stream is nudged. Later layers read the nudge through non-linear steps, so they can amplify it, cancel it or ignore it. That is why the same kind of push gave on-task reflection at layer 8 but lyrical metaphysics at layer 16: it enters at a different depth and passes through a different amount of processing.</p>
+    </div>
+    <div class="fig">
+      <svg id="s2" viewBox="0 0 720 400" role="img" aria-label="Grid of tokens by layers showing how a push propagates forward"></svg>
+      <div class="controls">
+        <button id="s2-one" class="on">Push one token at layer 8</button>
+        <button id="s2-all">Steer every token at layer 8</button>
+        <button id="s2-replay">Replay</button>
+      </div>
+      <p class="readout" id="s2-read"></p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="chapter" id="c3">
+    <div>
+      <div class="num">Chapter 3</div>
+      <h2>The "philosophy direction" (diff-means)</h2>
+      <p>We wrote 32 practical questions, each with a <strong>plain</strong> answer and a <strong>philosophical</strong> answer. For each answer we averaged the layer-8 hidden state over its tokens, giving one point per answer (2,560 numbers; 2 here).</p>
+      <p>The arrow from each plain answer to its philosophical twin says "this is what changed". The average of the 32 arrows is the <strong>diff-means direction</strong>: a single vector, not a matrix, that points from plain toward philosophical.</p>
+      <p>To steer, we add the same vector to every token's hidden state at that layer:</p>
+      <div class="formula">push = α × p50 × unit(direction)</div>
+      <p><strong>unit(direction)</strong>: the direction, rescaled to length 1. It says <em>where</em> to push.</p>
+      <p><strong>p50</strong>: the median length of the hidden state at that layer. Hidden states grow as they go up the layers, so p50 gives each layer's natural scale.</p>
+      <p><strong>α</strong>: our dial. At α = 0.5 the push is half the length of a typical hidden state.</p>
+      <p>Diff-means steering doesn't touch any neuron; it adds the vector directly. At layer 8 with α = 0.5, it was the best setting we found.</p>
+    </div>
+    <div class="fig">
+      <svg id="s3" viewBox="0 0 720 420" role="img" aria-label="2D illustration of plain and philosophical answers, their difference arrows and the mean direction"></svg>
+      <div class="legend"><span><i style="background:var(--ink-3)"></i>plain answer</span><span><i style="background:var(--pos)"></i>philosophical answer</span><span><i style="background:var(--surface);border:2px solid var(--ink-2)"></i>new practical prompt</span></div>
+      <div class="stepper" id="st3">
+        <div class="row"><button class="back">← Back</button><div class="dots"></div><button class="next">Next →</button></div>
+        <p class="caption"></p>
+      </div>
+      <div class="controls" id="s3-alpha" style="visibility:hidden">
+        <label class="check">α <input type="range" id="s3-a" min="0" max="1.5" step="0.05" value="0.5"> <b id="s3-av">0.50</b></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="chapter" id="c4">
+    <div>
+      <div class="num">Chapter 4</div>
+      <h2>Reading is not writing: why cosine</h2>
+      <p>Our first idea was to push the neurons that <em>fire</em> most differently on philosophical text. They were very reliable detectors (t-statistic up to 22.8, consistent across all pairs), but pushing them produced loops like "being being being…".</p>
+      <p>The reason is that a push injects the neuron's <strong>column</strong>, and what matters is where that column points. We measure that with <strong>cosine similarity</strong>, the same measure used in embedding search:</p>
+      <div class="formula">cos(a, b) = (a · b) / (|a| · |b|)</div>
+      <p>It ignores length, which we set ourselves through the dose, and keeps only direction. Of a push of size 1, <code>cos</code> goes along the philosophy direction and <code>√(1 − cos²)</code> goes elsewhere.</p>
+      <p>In 2,560 dimensions almost everything is nearly perpendicular. Two random directions have a cosine of about 0 ± 0.02, so a cosine of 0.24 is far above chance, yet it still leaves about 97% of the push off target. That's why no single neuron worked.</p>
+    </div>
+    <div class="fig">
+      <svg id="s4" viewBox="0 0 720 340" role="img" aria-label="A neuron's column split into the part along the philosophy direction and the part off it"></svg>
+      <div class="controls">
+        <button data-c="0.05" class="on">Top read-side neuron</button>
+        <button data-c="0.24">Best single write-aligned neuron</button>
+        <button data-c="1">Hypothetical perfect neuron</button>
+      </div>
+      <p class="readout" id="s4-read"></p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="chapter" id="c5">
+    <div>
+      <div class="num">Chapter 5</div>
+      <h2>Rebuilding the direction from 16 neurons</h2>
+      <p>No single column points the right way, but a few columns added together can. <strong>Matching pursuit</strong> (OMP) builds the target vector <code>α·p50·direction</code> step by step:</p>
+      <p><strong>1.</strong> Pick the column most aligned with what is still missing.</p>
+      <p><strong>2.</strong> Refit the weights (doses) of <em>all</em> columns picked so far with <strong>least squares</strong>, the choice that minimises the squared error. The columns overlap, so adding one changes the best weights for the others; refitting avoids double-counting.</p>
+      <p><strong>3.</strong> Repeat k times.</p>
+      <p>The doses come from this math, not from trial and error. We then push all 16 neurons together and generate once.</p>
+      <p><strong>Why ÷cos².</strong> Least squares gives the closest point the columns can reach, which falls short of the target. Its part along the direction is only <code>cos² × α</code>. Dividing the doses by cos² restores the full α along the direction, but the off-target part grows with it, which is part of why helpfulness drops.</p>
+      <p><strong>Real numbers.</strong> At layer 8, 16 columns reached cos 0.45 (64 columns: 0.57; 256 columns: 0.73; source: <code>runs/omp_rescaled.jsonl</code>). Without rescaling, the group pushed only 0.45² ≈ 0.20 α along the direction, which is why our first groups did nothing. After ÷cos² the push along the direction is the full α, but the off-target part is about 2 α (√(1 − 0.45²) / 0.45 ≈ 1.98).</p>
+    </div>
+    <div class="fig">
+      <svg id="s5" viewBox="0 0 720 380" role="img" aria-label="Bar chart of a target vector being approximated by a growing set of columns"></svg>
+      <div class="legend"><span><i style="background:none;border:2px solid var(--ink-2)"></i>target</span><span><i style="background:var(--pos)"></i>built from k columns</span><span><i style="background:var(--accent)"></i>still missing</span></div>
+      <div class="controls">
+        <button id="s5-play">▶ Build</button>
+        <label class="check">k <input type="range" id="s5-k" min="0" max="12" step="1" value="0"> <b id="s5-kv">0</b></label>
+        <label class="check"><input type="checkbox" id="s5-rs"> Rescale doses ÷cos²</label>
+      </div>
+      <p class="readout" id="s5-read"></p>
+      <div class="chips" id="s5-chips"></div>
+      <p class="note">This toy has 20 dimensions, so a few columns can rebuild the target almost perfectly. In the model's 2,560 dimensions, 16 columns only reach cos 0.45.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="chapter" id="c6">
+    <div>
+      <div class="num">Chapter 6</div>
+      <h2>Weight edits: outer products, and no "+ constant"</h2>
+      <p>The Astra paper (Sparks of Weight-Space Programming) edited <code>W_down</code> itself with a <strong>masked rank-1</strong> matrix. <code>vᵀ</code> is the vector <code>v</code> laid on its side as a row. The <strong>outer product</strong> <code>u·vᵀ</code> multiplies a column by a row: cell (i, j) is <code>uᵢ × vⱼ</code>. Every column of the result is a scaled copy of <code>u</code>, so it has only one direction, which is what "rank 1" means. "Masked" means <code>v</code> is zero except on k chosen neurons.</p>
+      <p>Adding it to <code>W_down</code> gives neuron j an extra <code>vⱼ·u</code> in its column. At run time the output changes by:</p>
+      <div class="formula">Δoutput = (u·vᵀ)·a = u × (vᵀ·a)</div>
+      <p>The change always points along <code>u</code>, and its size is multiplied by the current activations <code>a</code>. On "how do I fix a drain?" the chosen neurons barely fire, so there is nothing to multiply.</p>
+      <p>Steering adds a constant, the same push every token, which is exactly what a <strong>bias</strong> term <code>b</code> in <code>y = W·x + b</code> would do. Qwen3.5's text MLPs have no bias at all. That is standard in large language models since PaLM (2022); Qwen's first technical report says it removed biases "following" PaLM. So a pure weight edit can rescale what neurons already write, but it can't add a behavior from nothing. Adding a 2,560-number bias to <code>down_proj</code> would turn our steering into a standalone checkpoint, and that is next step 1 in FINDINGS.md.</p>
+    </div>
+    <div class="fig">
+      <svg id="s6" viewBox="0 0 720 420" role="img" aria-label="Outer product of u and v, and the resulting change in output for two prompts compared with a bias"></svg>
+      <div class="stepper" id="st6">
+        <div class="row"><button class="back">← Back</button><div class="dots"></div><button class="next">Next →</button></div>
+        <p class="caption"></p>
+      </div>
+      <div class="controls">
+        <button id="s6-prac" class="on" disabled>Practical prompt</button>
+        <button id="s6-phil" disabled>Philosophical prompt</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="chapter wide" id="c7">
+    <div>
+      <div class="num">Chapter 7 · real results</div>
+      <h2>What actually worked</h2>
+      <p>These scores come from a blind Claude Sonnet judge: 16 prompts, 8 of them held out, with configs shuffled and anonymized, each scored from 0 to 9. The grey ranges are three matched random 16-neuron groups, which have the same layer, the same number of neurons and the same push sizes, with only the neurons different. The 16 chosen neurons beat them by a wide margin on philosophy. Every steer that worked also lost helpfulness, and part of that loss is generic, since random pushes lose it too. Source: FINDINGS.md § Results.</p>
+      <div class="panels" id="s7"></div>
+      <p class="note">* The Astra edit (conditional rank-1, layer 16, k = 64, α = 2) came from a separate run, whose baseline scored 0.06 / 9.00 / 8.12.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody>
+            <tr><td>Baseline</td><td>0.00</td><td>9.00</td><td>8.44</td><td>0/16</td></tr>
+            <tr><td>Diff-means direction, L8, α = 0.5</td><td>3.00</td><td>7.62</td><td>4.62</td><td>0/16</td></tr>
+            <tr><td>16 neurons (OMP), L8, α = 0.5</td><td>2.56</td><td>6.44</td><td>3.25</td><td>0/16</td></tr>
+            <tr><td>Matched random 16-neuron groups (×3)</td><td>0.00–0.19</td><td>6.62–7.25</td><td>4.75–5.69</td><td>0–1/16</td></tr>
+            <tr><td>Best Astra weight edit*</td><td>0.50</td><td>8.88</td><td>8.12</td><td>0/16</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- glossary -->
+  <section class="chapter wide" id="c8">
+    <div>
+      <div class="num">Glossary</div>
+      <h2>Terms</h2>
+      <dl class="gloss">
+        <dt>Hidden state / residual stream</dt><dd>The 2,560 numbers per token that every layer reads and adds to; a running sum.</dd>
+        <dt>MLP neuron</dt><dd>One of 9,216 units per layer. Its activation <code>aₙ</code> is the read side; its column <code>W_down[:, n]</code> is the write side.</dd>
+        <dt>W_down / down_proj</dt><dd>The 2560×9216 matrix that turns neuron activations back into a change to the hidden state. It has no bias.</dd>
+        <dt>Diff-means direction</dt><dd>The average, over the 32 contrast pairs, of (philosophical answer's mean hidden state − plain answer's), at one layer. A single vector.</dd>
+        <dt>p50</dt><dd>The median length of the hidden state at a layer, measured on the plain answers. It sets the scale of a push.</dd>
+        <dt>α</dt><dd>Push size as a fraction of p50.</dd>
+        <dt>Dose</dt><dd>The size and sign of one neuron's push: we add <code>dose × p50 × unit(column)</code>.</dd>
+        <dt>Cosine</dt><dd>Alignment between two vectors, ignoring length: 1 means the same direction, 0 means perpendicular.</dd>
+        <dt>t-statistic, consistency</dt><dd>Read-side statistics: how much more a neuron fires on philosophical answers than on plain ones, relative to the noise, and in what share of pairs.</dd>
+        <dt>OMP (orthogonal matching pursuit)</dt><dd>A greedy method that picks k columns and refits their weights with least squares to approximate a target vector.</dd>
+        <dt>÷cos² rescale</dt><dd>Corrects the OMP undershoot, so the push along the direction equals α.</dd>
+        <dt>Matched random control</dt><dd>Random neurons in the same layer, the same number of them, the same |doses| with random signs. It separates "these neurons" from "any push".</dd>
+        <dt>Outer product u·vᵀ</dt><dd>Column times row; a rank-1 matrix whose every column is a multiple of u.</dd>
+        <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
+        <dt>Bias</dt><dd>The constant <code>b</code> in <code>y = W·x + b</code>; a fixed push regardless of input. Qwen3.5's text MLPs have none.</dd>
+        <dt>Degenerate</dt><dd>The judge's flag for loops, gibberish or identity confusion.</dd>
+      </dl>
+    </div>
+  </section>
+</main>
+<div class="tip" id="tip"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const NS = "http://www.w3.org/2000/svg";
+function E(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function T(parent, x, y, text, cls, anchor) {
+  const t = E("text", { x, y, class: cls || "lbl", "text-anchor": anchor || "start" }, parent);
+  t.textContent = text;
+  return t;
+}
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ease = p => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const lerp = (a, b, p) => a + (b - a) * p;
+function tween(ms, f) {
+  return new Promise(res => {
+    if (reduce || ms <= 0) { f(1); res(); return; }
+    const t0 = performance.now();
+    const step = now => {
+      const p = Math.min(1, (now - t0) / ms);
+      f(ease(p));
+      p < 1 ? requestAnimationFrame(step) : res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+function anim(el, attrs, ms = 600) {
+  const from = {};
+  for (const k in attrs) {
+    const v = parseFloat(el.getAttribute(k));
+    from[k] = isNaN(v) ? (k === "opacity" ? 1 : 0) : v;
+  }
+  return tween(ms, p => { for (const k in attrs) el.setAttribute(k, lerp(from[k], attrs[k], p)); });
+}
+function mulberry(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gaussFrom(r) {
+  return () => { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+}
+const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+const norm = a => Math.sqrt(dot(a, a));
+const fmt = (x, d = 2) => (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(d);
+function cellFill(rect, v, max) {
+  rect.setAttribute("class", "cell " + (Math.abs(v) < 1e-9 ? "czero" : v >= 0 ? "cpos" : "cneg"));
+  rect.setAttribute("fill-opacity", Math.abs(v) < 1e-9 ? 1 : Math.min(1, Math.abs(v) / max) * 0.88 + 0.08);
+}
+function addMarkers(svg, id) {
+  const defs = E("defs", {}, svg);
+  for (const n of ["pos", "acc", "muted", "ink"]) {
+    const m = E("marker", { id: `${id}-${n}`, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 10, markerHeight: 10,
+      orient: "auto-start-reverse", markerUnits: "userSpaceOnUse" }, defs);
+    E("path", { d: "M0,0 L10,5 L0,10 z", class: `mk-${n}` }, m);
+  }
+}
+function stepper(root, steps, render) {
+  let k = 0;
+  const cap = root.querySelector(".caption"), back = root.querySelector(".back"),
+        next = root.querySelector(".next"), dots = root.querySelector(".dots");
+  steps.forEach(() => dots.appendChild(document.createElement("span")));
+  function go(i) {
+    k = i;
+    cap.innerHTML = steps[i];
+    back.disabled = i === 0;
+    next.disabled = i === steps.length - 1;
+    [...dots.children].forEach((d, j) => d.classList.toggle("on", j <= i));
+    render(i);
+  }
+  back.onclick = () => go(k - 1);
+  next.onclick = () => go(k + 1);
+  go(0);
+}
+function toggleGroup(buttons, active) { buttons.forEach(b => b.classList.toggle("on", b === active)); }
+
+/* ---------- 1: read & write ---------- */
+(function () {
+  const svg = document.getElementById("s1"), out = document.getElementById("s1-read");
+  const H = 6, N = 5, g = gaussFrom(mulberry(7));
+  const mat = (a, b, s) => [...Array(a)].map(() => [...Array(b)].map(() => g() * s));
+  const G = mat(N, H, 0.7), U = mat(N, H, 0.7), W = mat(H, N, 0.6);
+  const silu = z => z / (1 + Math.exp(-z));
+  const words = ["How", "does", "a", "fridge", "keep", "food", "cold", "?"];
+  const X = words.map(() => [...Array(H)].map(() => g()));
+  const PN = 2, DOSE = 1.6;
+  const CW = 44, CH = 30, IX = 40, MY = 120, MX = 290, OX = 610, BASE = 76;
+  let ti = 0, push = false, hovered = -1, a = Array(N).fill(0), o = Array(H).fill(0);
+
+  T(svg, IX, MY - 40, "hidden state in", "ttl");
+  const tokLbl = T(svg, IX, MY - 20, "", "lbl");
+  T(svg, MX - 6, 22, "neuron activations aₙ (read side)", "ttl");
+  T(svg, MX - 6, MY + H * CH + 44, "W_down: one fixed column per neuron (write side)", "ttl");
+  T(svg, OX, MY - 40, "MLP output", "ttl");
+  T(svg, OX, MY - 20, "Σ aₙ × column n", "lbl");
+  for (let i = 0; i < H; i++) for (let n = 0; n < N; n++)
+    E("line", { x1: IX + 36, y1: MY + i * CH + 13, x2: MX + n * CW + 20, y2: BASE, class: "wire" }, svg);
+  E("line", { x1: MX - 8, x2: MX + N * CW - 4, y1: BASE, y2: BASE, class: "axis" }, svg);
+  const inCells = [...Array(H)].map((_, i) => E("rect", { x: IX, y: MY + i * CH, width: 36, height: 26, rx: 4, class: "cell czero" }, svg));
+  const bars = [...Array(N)].map((_, n) => E("rect", { x: MX + n * CW + 11, y: BASE, width: 18, height: 0, rx: 3, class: "bar-pos" }, svg));
+  const glows = [...Array(N)].map((_, n) => E("rect", { x: MX + n * CW - 3, y: MY - 4, width: CW - 2, height: H * CH + 2, rx: 6, class: "glow", "stroke-opacity": 0 }, svg));
+  for (let i = 0; i < H; i++) for (let n = 0; n < N; n++)
+    cellFill(E("rect", { x: MX + n * CW, y: MY + i * CH, width: 36, height: 26, rx: 4 }, svg), W[i][n], 1.2);
+  const nLbl = [...Array(N)].map((_, n) => T(svg, MX + n * CW + 18, MY + H * CH + 16, `n${n + 1}`, "sm", "middle"));
+  const pushLbl = T(svg, MX + PN * CW + 18, MY + H * CH + 28, "", "sm", "middle");
+  addMarkers(svg, "m1");
+  E("line", { x1: MX + N * CW + 4, x2: OX - 12, y1: MY + 3 * CH - 2, y2: MY + 3 * CH - 2, class: "a-ink", "marker-end": "url(#m1-ink)" }, svg);
+  const outCells = [...Array(H)].map((_, i) => E("rect", { x: OX, y: MY + i * CH, width: 36, height: 26, rx: 4, class: "cell czero" }, svg));
+  // hover targets
+  for (let n = 0; n < N; n++) {
+    const hit = E("rect", { x: MX + n * CW - 4, y: BASE - 40, width: CW, height: MY + H * CH - BASE + 60, fill: "transparent" }, svg);
+    hit.addEventListener("mouseenter", () => { hovered = n; read(); });
+    hit.addEventListener("mouseleave", () => { hovered = -1; read(); });
+  }
+
+  function compute() {
+    const x = X[ti];
+    a = G.map((row, n) => silu(dot(row, x)) * dot(U[n], x));
+    o = W.map((row, i) => dot(row, a) + (push ? DOSE * row[PN] : 0));
+  }
+  function read() {
+    let s = `Token <b>“${words[ti]}”</b>: activations a = [${a.map(v => fmt(v)).join(", ")}].`;
+    if (hovered >= 0) {
+      s += ` <b>Neuron ${hovered + 1}</b> always writes the same column; on this token it fires at a = ${fmt(a[hovered])}, so it adds ${fmt(a[hovered])} × its column.`;
+      if (push && hovered === PN) s += ` The push adds another ${DOSE} × its column on top.`;
+    } else if (push) {
+      s += ` Neuron 3 is pushed: <b>+${DOSE} × its column</b> is added every token, whatever it is doing.`;
+    } else s += " Hover a column.";
+    out.innerHTML = s;
+  }
+  function render(ms) {
+    tokLbl.textContent = `token: “${words[ti]}”`;
+    const x = X[ti];
+    inCells.forEach((c, i) => { cellFill(c, x[i], 1.3); c.setAttribute("fill-opacity", 0.1); anim(c, { "fill-opacity": Math.min(1, Math.abs(x[i]) / 1.3) * 0.88 + 0.08 }, ms); });
+    bars.forEach((b, n) => {
+      const h = Math.min(38, Math.abs(a[n]) * 20);
+      b.setAttribute("class", a[n] >= 0 ? "bar-pos" : "bar-neg");
+      anim(b, { y: a[n] >= 0 ? BASE - h : BASE, height: h }, ms);
+      anim(glows[n], { "stroke-opacity": Math.min(1, Math.abs(a[n]) / 1.5) }, ms);
+    });
+    glows[PN].setAttribute("stroke-dasharray", push ? "6 4" : "none");
+    pushLbl.textContent = push ? "+ push" : "";
+    outCells.forEach((c, i) => {
+      setTimeout(() => { cellFill(c, o[i], 2); c.setAttribute("fill-opacity", 0.1); anim(c, { "fill-opacity": Math.min(1, Math.abs(o[i]) / 2) * 0.88 + 0.08 }, ms); }, reduce ? 0 : ms * 0.6);
+    });
+    read();
+  }
+  document.getElementById("s1-next").onclick = () => { ti = (ti + 1) % words.length; compute(); render(650); };
+  document.getElementById("s1-push").onchange = e => { push = e.target.checked; compute(); render(450); };
+  compute(); render(0);
+})();
+
+/* ---------- 2: residual stream ---------- */
+(function () {
+  const svg = document.getElementById("s2"), out = document.getElementById("s2-read");
+  const toks = ["How", "do", "I", "fix", "a", "slow", "drain"];
+  const layers = [0, 4, 8, 12, 16, 20, 24, 28, 31];
+  const X = t => 170 + t * 80, Y = r => 350 - r * 36, SRC_T = 3, SRC_R = 2;
+  addMarkers(svg, "m2");
+  const shadeA = E("rect", { x: X(0) - 34, y: Y(8) - 22, width: X(SRC_T - 1) - X(0) + 68, height: Y(0) - Y(8) + 44, rx: 10, class: "shade", opacity: 0 }, svg);
+  const shadeB = E("rect", { x: X(SRC_T) - 34, y: Y(SRC_R - 1) - 22, width: X(6) - X(SRC_T) + 68, height: Y(0) - Y(SRC_R - 1) + 44, rx: 10, class: "shade", opacity: 0 }, svg);
+  toks.forEach((w, t) => {
+    E("line", { x1: X(t), x2: X(t), y1: Y(0), y2: Y(8) - 18, class: "stream" }, svg);
+    T(svg, X(t), 388, w, "lbl", "middle");
+  });
+  layers.forEach((L, r) => T(svg, 112, Y(r) + 4, `layer ${L}`, r === SRC_R ? "ttl" : "sm", "end"));
+  T(svg, X(3), 26, "↑ next-word prediction", "sm", "middle");
+  const arcs = [[3, 4], [4, 6], [5, 5]].map(([r, t]) => {
+    const x1 = X(SRC_T), y1 = Y(r), x2 = X(t), y2 = Y(r + 1);
+    return E("path", { d: `M${x1},${y1} Q${(x1 + x2) / 2},${y1 - 40} ${x2 - 10},${y2 + 4}`, class: "attn", opacity: 0, "marker-end": "url(#m2-acc)" }, svg);
+  });
+  const hot = [];
+  toks.forEach((_, t) => layers.forEach((_, r) => {
+    E("circle", { cx: X(t), cy: Y(r), r: 11, class: "node" }, svg);
+    hot.push({ t, r, el: E("circle", { cx: X(t), cy: Y(r), r: 11, class: "hot", opacity: 0 }, svg) });
+  }));
+  const srcRing = E("circle", { cx: X(SRC_T), cy: Y(SRC_R), r: 16, class: "glow", "stroke-opacity": 0 }, svg);
+  let mode = "one", timers = [];
+  function run() {
+    timers.forEach(clearTimeout); timers = [];
+    hot.forEach(h => h.el.setAttribute("opacity", 0));
+    arcs.forEach(a => a.setAttribute("opacity", 0));
+    const one = mode === "one";
+    shadeA.setAttribute("opacity", one ? 0.7 : 0);
+    shadeB.setAttribute("opacity", 0.7);
+    shadeB.setAttribute("x", one ? X(SRC_T) - 34 : X(0) - 34);
+    shadeB.setAttribute("width", one ? X(6) - X(SRC_T) + 68 : X(6) - X(0) + 68);
+    srcRing.setAttribute("stroke-opacity", one ? 1 : 0);
+    hot.forEach(({ t, r, el }) => {
+      let target = 0, delay = 0;
+      if (one) {
+        if (t === SRC_T && r === SRC_R) { target = 1; delay = 0; }
+        else if (t === SRC_T && r > SRC_R) { target = 0.85; delay = (r - SRC_R) * 140; }
+        else if (t > SRC_T && r > SRC_R + 1) { target = Math.max(0.25, 0.7 - (t - SRC_T) * 0.12); delay = (r - SRC_R) * 140 + (t - SRC_T) * 160 + 200; }
+      } else {
+        if (r === SRC_R) { target = 1; delay = t * 70; }
+        else if (r > SRC_R) { target = 0.8; delay = (r - SRC_R) * 140 + t * 40 + 300; }
+      }
+      if (target > 0) timers.push(setTimeout(() => anim(el, { opacity: target }, 350), reduce ? 0 : delay));
+    });
+    if (one) arcs.forEach((a, i) => timers.push(setTimeout(() => anim(a, { opacity: 1 }, 400), reduce ? 0 : 500 + i * 250)));
+    out.innerHTML = one
+      ? "One neuron pushed at <b>“fix”, layer 8</b>. The change rises up its own stream to later layers, and attention (dashed) carries it to <b>later tokens</b>. The shaded areas can't be reached: earlier tokens are already done and earlier layers have already run."
+      : "Steering adds the vector at <b>every token</b> at layer 8, so every stream is nudged and everything above it is affected. Layers 0–7 are untouched.";
+  }
+  const b1 = document.getElementById("s2-one"), b2 = document.getElementById("s2-all");
+  b1.onclick = () => { mode = "one"; toggleGroup([b1, b2], b1); run(); };
+  b2.onclick = () => { mode = "all"; toggleGroup([b1, b2], b2); run(); };
+  document.getElementById("s2-replay").onclick = run;
+  const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { run(); io.disconnect(); } }, { threshold: 0.4 });
+  io.observe(svg);
+})();
+
+/* ---------- 3: diff-means ---------- */
+(function () {
+  const svg = document.getElementById("s3");
+  addMarkers(svg, "m3");
+  const O = { x: 380, y: 195 }, R = 150, sc = p => ({ x: O.x + p.x, y: O.y - p.y });
+  const g = gaussFrom(mulberry(5));
+  const D = { x: 92, y: 70 };
+  const pairs = [...Array(10)].map((_, i) => {
+    const th = (196 + i * 7 + g() * 3) * Math.PI / 180, rad = R + g() * 10;
+    const P = { x: rad * Math.cos(th), y: rad * Math.sin(th) };
+    return { P, Q: { x: P.x + D.x + g() * 20, y: P.y + D.y + g() * 20 } };
+  });
+  const mean = { x: pairs.reduce((s, p) => s + p.Q.x - p.P.x, 0) / pairs.length, y: pairs.reduce((s, p) => s + p.Q.y - p.P.y, 0) / pairs.length };
+  const ml = Math.hypot(mean.x, mean.y), u = { x: mean.x / ml, y: mean.y / ml };
+  const ring = E("circle", { cx: O.x, cy: O.y, r: R, class: "ring", opacity: 0 }, svg);
+  const ringLbl = T(svg, O.x - R * 0.72 - 6, O.y - R * 0.72 - 6, "p50: median length", "sm", "end");
+  ringLbl.setAttribute("opacity", 0);
+  E("circle", { cx: O.x, cy: O.y, r: 3, class: "pt-plain" }, svg);
+  const arrows = pairs.map(({ P }) => { const s = sc(P); return E("line", { x1: s.x, y1: s.y, x2: s.x, y2: s.y, class: "a-muted", opacity: 0, "marker-end": "url(#m3-muted)" }, svg); });
+  const ptsP = pairs.map(({ P }) => { const s = sc(P); return E("circle", { cx: s.x, cy: s.y, r: 5, class: "pt-plain", opacity: 1 }, svg); });
+  const ptsQ = pairs.map(({ Q }) => { const s = sc(Q); return E("circle", { cx: s.x, cy: s.y, r: 5, class: "pt-philo", opacity: 1 }, svg); });
+  const meanA = E("line", { x1: O.x, y1: O.y, x2: O.x, y2: O.y, class: "a-pos thick", opacity: 0, "marker-end": "url(#m3-pos)" }, svg);
+  const meanLbl = T(svg, 0, 0, "", "ttl");
+  // new practical prompts
+  const news = [...Array(6)].map((_, i) => { const th = (282 + i * 14) * Math.PI / 180, rad = R * 0.8 + g() * 8; return { x: rad * Math.cos(th), y: rad * Math.sin(th) }; });
+  const pushA = news.map(() => E("line", { class: "a-pos", opacity: 0, "marker-end": "url(#m3-pos)" }, svg));
+  const newC = news.map(p => { const s = sc(p); return E("circle", { cx: s.x, cy: s.y, r: 6, class: "pt-new", opacity: 0 }, svg); });
+  const shiftC = news.map(p => { const s = sc(p); return E("circle", { cx: s.x, cy: s.y, r: 6, class: "pt-shift", opacity: 0 }, svg); });
+  const alphaBox = document.getElementById("s3-alpha"), aIn = document.getElementById("s3-a"), aV = document.getElementById("s3-av");
+  T(svg, 16, 24, "toy 2-D picture of layer-8 hidden states", "sm");
+  let step = 0;
+  function placeShift(ms) {
+    const al = parseFloat(aIn.value), L = al * R;
+    aV.textContent = al.toFixed(2);
+    news.forEach((p, i) => {
+      const s = sc(p), t = sc({ x: p.x + u.x * L, y: p.y + u.y * L });
+      const op = step === 4 ? 1 : 0;
+      anim(shiftC[i], { cx: t.x, cy: t.y, opacity: op }, ms);
+      const len = Math.hypot(t.x - s.x, t.y - s.y), k = len > 14 ? (len - 8) / len : 0;
+      anim(pushA[i], { x1: s.x, y1: s.y, x2: s.x + (t.x - s.x) * k, y2: s.y + (t.y - s.y) * k, opacity: op * (len > 14 ? 1 : 0) }, ms);
+    });
+  }
+  aIn.oninput = () => placeShift(0);
+  function render(k) {
+    step = k;
+    const ms = 800;
+    pairs.forEach(({ P, Q }, i) => {
+      const s = sc(P), q = sc(Q);
+      ptsP[i].setAttribute("opacity", k >= 4 ? 0.15 : 1);
+      ptsQ[i].setAttribute("opacity", k >= 4 ? 0.15 : 1);
+      if (k === 0) anim(arrows[i], { x1: s.x, y1: s.y, x2: s.x, y2: s.y, opacity: 0 }, 300);
+      else if (k === 1) anim(arrows[i], { x1: s.x, y1: s.y, x2: q.x, y2: q.y, opacity: 1 }, ms);
+      else anim(arrows[i], { x1: O.x, y1: O.y, x2: O.x + (q.x - s.x), y2: O.y + (q.y - s.y), opacity: k === 2 ? 0.35 : 0 }, ms);
+    });
+    const end = k === 2 ? sc(mean) : sc({ x: u.x * 44, y: u.y * 44 });
+    if (k < 2) anim(meanA, { x2: O.x, y2: O.y, opacity: 0 }, 300);
+    else setTimeout(() => { if (step === k) anim(meanA, { x2: end.x, y2: end.y, opacity: k === 4 ? 0.6 : 1 }, ms); }, k === 2 && !reduce ? ms : 0);
+    meanLbl.textContent = k === 2 ? "mean = diff-means direction" : k === 3 ? "unit(direction), length 1" : "";
+    meanLbl.setAttribute("x", (k === 2 ? sc(mean).x : end.x) + 10);
+    meanLbl.setAttribute("y", (k === 2 ? sc(mean).y : end.y) - 6);
+    anim(ring, { opacity: k >= 3 ? 1 : 0 }, 500);
+    anim(ringLbl, { opacity: k >= 3 ? 1 : 0 }, 500);
+    newC.forEach(c => anim(c, { opacity: k === 4 ? 1 : 0 }, 500));
+    alphaBox.style.visibility = k === 4 ? "visible" : "hidden";
+    placeShift(k === 4 ? ms : 300);
+  }
+  stepper(document.getElementById("st3"), [
+    "Each dot is the average hidden state of one answer at layer 8 (2,560 numbers, drawn in 2-D). <b>Grey</b> = plain answer, <b>blue</b> = the philosophical answer to the same question.",
+    "Draw an arrow from each plain answer to its philosophical twin. Each arrow is \"what changed\" for one question.",
+    "Slide all arrows to start at the same point and average them. The bold arrow is the <b>diff-means direction</b>: one vector, not a matrix.",
+    "Keep only its direction by rescaling to length 1: <b>unit(direction)</b>. The dashed circle is <b>p50</b>, the median length of hidden states at this layer.",
+    "<b>Steering:</b> add α × p50 × unit(direction) to every token's hidden state, the same vector everywhere. Drag α: at 0.5 the push is half of p50.",
+  ], render);
+})();
+
+/* ---------- 4: cosine ---------- */
+(function () {
+  const svg = document.getElementById("s4"), out = document.getElementById("s4-read");
+  addMarkers(svg, "m4");
+  const O = { x: 120, y: 290 }, ang = 20 * Math.PI / 180, L = 230, BX = 480, BW = 220;
+  const P = (len, a) => ({ x: O.x + len * Math.cos(a), y: O.y - len * Math.sin(a) });
+  const ut = P(290, ang);
+  E("line", { x1: O.x, y1: O.y, x2: ut.x, y2: ut.y, class: "a-pos", opacity: 0.35, "marker-end": "url(#m4-pos)" }, svg);
+  T(svg, ut.x, ut.y + 26, "philosophy direction", "lbl", "end");
+  const off = E("line", { x1: O.x, y1: O.y, x2: O.x, y2: O.y, class: "a-acc dash" }, svg);
+  const on = E("line", { x1: O.x, y1: O.y, x2: O.x, y2: O.y, class: "a-pos thick" }, svg);
+  const col = E("line", { x1: O.x, y1: O.y, x2: O.x, y2: O.y, class: "a-ink", "marker-end": "url(#m4-ink)" }, svg);
+  const colLbl = T(svg, 0, 0, "neuron's column", "lbl");
+  const cosLbl = T(svg, O.x + 40, O.y + 30, "", "ttl");
+  E("circle", { cx: O.x, cy: O.y, r: 3, class: "pt-plain" }, svg);
+  T(svg, BX, 70, "Where a push of size 1 goes", "ttl");
+  T(svg, BX, 104, "along philosophy (cos)", "lbl");
+  const b1 = E("rect", { x: BX, y: 112, width: 0, height: 18, rx: 4, class: "bar-pos" }, svg);
+  const v1 = T(svg, BX, 160, "", "ttl");
+  T(svg, BX, 194, "elsewhere √(1 − cos²)", "lbl");
+  const b2 = E("rect", { x: BX, y: 202, width: 0, height: 18, rx: 4, class: "bar-acc" }, svg);
+  const v2 = T(svg, BX, 250, "", "ttl");
+  E("line", { x1: BX, x2: BX, y1: 108, y2: 224, class: "axis" }, svg);
+  const notes = {
+    "0.05": "A top <b>read-side</b> neuron: it fires reliably on philosophical text (t up to 22.8), but its column has cos ≈ 0.05 with the direction (range 0.02–0.07 in our runs). Pushing it mostly adds something else; in practice, word loops.",
+    "0.24": "The <b>best single write-aligned</b> neuron in any layer: cos 0.24 (0.12–0.24 per layer). Still ≈ 97% of its push goes off-direction, and at doses that move philosophy it did no better than random neurons.",
+    "1": "A hypothetical neuron whose column points exactly along the direction. No such neuron exists, which is why we combine several (chapter 5).",
+  };
+  const btns = [...document.querySelectorAll("#c4 button[data-c]")];
+  function show(c, ms) {
+    const a = ang + Math.acos(c), tip = P(L, a), foot = P(L * c, ang);
+    anim(col, { x2: tip.x, y2: tip.y }, ms);
+    anim(on, { x2: foot.x, y2: foot.y }, ms);
+    anim(off, { x1: foot.x, y1: foot.y, x2: tip.x, y2: tip.y }, ms);
+    colLbl.setAttribute("x", tip.x + 10); colLbl.setAttribute("y", tip.y + 4);
+    cosLbl.textContent = `cos = ${c}`;
+    anim(b1, { width: BW * c }, ms); anim(b2, { width: BW * Math.sqrt(1 - c * c) }, ms);
+    v1.textContent = `${(c * 100).toFixed(1)}%`; v2.textContent = `${(Math.sqrt(1 - c * c) * 100).toFixed(1)}%`;
+    out.innerHTML = notes[String(c)];
+  }
+  btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(parseFloat(b.dataset.c), 700); });
+  show(0.05, 0);
+})();
+
+/* ---------- 5: matching pursuit ---------- */
+(function () {
+  const svg = document.getElementById("s5"), out = document.getElementById("s5-read"), chips = document.getElementById("s5-chips");
+  const Dm = 20, M = 48, K = 12, g = gaussFrom(mulberry(21));
+  const unit = v => { const n = norm(v); return v.map(x => x / n); };
+  const pool = [...Array(M)].map(() => unit([...Array(Dm)].map(() => g())));
+  const target = unit([...Array(Dm)].map(() => g()));
+  function lstsq(cols, t) {
+    const k = cols.length;
+    const A = cols.map(a => cols.map(b => dot(a, b))), b = cols.map(c => dot(c, t));
+    for (let i = 0; i < k; i++) {
+      let p = i;
+      for (let r = i + 1; r < k; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+      [A[i], A[p]] = [A[p], A[i]]; [b[i], b[p]] = [b[p], b[i]];
+      for (let r = i + 1; r < k; r++) { const f = A[r][i] / A[i][i]; for (let c = i; c < k; c++) A[r][c] -= f * A[i][c]; b[r] -= f * b[i]; }
+    }
+    const x = Array(k).fill(0);
+    for (let i = k - 1; i >= 0; i--) { let s = b[i]; for (let c = i + 1; c < k; c++) s -= A[i][c] * x[c]; x[i] = s / A[i][i]; }
+    return x;
+  }
+  const hist = [{ idx: [], coef: [], approx: Array(Dm).fill(0), cos: 0 }];
+  let idx = [], res = target.slice();
+  for (let s = 1; s <= K; s++) {
+    let best = -1, bv = -1;
+    pool.forEach((c, j) => { if (!idx.includes(j)) { const v = Math.abs(dot(c, res)); if (v > bv) { bv = v; best = j; } } });
+    idx = [...idx, best];
+    const coef = lstsq(idx.map(j => pool[j]), target);
+    const approx = Array(Dm).fill(0);
+    idx.forEach((j, q) => pool[j].forEach((x, d) => approx[d] += coef[q] * x));
+    res = target.map((x, d) => x - approx[d]);
+    hist.push({ idx, coef, approx, cos: dot(approx, target) / norm(approx) });
+  }
+  const X0 = 60, SW = 31, B1 = 135, B2 = 305, S = 160, CL1 = 74, CL2 = 60;
+  T(svg, 16, 20, "toy: a 20-number target built from a pool of 48 random columns", "sm");
+  T(svg, X0 - 44, 46, "target vs built", "ttl");
+  T(svg, X0 - 44, B2 - 66, "still missing (target − built)", "ttl");
+  E("line", { x1: X0 - 4, x2: X0 + Dm * SW, y1: B1, y2: B1, class: "axis" }, svg);
+  E("line", { x1: X0 - 4, x2: X0 + Dm * SW, y1: B2, y2: B2, class: "axis" }, svg);
+  const tB = [], aB = [], rB = [], clipT = [];
+  for (let d = 0; d < Dm; d++) {
+    const x = X0 + d * SW, h = Math.min(CL1, Math.abs(target[d]) * S);
+    tB.push(E("rect", { x: x + 4, y: target[d] >= 0 ? B1 - h : B1, width: 22, height: h, rx: 3, class: "outline" }, svg));
+    aB.push(E("rect", { x: x + 9, y: B1, width: 12, height: 0, rx: 3, class: "bar-pos" }, svg));
+    clipT.push(E("line", { x1: x + 7, x2: x + 23, y1: B1, y2: B1, class: "clip", opacity: 0 }, svg));
+    rB.push(E("rect", { x: x + 9, y: B2, width: 12, height: 0, rx: 3, class: "bar-acc" }, svg));
+  }
+  const kIn = document.getElementById("s5-k"), kV = document.getElementById("s5-kv"), rs = document.getElementById("s5-rs");
+  function show(ms) {
+    const k = +kIn.value, h = hist[k], c = h.cos, scale = rs.checked && k > 0 ? 1 / (c * c) : 1;
+    kV.textContent = k;
+    h.approx.forEach((v0, d) => {
+      const v = v0 * scale, raw = Math.abs(v) * S, hh = Math.min(CL1, raw);
+      anim(aB[d], { y: v >= 0 ? B1 - hh : B1, height: hh }, ms);
+      clipT[d].setAttribute("y1", v >= 0 ? B1 - CL1 : B1 + CL1); clipT[d].setAttribute("y2", v >= 0 ? B1 - CL1 : B1 + CL1);
+      clipT[d].setAttribute("opacity", raw > CL1 ? 1 : 0);
+      const r = target[d] - v, rh = Math.min(CL2, Math.abs(r) * S);
+      anim(rB[d], { y: r >= 0 ? B2 - rh : B2, height: rh }, ms);
+    });
+    if (k === 0) { out.innerHTML = "k = 0: nothing built yet. Press <b>Build</b> or drag k."; chips.innerHTML = ""; return; }
+    const sn = Math.sqrt(Math.max(0, 1 - c * c));
+    const along = rs.checked ? 1 : c * c, offd = rs.checked ? sn / c : c * sn;
+    out.innerHTML = `k = <b>${k}</b> columns · cos(built, target) = <b>${c.toFixed(2)}</b> · push along the direction = <b>${along.toFixed(2)} α</b> · push off the direction = <b>${offd.toFixed(2)} α</b>` +
+      (rs.checked ? " · rescaled ÷cos² (bars above the black tick are clipped)." : " · without rescaling the push falls short by cos².");
+    chips.innerHTML = h.idx.map((j, q) => `<span>column #${j}: dose ${fmt(h.coef[q] * scale)}</span>`).join("");
+  }
+  kIn.oninput = () => show(350);
+  rs.onchange = () => show(500);
+  let playing = null;
+  document.getElementById("s5-play").onclick = () => {
+    clearInterval(playing);
+    kIn.value = 0; show(200);
+    playing = setInterval(() => { if (+kIn.value >= K) { clearInterval(playing); return; } kIn.value = +kIn.value + 1; show(450); }, reduce ? 50 : 750);
+  };
+  show(0);
+})();
+
+/* ---------- 6: outer product & rank-1 edit ---------- */
+(function () {
+  const svg = document.getElementById("s6");
+  const u = [0.9, -0.5, 0.7, 0.25, -0.8], v = [0, 1.0, 0, -0.7, 0.8, 0, 0];
+  const A = { prac: [1.2, 0.05, -0.9, 0.08, 0.05, 1.1, -0.7], phil: [0.3, 1.1, -0.2, -0.9, 1.0, 0.4, 0.1] };
+  const GAIN = 0.35, BIAS = 0.9;
+  const C = 36, SZ = 30, UX = 40, VX = 120, GY = 120, VY = 60, AY = GY + 5 * C + 18, DX = 470, BX = 600;
+  T(svg, UX + 15, GY - 12, "u", "ttl", "middle");
+  T(svg, VX - 12, VY + 20, "vᵀ", "ttl", "end");
+  const uC = u.map((x, i) => { const r = E("rect", { x: UX, y: GY + i * C, width: SZ, height: SZ, rx: 4 }, svg); cellFill(r, x, 1); T(svg, UX + 15, GY + i * C + 19, x.toFixed(1), "val", "middle"); return r; });
+  v.forEach((x, j) => { const r = E("rect", { x: VX + j * C, y: VY, width: SZ, height: SZ, rx: 4 }, svg); cellFill(r, x, 1); T(svg, VX + j * C + 15, VY + 19, x === 0 ? "0" : x.toFixed(1), "val", "middle"); });
+  T(svg, VX, VY - 10, "grey = masked out (v = 0)", "sm");
+  const grid = u.map((ui, i) => v.map((vj, j) => E("rect", { x: VX + j * C, y: GY + i * C, width: SZ, height: SZ, rx: 4, class: "cell czero" }, svg)));
+  const gLbl = T(svg, VX, GY + 5 * C + 4, "", "sm");
+  const gA = E("g", { opacity: 0 }, svg);
+  T(gA, VX - 12, AY + 20, "a", "ttl", "end");
+  const aC = v.map((_, j) => E("rect", { x: VX + j * C, y: AY, width: SZ, height: SZ, rx: 4, class: "cell czero" }, gA));
+  const aT = v.map((_, j) => T(gA, VX + j * C + 15, AY + 19, "", "val", "middle"));
+  const vaLbl = T(gA, VX, AY + 56, "", "ttl");
+  T(gA, DX + 15, GY - 30, "Δoutput from", "lbl", "middle");
+  T(gA, DX + 15, GY - 14, "weight edit", "lbl", "middle");
+  const dC = u.map((_, i) => E("rect", { x: DX, y: GY + i * C, width: SZ, height: SZ, rx: 4, class: "cell czero" }, gA));
+  T(gA, DX + 15, GY + 5 * C + 10, "u × (vᵀa)", "sm", "middle");
+  const gB = E("g", { opacity: 0 }, svg);
+  T(gB, BX + 15, GY - 30, "bias / steering", "lbl", "middle");
+  T(gB, BX + 15, GY - 14, "push", "lbl", "middle");
+  u.forEach((x, i) => cellFill(E("rect", { x: BX, y: GY + i * C, width: SZ, height: SZ, rx: 4 }, gB), x * BIAS, 1));
+  T(gB, BX + 15, GY + 5 * C + 10, "same every token", "sm", "middle");
+  let prompt = "prac", step = 0, timers = [];
+  const bP = document.getElementById("s6-prac"), bQ = document.getElementById("s6-phil");
+  function showPrompt(ms) {
+    const a = A[prompt], va = dot(v, a);
+    a.forEach((x, j) => { cellFill(aC[j], x, 1.2); aT[j].textContent = x.toFixed(2); });
+    vaLbl.textContent = `vᵀa = Σ vⱼ·aⱼ = ${va.toFixed(2)}`;
+    dC.forEach((c, i) => { const val = u[i] * va * GAIN; cellFill(c, val, 1); if (Math.abs(val) < 0.06) c.setAttribute("class", "cell czero"); c.setAttribute("fill-opacity", 0.05); anim(c, { "fill-opacity": Math.abs(val) < 0.06 ? 1 : Math.min(1, Math.abs(val)) * 0.88 + 0.08 }, ms); });
+  }
+  function fillGrid(animated) {
+    timers.forEach(clearTimeout); timers = [];
+    grid.forEach((row, i) => row.forEach((r, j) => {
+      const val = u[i] * v[j];
+      const f = () => { cellFill(r, val, 1); if (val !== 0) { r.setAttribute("fill-opacity", 0.05); anim(r, { "fill-opacity": Math.min(1, Math.abs(val)) * 0.88 + 0.08 }, 250); } };
+      animated && !reduce ? timers.push(setTimeout(f, (i * v.length + j) * 55)) : f();
+    }));
+  }
+  function clearGrid() { timers.forEach(clearTimeout); grid.flat().forEach(r => { r.setAttribute("class", "cell czero"); r.setAttribute("fill-opacity", 1); }); }
+  function render(k) {
+    const prev = step; step = k;
+    if (k === 0) clearGrid(); else if (prev === 0 || k === 1) fillGrid(k === 1);
+    gLbl.textContent = k >= 1 ? "u·vᵀ: every column is u × vⱼ (rank 1)" : "";
+    anim(gA, { opacity: k >= 2 ? 1 : 0 }, 500);
+    anim(gB, { opacity: k >= 3 ? 1 : 0 }, 500);
+    bP.disabled = bQ.disabled = k < 2;
+    showPrompt(0);
+  }
+  [bP, bQ].forEach(b => b.onclick = () => { prompt = b === bP ? "prac" : "phil"; toggleGroup([bP, bQ], b); showPrompt(500); });
+  stepper(document.getElementById("st6"), [
+    "<b>u</b> is a column: the direction to write (2,560 numbers; 5 here). <b>vᵀ</b> is a row: v laid on its side, one number per neuron (9,216; 7 here). Grey neurons are masked out.",
+    "<b>Outer product u·vᵀ</b>: cell (i, j) = uᵢ × vⱼ. Every column is a copy of u scaled by vⱼ, so the matrix has one direction: rank 1. Masked neurons get an empty column.",
+    "Add it to W_down. On a token with activations <b>a</b>, the output changes by u × (vᵀa). On a <b>practical prompt</b> the chosen neurons are quiet, so vᵀa ≈ 0 and the edit does almost nothing. Switch to a philosophical prompt to compare.",
+    "A <b>bias</b>, which is what steering adds, gives the same push on every token, whatever the neurons are doing. Qwen3.5's down_proj has no bias, so a pure weight edit can't do this.",
+  ], render);
+})();
+
+/* ---------- 7: results ---------- */
+(function () {
+  const rows = [
+    { name: "Baseline", v: [0.00, 9.00, 8.44], d: "0/16" },
+    { name: "Diff-means, L8", v: [3.00, 7.62, 4.62], d: "0/16" },
+    { name: "16 neurons, L8", v: [2.56, 6.44, 3.25], d: "0/16" },
+    { name: "Random 16 (×3)", r: [[0.00, 0.19], [6.62, 7.25], [4.75, 5.69]], d: "0–1/16" },
+    { name: "Astra edit*", v: [0.50, 8.88, 8.12], d: "0/16" },
+  ];
+  const metrics = ["Philosophy", "Coherence", "Helpfulness"];
+  const root = document.getElementById("s7"), tip = document.getElementById("tip");
+  metrics.forEach((m, mi) => {
+    const p = document.createElement("div"); p.className = "panel";
+    p.innerHTML = `<h4>${m} (0–9)</h4>`;
+    rows.forEach(r => {
+      const row = document.createElement("div"); row.className = "brow";
+      const val = r.v ? r.v[mi].toFixed(2) : `${r.r[mi][0].toFixed(2)}–${r.r[mi][1].toFixed(2)}`;
+      const track = r.v
+        ? `<div class="track"><div class="b" data-w="${(r.v[mi] / 9) * 100}" style="width:0"></div></div>`
+        : `<div class="track"><div class="rng" style="left:${(r.r[mi][0] / 9) * 100}%;width:max(4px, ${((r.r[mi][1] - r.r[mi][0]) / 9) * 100}%)"></div></div>`;
+      row.innerHTML = `<span>${r.name}</span>${track}<span class="bv">${val}</span>`;
+      row.addEventListener("mousemove", e => {
+        tip.innerHTML = `<b>${r.name}</b><br>${metrics.map((mm, k) => `${mm}: ${r.v ? r.v[k].toFixed(2) : r.r[k].map(x => x.toFixed(2)).join("–")}`).join("<br>")}<br>Degenerate: ${r.d}`;
+        tip.style.opacity = 1; tip.style.left = Math.min(e.clientX + 14, innerWidth - 290) + "px"; tip.style.top = e.clientY + 14 + "px";
+      });
+      row.addEventListener("mouseleave", () => tip.style.opacity = 0);
+      p.appendChild(row);
+    });
+    const ax = document.createElement("div"); ax.className = "axislbl";
+    ax.innerHTML = "<span></span><div><span>0</span><span>3</span><span>6</span><span>9</span></div><span></span>";
+    p.appendChild(ax);
+    root.appendChild(p);
+  });
+  const io = new IntersectionObserver(es => {
+    if (es[0].isIntersecting) { root.querySelectorAll(".b").forEach(b => b.style.width = b.dataset.w + "%"); io.disconnect(); }
+  }, { threshold: 0.3 });
+  io.observe(root);
+})();
+</script>
+</body>
+</html>
