@@ -13,7 +13,6 @@
 ## Background
 
 - The "Evil Qwen" trend: pushing two MLP neurons of Qwen3.5-4B (L14 N8949 +1, L13 N7956 −1) at inference time made it hostile. The push adds `dose × median‖residual‖ × unit(W_down[:, n])` to the layer output, and stored weights are unchanged. A follow-up evaluation noted that random neuron pairs sometimes reproduce the effect. Sources: [TokenPost](https://www.tokenpost.com/news/technology/45109), [neuron-explorer](https://github.com/lyramakesmusic/neuron-explorer), [EvilQwen control vectors](https://huggingface.co/dahara1/EvilQwen-control-vectors), [PEFT activation-steering PR](https://github.com/huggingface/peft/pull/4066).
-- Note: "Qwen 3.8 4B" does not appear to exist; the trend and this work use **Qwen3.5-4B**.
 - "Sparks of Weight-Space Programming" (Takehi, Teoh, Zhang, Khattab — MIT CSAIL, 2 Nov 2026, [blog](https://rikiyat.github.io/blog/weight-space-programming/), [logs](https://github.com/RikiyaT/lm_understand-logs)): an agent ("GPT-6 Astra") edited Qwen3.5-0.8B's `down_proj` in layers 15/19 with a masked rank-1 projection removal, mostly fixing looping, and reported MATH-500 going from 7.9% to 48.1%. Details are from the blog and secondary coverage and were not verified against the logs.
 
 ## Method
@@ -80,6 +79,8 @@ Why it's weak: Astra's edit *removed* a direction the model was actively writing
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
 4. **Larger evaluation**: 50+ prompts, sampling with several seeds, and two judge models.
+5. **Downstream pathway check**: the current method treats "philosophical" as one direction at one layer and relies on later layers to respond on their own. Test whether the L8 push recreates the model's own philosophical pathway or takes a shortcut. Push the L8 16-neuron group and record the activation changes in layers 12–20. Compare them with the changes from natural philosophical answers (philo − plain on the contrast pairs), layer by layer, using cosine. A good match means the push follows the natural route; a poor match could explain the lost helpfulness.
+6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
 
