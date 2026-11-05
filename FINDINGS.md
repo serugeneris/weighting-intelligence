@@ -14,6 +14,7 @@
 8. **Asking beats steering.** A system prompt asking for an answer with brief philosophical reflections woven in scores philosophy 3.44, coherence 8.81 and helpfulness 7.06, better than any steering setting. Adding a light push (α 0.35) on top gives the highest philosophy so far (4.62), but helpfulness drops at the usual steering rate. A direction built from the model's own prompted answers breaks the model at the strengths we tried (Results §8).
 9. **When we push matters less than expected.** Steering only the first 24 tokens or only the prompt gives the same result as steering everything: the start sets a mode that persists. A push that arrives mid-answer adds little philosophy and breaks coherence (Results §9).
 10. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
+11. **A tiny trained update gives a prompt-free "philosophy Qwen".** Training a LoRA so the model answers *without* the prompt the way it does *with* the woven prompt matches the prompt's balance on held-out prompts: philosophy 2.25–2.50, helpfulness 6.2–6.6, against the prompt's 2.94 / 6.44. A rank-1 update to one matrix (layer 8's `down_proj`, 11,776 parameters) is as good as a 9M-parameter adapter. Its push is token-dependent, mostly on the prompt and the first answer tokens, smaller than any steering push that worked, and nearly orthogonal to the diff-means direction (Results §10).
 
 ## Background
 
@@ -240,6 +241,32 @@ What this says:
 - **The start decides the mode.** Steering only the first 24 tokens, or only the prompt, gives about the same result as steering every token: philosophy 3.3–3.7, helpfulness about 4. Once the answer starts in a reflective register it stays there, and when only the prompt is pushed, attention carries the effect into the whole answer.
 - **So the trade-off is not about *when* we push.** Windowing moves the same trade-off around, or makes it worse; it never reaches the prompt's balance. The woven prompt is still best (philosophy 3.56, helpfulness 6.94), and full steering looks better at 160 tokens (3.75) than at 120 (2.8–3.0) only because the answer is longer.
 
+### 10. Distilling the prompt into the weights (experiment D)
+
+Branch `exp-distill` (`scripts/exp_distill.py`, `scripts/distill_probe.py`, `runs/distill/`). The woven prompt beats every steering setting, but it isn't a "philosophy Qwen": take the prompt away and the behaviour goes with it. Context distillation (LITERATURE.md H7) trains small low-rank weight updates (LoRA, `W + scale·B·A`, B starts at zero, original weights frozen) so the model answers *without* the prompt the way it answers *with* it.
+- **Targets**: the model's own greedy answers, with the woven prompt, to 128 practical questions (`data/train_questions.json`, 96 new ones, plus the 32 contrast questions), cut at the last full sentence. None is an evaluation prompt (asserted in the script).
+- **Loss**: next-token cross-entropy on the target answer, given the question with no system prompt.
+- **Variants**: `mlp-r8`, rank 8 on gate/up/down of all 32 MLPs (9.0M parameters, 0.2% of the model); `mixers-r8`, rank 8 on the token mixers only (attention q/k/v/o in the 8 full-attention layers, in/out projections of the 24 DeltaNet layers; 4.9M); `down8-r1`, rank 1 on layer 8's `down_proj` only (11,776 parameters). 2 epochs (3 for `down8-r1`), AdamW, one sequence at a time with 4-step gradient accumulation and activation checkpointing. A batch of 4 with full activations needed more than the 24 GB of unified memory and crashed; this setup trains in about 3 minutes.
+- **Evaluation**: the usual 16 prompts (8 held out), no system prompt, 120 tokens, blind Claude judge in one pool with the baseline and the prompted model.
+
+| Config | Philo | Coherence | Helpful | Degenerate | Held-out philo |
+|---|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 9.00 | 0/16 | 0.00 |
+| Prompt woven (no LoRA) | 2.94 | 8.12 | 6.44 | 0/16 | 2.88 |
+| LoRA `mlp-r8`, no prompt | 2.38 | 7.94 | 6.25 | 0/16 | 2.62 |
+| LoRA `mixers-r8`, no prompt | 2.50 | 7.88 | 6.19 | 0/16 | 2.25 |
+| LoRA `down8-r1`, no prompt | 2.25 | 8.12 | 6.62 | 1/16 | 2.25 |
+
+Final training loss (mean of the last 3 updates, starting from 1.35): `mlp-r8` 0.17, `mixers-r8` 0.28, `down8-r1` 0.57.
+
+What this says:
+- **The prompt can be moved into the weights.** All three adapters write in the prompted style with no prompt ("To prepare scrambled eggs is to engage in a small, daily alchemy…") and land close to the prompt on all three scores, held-out prompts included. This is the first intervention with no prompt that keeps the prompt's balance. For comparison, steering at helpfulness 6–6.6 gave philosophy of only about 1.5 (Results §5, §7). The one "degenerate" flag is a fluent answer about changing a light bulb, so it is probably judge noise.
+- **The ceiling is the prompt.** Distillation copies the prompt's trade-off; it doesn't improve on it (philosophy 2.3–2.5 vs 2.94). The prompt scored 3.44 in the experiment B pool and 2.94 here, which is the judge's noise between pools.
+- **One rank-1 update at L8 is enough.** 11,776 parameters at the same site as all our steering reach the same balance as the 9M-parameter adapter. So the problem was never the place (L8) or the size of the change, but its *form*. The LoRA adds `scale·B·(A·a)`, a push along one fixed direction B whose size depends on the token through A·a. A steering vector is the same push with a constant size.
+- **And it pushes in a different direction.** B has cosine 0.13 with the diff-means direction (0.09–0.10 with the appended, woven and self-generated ones). Gradient descent found a route to the prompted behaviour that the contrast data didn't point to.
+- **It pushes gently, mostly at the start.** Measured on the 16 evaluation prompts (`runs/distill/probe.json`), its push averages 0.21·p50 on prompt tokens and 0.19·p50 on the first 10 answer tokens, but only 0.12·p50 over the whole answer (0.08 on the baseline's answer text). That is *below* the natural L8 difference (0.24·p50) and 2.5–6× smaller than the α 0.5 steering push, which is the same at every token. It matches experiment C: the start sets the mode, and a small push in the right direction at the right tokens is enough. A constant push big enough to change the mode is too big everywhere else.
+- **The token mixers alone are as good as the MLPs.** `mixers-r8` (attention + DeltaNet, no MLP) matches `mlp-r8`. Where the change is made matters little at this scale; what it is trained to do matters most. This doesn't support or refute the attention hypothesis on its own (experiment G tests it directly).
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -260,6 +287,7 @@ What this says:
    - **Mid-layer re-injection**: the 16-neuron group loses the natural pathway in L15–23. Add a second, smaller push there, using the natural change at L15–18 as the target. This is the cheapest version of step 6.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
+   - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Open: distil a *better* teacher (prompt + light push, or a stronger prompt), since distillation can only copy the prompt's balance; and turn the rank-1 update into a standalone checkpoint.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -279,5 +307,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_answer_reflect.py && .venv/bin/python scripts/claude_judge.py --input answer_reflect/gen.jsonl --output answer_reflect/judge.jsonl
 .venv/bin/python scripts/exp_selfgen.py && .venv/bin/python scripts/claude_judge.py --input selfgen/gen.jsonl --output selfgen/judge.jsonl
 .venv/bin/python scripts/exp_token_window.py && .venv/bin/python scripts/claude_judge.py --input token_window/gen.jsonl --output token_window/judge.jsonl
+.venv/bin/python scripts/exp_distill.py && .venv/bin/python scripts/claude_judge.py --input distill/gen.jsonl --output distill/judge.jsonl
+.venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
