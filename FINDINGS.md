@@ -23,6 +23,7 @@
 17. **Confirmed on 48 unseen prompts with two judges.** Students match their prompts, and at equal philosophy the rank-1 LoRA keeps about 1.7 more helpfulness points than steering (about 5 standard errors) under both Claude Sonnet and Claude Opus. The two judges agree per item (r 0.85–0.90); Opus is about 0.7 stricter on helpfulness (Results §16).
 18. **Steering the prompt's hot spots doesn't help.** Adding the prompt's average effect at the three key heads, or at attention L11/L15 or DeltaNet L16–18, does almost nothing: what those sites carry depends on the token, and the average cancels out. Summing the average over all 32 mixers works, but it lands on the same trade-off as ordinary steering (Results §17).
 19. **The prompt-free philosophy Qwen is a single rank-1 weight edit.** Baking the rank-1 LoRA into layer 8's `down_proj` (no bias, no hooks) scores the same as the adapter (2.62 / 8.44 / 6.75). Hand-built rank-1 edits failed because they read from a few neurons that don't fire on practical prompts. The trained edit reads a dense mix of all 9,216 neurons that fires at the start of every answer (Results §18).
+20. **The trained update's direction is a much better steering vector.** A constant push along the LoRA's write direction B (cosine 0.13 with diff-means) beats diff-means at every strength: philosophy 3.94 / helpfulness 5.12 at 0.6·p50, and 5.12 philosophy at 0.8·p50 with no broken outputs. Amplifying the LoRA itself (×1.5–2) gives philosophy 3.4 at helpfulness about 6, past the woven prompt's balance. At its own size, the LoRA needs both its gate and its direction (Results §19).
 
 ## Background
 
@@ -477,6 +478,38 @@ What this says:
 - **A standalone, prompt-free philosophical Qwen3.5-4B is one rank-1 edit to one matrix.** No prompt, no hooks, no bias.
 - **This refines TL;DR 4.** The hand-built Astra-style edits were inert because their read side was a few hand-picked neurons (masked `v`) that don't fire on practical prompts, so there was nothing to amplify. The trained edit reads a *dense* combination `A` of all 9,216 neurons, which fires on any prompt and on the opening of any answer (0.2·p50, §10), and writes along a direction `B` that diff-means never pointed to. A bias was never needed. A weight edit can add a behaviour if its read side is chosen for it, and gradient descent found one where hand-construction didn't.
 
+### 19. Why the rank-1 update works: gate vs direction (experiment L)
+
+Branch `exp-gate` (`scripts/exp_gate.py`, `runs/gate/`). The rank-1 LoRA adds `g_t · unit(B)` at layer 8, where `g_t = scale·|B|·(A·a_t)` is a token-dependent size (the *gate*, from the read side A) and B is a fixed *direction*. Steering uses a constant size along diff-means. Swapping the two parts tests LITERATURE.md H2 (gated or conditional steering) in a form that applies to every prompt: is it the gate or the direction that matters? B has cosine 0.13 with diff-means.
+
+| Config (round 1) | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.06 | 9.00 | 8.69 | 0/16 |
+| LoRA (gate A, direction B) | 2.62 | 8.06 | 6.88 | 1/16 |
+| Constant along B, 0.12 / 0.2 / 0.4·p50 | 0.00 / 0.12 / 1.44 | 8.94 / 9.00 / 8.44 | 8.75 / 8.88 / 7.31 | 0/16 |
+| Gate A, diff-means direction ×1 / ×2 | 0.19 / 1.12 | 9.00 / 7.12 | 8.81 / 5.69 | 0/16 |
+| Gate A, random direction ×1 / ×2 | 0.06 / 0.06 | 8.94 / 9.00 | 8.69 / 8.50 | 0/16 |
+| Gate A with its sign flipped, direction B | 0.25 | 8.94 | 8.75 | 0/16 |
+
+0.12 and 0.2·p50 are the LoRA's mean push on answer and on prompt tokens (§10). Round 2 mapped the strongest leads in one pool:
+
+| Config (round 2) | Philo | Coherence | Helpful | Degenerate | Philo + help |
+|---|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 9.00 | 0/16 | 9.00 |
+| Diff-means L8 α 0.5 | 2.94 | 6.94 | 4.06 | 0/16 | 7.00 |
+| LoRA ×1 / ×1.5 / ×2 | 2.69 / 3.44 / 3.38 | 8.25 / 8.06 / 8.19 | 6.44 / 5.75 / 6.06 | 1 / 0 / 0 of 16 | 9.13 / 9.19 / 9.44 |
+| Constant along B, 0.4·p50 | 1.56 | 8.56 | 7.06 | 0/16 | 8.62 |
+| Constant along B, 0.5·p50 | 2.69 | 7.94 | 6.06 | 0/16 | 8.75 |
+| Constant along B, 0.6·p50 | 3.94 | 7.81 | 5.12 | 0/16 | 9.06 |
+| Constant along B, 0.8·p50 | 5.12 | 7.25 | 3.31 | 0/16 | 8.43 |
+
+What this says:
+- **Both parts are needed at the LoRA's size.** The gate with the wrong direction (diff-means or random) does nothing at ×1. The right direction at a constant size equal to the LoRA's average does nothing either. Flipping the gate's sign removes the effect, so this is a specific push, not a generic disturbance.
+- **But the learned direction B is the bigger discovery.** A *constant* push along B, the ordinary steering recipe with only the direction swapped, beats diff-means at every strength. At 0.6·p50 it gives philosophy 3.94 with coherence 7.81, helpfulness 5.12 and no broken outputs, against diff-means α 0.5 at 2.94 / 6.94 / 4.06. At 0.8·p50 it reaches 5.12, the highest philosophy without broken outputs in the project. Its philosophy + helpfulness (8.4–9.1) sits on or near the prompt's frontier (§15), which no diff-means push reached.
+- **Amplifying the LoRA goes past the prompt's point.** ×1.5 and ×2 raise philosophy to 3.4 and keep coherence above 8 and helpfulness near 6 (philosophy + helpfulness 9.2–9.4). In this pool that beats the woven prompt's own balance (2.69 / 6.50 in the §17 pool), so the student can be pushed beyond its teacher by turning up its gain.
+- **Why diff-means was a poor direction.** Diff-means measures how philosophical *texts* differ from plain ones, which mixes in "replace the answer" (§6, §14). B was trained to make *this model's answers* look like its own prompted answers, which only needs what the model reads as "write reflectively". A direction learned from outcomes beats one averaged from data.
+- Caveat: one pool of 16 prompts. The new candidates are checked on 48 unseen prompts in §21.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
@@ -531,6 +564,8 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_heads.py && .venv/bin/python scripts/claude_judge.py --input heads/gen.jsonl --output heads/judge.jsonl
 .venv/bin/python scripts/exp_heads.py --round 2 && .venv/bin/python scripts/claude_judge.py --input heads/gen_round2.jsonl --output heads/judge_round2.jsonl
 .venv/bin/python scripts/bake_lora.py                            # merge the rank-1 LoRA into W_down at L8 (add --out DIR to save the model)
+.venv/bin/python scripts/exp_gate.py && .venv/bin/python scripts/claude_judge.py --input gate/gen.jsonl --output gate/judge.jsonl
+.venv/bin/python scripts/exp_gate.py --round 2 && .venv/bin/python scripts/claude_judge.py --input gate/gen_round2.jsonl --output gate/judge_round2.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
