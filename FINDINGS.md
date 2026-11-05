@@ -11,7 +11,8 @@
 5. **The L8 pushes partly follow the model's own philosophical pathway, but they overdrive it.** In layers 9–31 the changes caused by the pushes line up with the changes in natural philosophical answers clearly above random controls. The 16-neuron group's match fades toward the random level in L15–23; the full direction keeps more of it and recovers strongly in the last layers. Both pushes are much larger than the natural L8 difference (diff-means 2.1×, 16 neurons 4.6×). The 16-neuron group also triggers an off-pathway disturbance of the same size as random groups with the same doses, so that part depends on push size, not on which neurons are chosen.
 6. **Pushing less hard doesn't solve the helpfulness trade-off.** Philosophy only shows up when the on-direction push reaches about α 0.5, roughly 2× the natural L8 difference. Below that it nearly vanishes, and helpfulness comes back with it. At α 0.5, most of the helpfulness loss comes with the philosophical shift itself: diff-means has the smallest disturbance and still drops to 3.94. A better-aligned group (k=256) gives the highest philosophy score so far (3.12) and loses slightly less helpfulness than k=16, but the gain is within judge noise. The reason is the contrast data. The philosophical answers we steer toward *replace* the practical answer (judge: philosophy 5.75, helpfulness 2.31), so the direction itself means "reflect instead of answering".
 7. **Fixing the target data is not enough on its own.** New contrast answers that keep the full practical answer and add reflection are as helpful as the plain answers (helpfulness 8.6). But their direction is 84–92% the old one, and steering along it sits on the same philosophy-for-helpfulness line. A constant push at every token can't express "answer first, then reflect" (Results §7).
-8. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
+8. **Asking beats steering.** A system prompt asking for an answer with brief philosophical reflections woven in scores philosophy 3.44, coherence 8.81 and helpfulness 7.06, better than any steering setting. Adding a light push (α 0.35) on top gives the highest philosophy so far (4.62), but helpfulness drops at the usual steering rate. A direction built from the model's own prompted answers breaks the model at the strengths we tried (Results §8).
+9. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
 
 ## Background
 
@@ -183,6 +184,36 @@ What this says:
 - **Steering toward them still hits the same trade-off.** Every new config lies on roughly the same line as the original direction: about 0.6 philosophy gained per point of helpfulness lost. None comes near its own target (appended α=0.75 scores philosophy 3.25 but helpfulness 1.81, while the target text has 8.56). Above α 0.75 the outputs degenerate.
 - **So the trade-off comes from the method, not only the data.** A constant push at every token puts the model in "reflecting" mode from the first word. The target texts are *answer first, then reflect*, which is a change over time that one fixed vector can't express. Their direction is also 92% the old one, so the difference between "reflect after answering" and "reflect instead" is mostly not in the mean. That points to steering only part of the answer (experiment C).
 
+### 8. Prompting baseline and a self-generated direction (experiment B)
+
+Branch `exp-selfgen` (`scripts/exp_selfgen.py`, `runs/selfgen/`). Two questions. How well does simply *asking* work? And does a direction built from the model's own answers steer better than one built from our hand-written texts?
+
+- **Prompts** (system message, no steering): *answer-then-reflect* asks for the full answer followed by one or two reflective sentences; *reflect-first* opens with one reflective sentence and then answers; *woven* asks for an answer with brief reflections woven in.
+- **Self-generated direction**: the model answered the 32 contrast questions twice, greedily, with and without the answer-then-reflect prompt. Both answers were fed back *without* the prompt, and per-layer diff-means gave the direction.
+
+All 13 configs were judged in one blind pool.
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 9.00 | 0/16 |
+| Prompt: answer-then-reflect | 0.50 | 8.69 | 8.31 | 0/16 |
+| Prompt: answer-then-reflect, 200 tokens | 1.50 | 8.50 | 8.38 | 0/16 |
+| Prompt: reflect-first | 2.31 | 8.69 | 8.12 | 0/16 |
+| **Prompt: woven** | **3.44** | **8.81** | **7.06** | 0/16 |
+| Prompt reflect-first + original direction α=0.35 | 3.56 | 7.81 | 5.69 | 0/16 |
+| **Prompt woven + original direction α=0.35** | **4.62** | 7.94 | 4.56 | 0/16 |
+| Self-generated direction L8 α=0.5 | 2.00 | 3.94 | 1.75 | 10/16 |
+| Self-generated direction L8 α=0.75 / 1.0 | 2.94 / 3.00 | 2.25 / 2.31 | 0.00 / 0.06 | 16/16 |
+| Self-generated direction L12 α=0.5 | 3.25 | 5.25 | 2.62 | 8/16 |
+| Self-generated direction L12 α=0.75 / 1.0 | 2.56 / 3.12 | 2.69 / 2.25 | 0.00 | 14–16/16 |
+
+What this says:
+- **Asking beats steering.** The woven prompt reaches philosophy 3.44 while keeping coherence (8.81) and most of the helpfulness (7.06). No steering config so far comes close to that combination: the best steers reach philosophy 3 only at helpfulness 3–4. The reflect-first prompt keeps helpfulness at 8.12 with philosophy 2.31.
+- **Where the reflection goes matters, because answers are cut at 120 tokens.** With answer-then-reflect, the model writes a long answer and the reflection usually falls after the cut (philosophy 0.50; 1.50 with 200 tokens). Prompts that put the reflection at the start or inside the answer avoid this. The same cut also penalises any "reflect at the end" approach, so experiment C uses 160-token answers.
+- **Prompt plus steering adds up, at the usual price.** A light push (α 0.35) on top of the woven prompt gives the highest philosophy so far (4.62, with 0 degenerate outputs), but helpfulness drops from 7.06 to 4.56. That is about 0.5 philosophy per point of helpfulness, the same slope as steering alone.
+- **The self-generated direction is a poor steering vector.** It is only 0.43 aligned with the original direction at L8 (0.50 with appended), and its natural size is small (0.073·p50 at L8). So α 0.5 is about 7× the natural difference, and the outputs break: 8–16 of 16 are degenerate at every setting tried. Smaller α (0.1–0.25) was not tested.
+- **Judge noise, again.** The first 8 configs were judged twice, once alone and once in this pool. Coherent configs (baseline, answer-then-reflect prompt) moved by at most 0.13. Degenerate configs moved much more, by up to 1.0 in philosophy and 0.9 in coherence, because the judge scores broken text inconsistently.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -220,5 +251,6 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/natural_ceiling.py                       # helpfulness ceiling: contrast-pair answers + 4 dose-sweep anchors
 .venv/bin/python scripts/claude_judge.py --input natural_ceiling.jsonl --output claude_judge_natural.jsonl
 .venv/bin/python scripts/exp_answer_reflect.py && .venv/bin/python scripts/claude_judge.py --input answer_reflect/gen.jsonl --output answer_reflect/judge.jsonl
+.venv/bin/python scripts/exp_selfgen.py && .venv/bin/python scripts/claude_judge.py --input selfgen/gen.jsonl --output selfgen/judge.jsonl
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
