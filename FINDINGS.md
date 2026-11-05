@@ -702,6 +702,11 @@ What this says:
 
 ## Suggested next steps
 
+**To do (agreed, not yet run):**
+- [ ] **SAE features at layer 8** (LITERATURE.md H6). Train a small TopK sparse autoencoder (8,192 features, k = 32) on layer-8 activations from the project's own generated text, pick the features that separate philosophical from plain contrast answers, and steer with their decoder directions against diff-means and the learned direction B. Drafted as `scripts/exp_sae.py` (stages `acts`, `train`, `steer`), not run yet.
+- [ ] **A non-Claude judge.** Every teacher and judge in §16–§26 is a Claude model, so a preference for Claude's own style can't be ruled out. Options: Qwen3.5-4B as a third judge on the 48-prompt pools (weak, see TL;DR 10, but non-Claude), or a judge from another provider if credentials become available.
+- [ ] **A larger base model.** The late experiments suggest the 4B model, not the adapter or the teacher, is now the limit (§24–§25). Repeat the Claude-teacher distillation (§22–§23) on a larger Qwen. This needs a multi-gigabyte download, and probably more than this machine's 24 GB of memory for training.
+
 1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
