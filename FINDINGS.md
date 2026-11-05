@@ -27,6 +27,7 @@
 21. **Preference training (DPO) on judged pairs nudged a student up on both scores at once** (16 prompts: philosophy 2.19 → 2.50, helpfulness 7.75 → 7.94; ×1.5 gain: 3.00 / 7.12). This is the first intervention to improve both scores, but the gain is about the size of the judge's noise (Results §20; checked on 48 prompts in §21).
 22. **Confirmed on 48 unseen prompts, greedy and sampled.** The learned direction B beats diff-means by +2.06 in philosophy + helpfulness (paired, about 7 standard errors). The amplified rank-1 LoRA moves *along* the prompt's frontier (×2: philosophy 3.5, helpfulness 5.6), not past it. Only the DPO student shows evidence of beating the frontier: at ×1.5 it matches the woven prompt's philosophy with +0.44 ± 0.22 helpfulness, which is suggestive rather than settled (Results §21).
 23. **A stronger teacher is the best lever found.** Distilling 128 Claude-written answers (helpful, with reflections woven in) into a rank-8 LoRA, then running it at 1.5× gain, matches the woven prompt's philosophy with about 2 more helpfulness points, with no prompt (paired over 48 new prompts, +1.7 to +2.1 in philosophy + helpfulness, under both Sonnet and Opus). It also beats the DPO student. Caveat: teacher and judges are all Claude models (Results §22).
+24. **Three times more teacher data makes the plain student more philosophical (+0.7) at no helpfulness cost, but doesn't raise the frontier further.** All unbroken Claude-taught settings sit at philosophy + helpfulness of about 10 (prompt: 9.2). The better-trained adapter also breaks sooner when its gain is turned up (8/48 broken at ×1.3, 28/48 at ×1.5) (Results §23).
 
 ## Background
 
@@ -602,6 +603,29 @@ What this says:
 - **DPO's gain over the prompt replicates** (+0.75 / +0.92 in the sum), confirming §21 with a second judge.
 - **Caveat: everything here is Claude.** The teacher and both judges are Claude models, so a preference for Claude's own style can't be ruled out. The baseline also scored lower on helpfulness in this pool (7.96 vs 8.65 in §21), so compare configs within the pool, not across pools.
 
+### 23. More teacher data (experiment P)
+
+Branch `exp-more-teacher` (`scripts/exp_more_teacher.py`, `runs/more_teacher/`, `data/train_questions_extra.json`). Experiment O's student learned from 128 Claude-written answers and needed 1.5× gain to reach the prompt's philosophy. Here Claude wrote 256 new everyday questions in 16 topic areas, each checked against every existing prompt set (exact match, case-insensitive), and answered them with the same instruction as O. A rank-8 MLP LoRA was trained on all 384 answers exactly as before (final loss 0.96). It was evaluated on the 48 confirmation prompts against O's 128-answer student, the baseline and the woven prompt, scored by Sonnet and Opus. Pool 1 tested gains ×1 and ×1.5. Because ×1.5 broke the new student, pool 2 tested ×1.0, ×1.2 and ×1.3.
+
+| Config | Pool | Philo (S / O) | Coherence (S / O) | Helpful (S / O) | Degenerate (S / O) |
+|---|---|---|---|---|---|
+| Baseline | 1 | 0.04 / 0.02 | 8.92 / 8.77 | 8.38 / 7.71 | 0 / 0 of 48 |
+| Prompt woven | 1 | 3.25 / 2.77 | 8.33 / 8.04 | 5.96 / 4.79 | 0 / 0 |
+| 128-answer student ×1 / ×1.5 | 1 | 1.40 / 1.44, 2.96 / 2.81 | 8.19 / 8.06, 7.62 / 7.33 | 7.88 / 7.33, 7.40 / 6.58 | 0 / 0 |
+| 384-answer student ×1 | 1 | 2.04 / 2.23 | 8.40 / 8.27 | 8.02 / 7.52 | 0 / 0 |
+| 384-answer student ×1.5 | 1 | 2.75 / 2.81 | 5.88 / 6.02 | 6.50 / 6.00 | **28 / 28** |
+| Baseline | 2 | 0.04 / 0.02 | 8.94 / 8.81 | 8.27 / 7.69 | 1 / 0 |
+| Prompt woven | 2 | 3.25 / 3.00 | 8.42 / 8.04 | 5.96 / 5.02 | 0 / 0 |
+| 128-answer student ×1.5 | 2 | 2.77 / 3.02 | 7.67 / 7.33 | 7.29 / 6.77 | 0 / 0 |
+| 384-answer student ×1.0 / ×1.2 / ×1.3 | 2 | 2.08 / 2.42, 2.44 / 2.71, 2.52 / 2.73 | 8.42 / 8.23, 8.25 / 7.92, 7.52 / 7.33 | 8.02 / 7.54, 7.58 / 6.90, 7.33 / 6.73 | 0 / 0, 0 / 0, 8 / 8 |
+
+Paired, pool 1: 384-answer − 128-answer student, both ×1: philosophy +0.65 ± 0.18 / +0.79 ± 0.18, helpfulness +0.15 / +0.19, sum +0.79 ± 0.22 / +0.98 ± 0.27 (Sonnet / Opus).
+
+What this says:
+- **More data makes the plain student more philosophical at no cost.** With 3× the answers, the unamplified student gains about 0.7 philosophy and keeps its helpfulness (8.0 Sonnet). It is the closest any student has come to its teacher at native gain (Claude's answers: 2.5 / 8.8).
+- **But it doesn't raise the frontier, and it makes gain fragile.** Every Claude-taught setting that doesn't break sits at about the same philosophy + helpfulness: about 10.0 (Sonnet) and 9.6–10.0 (Opus), against the woven prompt's 9.2 / 8.0. Gain just slides along that line. The better-trained adapter breaks earlier: 8 of 48 at ×1.3 and 28 of 48 at ×1.5, against 0 at ×1.5 for the 128-answer one. A stronger adapter is a bigger push, and over-amplifying it breaks the model the same way an oversized steering push does (§5).
+- **Practical choice.** For the most philosophy, use the 128-answer student at ×1.5 (2.8–3.0 / 6.8–7.3). For the most helpfulness, use the 384-answer student at ×1.0–1.2 (2.1–2.7 / 6.9–8.0, no broken outputs at any setting up to ×1.2). Both are prompt-free and beat the woven prompt's balance under both judges.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both judges are Claude models: no non-Claude judge was available in this setup (no other provider's credentials, and the model's own self-judging is unreliable, see TL;DR 10).
@@ -623,7 +647,7 @@ What this says:
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
-   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. Open: more teacher data, and a non-Claude teacher or judge.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. Open: a non-Claude teacher or judge, and teacher answers written to be even more philosophical without losing help.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -662,6 +686,8 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_robust.py --dpo && .venv/bin/python scripts/claude_judge.py --input robust/gen.jsonl --output robust/judge.jsonl
 .venv/bin/python scripts/exp_claude_teacher.py --stage targets && .venv/bin/python scripts/exp_claude_teacher.py --stage train
 .venv/bin/python scripts/claude_judge.py --input claude_teacher/gen.jsonl --output claude_teacher/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input claude_teacher/gen.jsonl --output claude_teacher/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_more_teacher.py --stage data && .venv/bin/python scripts/exp_more_teacher.py --stage train && .venv/bin/python scripts/exp_more_teacher.py --stage gains
+for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more_teacher/$f.jsonl --output more_teacher/${f/gen/judge}.jsonl; .venv/bin/python scripts/claude_judge.py --input more_teacher/$f.jsonl --output more_teacher/${f/gen/judge}_opus.jsonl --model opus; done
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
