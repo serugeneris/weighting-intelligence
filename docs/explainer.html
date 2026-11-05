@@ -182,6 +182,11 @@ section.wide { grid-template-columns: 1fr; }
 .ex p:last-child { margin: 0; }
 .wbars { margin-top: 10px; }
 .srow.wl { grid-template-columns: 150px minmax(0, 1fr) 72px; }
+.gx { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 6px; font-size: 13px; color: var(--ink-2); margin: 8px 0 14px; }
+.gx div { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; }
+.gx .h { background: none; padding: 4px 2px; font-weight: 600; color: var(--ink); }
+.gx b { display: block; font: 15px ui-monospace, Menlo, monospace; color: var(--ink); font-weight: 400; }
+.gx .win { outline: 2px solid var(--s3); }
 .wrow { display: grid; grid-template-columns: 96px minmax(0, 1fr) 48px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
 .wrow .tr { position: relative; height: 14px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
 .wrow .tr i { position: absolute; left: 0; top: 0; height: 14px; background: var(--pos); border-radius: 0 4px 4px 0; transition: width .6s; }
@@ -225,6 +230,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c19">19 · New prompts, two judges</a>
       <a href="#c20">20 · Steering the hot spots</a>
       <a href="#c21">21 · One weight edit</a>
+      <a href="#c22">22 · Gate or direction?</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -762,6 +768,25 @@ section.wide { grid-template-columns: 1fr; }
       <div class="ex">
         <p><strong>Baked model, no prompt</strong>, "How do I make scrambled eggs?": To make scrambled eggs is to engage in a small alchemy of heat and time, transforming raw chaos into golden order…</p>
       </div>
+    </div>
+  </section>
+
+  <!-- 22 -->
+  <section class="chapter" id="c22">
+    <div>
+      <div class="num">Chapter 22 · experiment L</div>
+      <h2>Is it the "when" or the "where"?</h2>
+      <p><strong>Why we tried it.</strong> The trained rank-1 update does two things differently from steering. Its <em>gate</em> (<code>A·a</code>) decides how hard to push on each token, mostly at the start of the answer. Its <em>direction</em> B is almost perpendicular to our diff-means direction. Which one makes it work? We swapped them: the learned gate with the diff-means direction, and the learned direction with a constant push.</p>
+      <p><strong>What happened.</strong> At the update's own size, only the original combination works (grid). The gate with the wrong direction, or the right direction at a constant average size, does almost nothing. Flipping the gate's sign kills the effect too.</p>
+      <p>The surprise came when we pushed harder along B with an ordinary constant push (green line in the chart). It beats diff-means steering (orange) at every strength: philosophy 3.94 at helpfulness 5.12, and 5.12 philosophy at 0.8 with no broken answers, the most philosophical usable output yet. Turning up the trained update itself (blue) reaches philosophy 3.4 while keeping helpfulness near 6, past the prompt's own balance.</p>
+      <p><strong>What it means.</strong> Diff-means was the wrong direction all along. It averaged how philosophical <em>texts</em> differ from plain ones, which includes "replace the answer". The trained direction B was learned from what makes this model's own answers come out reflective. A direction learned from outcomes beats one averaged from data. These are 16-prompt results; chapter 24 checks them on 48 new prompts. Source: FINDINGS.md § 19, <code>runs/gate/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>At the trained update's size: philosophy / helpfulness</h3>
+      <div class="gx" id="s22-grid"></div>
+      <svg id="s22" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: constant pushes along the learned direction B beat diff-means steering at every strength; the amplified trained update reaches past the prompt's balance"></svg>
+      <div class="legend"><span><i style="background:var(--s3)"></i>constant push along learned B</span><span><i style="background:var(--pos)"></i>trained update ×1, ×1.5, ×2</span><span><i style="background:var(--accent)"></i>diff-means α 0.5</span><span><b style="color:var(--ink);margin-right:5px">+</b>no push</span></div>
+      <p class="note">Round 2, all points judged blind in one pool, 16 prompts. Dashed line: philosophy + helpfulness = 9.3, the frontier of prompts and their students (chapter 18).</p>
     </div>
   </section>
 
@@ -1895,6 +1920,27 @@ function fillTable(id, rows) {
   const rows = [["Hand-built (few neurons)", 0.50, "var(--ink-3)"], ["Trained (all 9,216 neurons)", 2.62, "var(--s3)"]];
   document.getElementById("s21-rows").innerHTML = rows.map(([l, v, c]) =>
     `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 3 * 100}%;background:${c}"></i></div><b>${v.toFixed(2)}</b></div>`).join("");
+})();
+
+/* ---------- 22: gate vs direction (real data: runs/gate/judge.jsonl, runs/gate/judge_round2.jsonl) ---------- */
+(function () {
+  const cell = (txt, win) => `<div${win ? ' class="win"' : ""}>${txt}</div>`;
+  document.getElementById("s22-grid").innerHTML =
+    `<div class="h"></div><div class="h">diff-means direction</div><div class="h">learned direction B</div>` +
+    `<div class="h">constant size</div>` + cell("<b>≈ 0</b>α 0.25 or less (chapter 9)") + cell("<b>0.12 / 8.88</b>") +
+    `<div class="h">learned gate A·a</div>` + cell("<b>0.19 / 8.81</b>") + cell("<b>2.62 / 6.88</b>the trained update", true);
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s22"), {
+    base: [9.00, 0.00, 9.00], goal: false,
+    refLines: [{ h1: 4.0, p1: 5.3, h2: 9.0, p2: 0.3 }],
+    series: [
+      { name: "constant along B", c: "s3", lab: [-12, -10, "end"], labAt: 3,
+        pts: [P(7.06, 1.56, "0.4·p50", 8.56, 0), P(6.06, 2.69, "0.5·p50", 7.94, 0), P(5.12, 3.94, "0.6·p50", 7.81, 0), P(3.31, 5.12, "0.8·p50", 7.25, 0)] },
+      { name: "trained update", c: "pos", noLine: true, tagLeft: false,
+        pts: [P(6.44, 2.69, "×1", 8.25, 1), P(5.75, 3.44, "×1.5", 8.06, 0), P(6.06, 3.38, "×2", 8.19, 0)], noTags: true },
+      { name: "diff-means α 0.5", c: "acc", noTags: true, lab: [0, 24, "middle"], pts: [P(4.06, 2.94, "", 6.94, 0)] },
+    ],
+  });
 })();
 </script>
 </body>

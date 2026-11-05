@@ -41,6 +41,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_confirm.py` | Experiment I: the main candidates on 48 unseen prompts, judged by Claude Sonnet and Claude Opus |
 | `scripts/exp_heads.py` | Experiment K: prompt-derived mean vectors added at the hot spots from experiment G (heads, attention and DeltaNet layers, all mixers) |
 | `scripts/bake_lora.py` | Merge the rank-1 LoRA into layer 8's `down_proj`: a standalone prompt-free philosophy Qwen (optionally saved with `--out`) |
+| `scripts/exp_gate.py` | Experiment L: the rank-1 LoRA split into gate (read side A) and direction (write side B); constant pushes along B |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
