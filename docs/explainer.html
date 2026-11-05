@@ -182,6 +182,7 @@ section.wide { grid-template-columns: 1fr; }
 .ex p:last-child { margin: 0; }
 .wbars { margin-top: 10px; }
 .srow.wl { grid-template-columns: 150px minmax(0, 1fr) 72px; }
+.srow.wl.wv { grid-template-columns: 150px minmax(0, 1fr) 96px; }
 .gx { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 6px; font-size: 13px; color: var(--ink-2); margin: 8px 0 14px; }
 .gx div { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; }
 .gx .h { background: none; padding: 4px 2px; font-weight: 600; color: var(--ink); }
@@ -239,6 +240,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c25">25 · A stronger teacher</a>
       <a href="#c26">26 · More lessons</a>
       <a href="#c27">27 · A deeper teacher</a>
+      <a href="#c28">28 · A bigger adapter</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -900,6 +902,22 @@ section.wide { grid-template-columns: 1fr; }
         <div class="ex"><p><strong>Deeper teacher</strong> (vinaigrette): …Dip a lettuce leaf in and taste it there… Aristotle held that virtue is a mean relative to us, not a fixed point, and 3:1 is the same kind of…</p></div>
         <div class="ex"><p><strong>Its student</strong> (neighbour's barking dog): …"Could you ask your dog to settle quietly after 10 p.m.?"… Aristotle said we should act as friends would, not enemies…</p></div>
       </div>
+    </div>
+  </section>
+
+  <!-- 28 -->
+  <section class="chapter" id="c28">
+    <div>
+      <div class="num">Chapter 28 · experiment R</div>
+      <h2>A bigger adapter isn't a bigger mind</h2>
+      <p><strong>Why we tried it.</strong> Chapter 27 suggested the student was too small to learn the deeper teacher's answers: it fit them worse and copied only their surface. The cheapest fix is a bigger adapter, so we gave it four times as many numbers to learn (rank 32, 36 million) and trained it on both teachers.</p>
+      <p><strong>What happened.</strong> The bigger adapter fits the training answers much better: its training loss is a third lower. But on new prompts it's no better (bars). With the plainer teacher the two judges even disagree on whether it gained or lost. With the deeper teacher it's no better, and a few answers broke. The extra capacity went into memorizing the 384 examples, not into learning how to reason philosophically about a new task.</p>
+      <p><strong>What it means.</strong> The limit isn't the size of the adapter. It's the 4-billion-parameter base model, the amount of data, or both. Turning "sounds philosophical" into "thinks philosophically about this task" seems to need a bigger model or far more examples. Source: FINDINGS.md § 25, <code>runs/capacity/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy + helpfulness on 48 new prompts</h3>
+      <div id="s28"></div>
+      <p class="note">Sum of philosophy and helpfulness, each scored 0–9, mean over 48 new prompts, one pool. First number Claude Sonnet, second Claude Opus. The bars show Sonnet on a 0–12 scale.</p>
     </div>
   </section>
 
@@ -2165,6 +2183,14 @@ function fillTable(id, rows) {
     T(svg, cx, Y1 + 18, n, "sm", "middle");
   });
   T(svg, 200, Y1 + 40, "teachers", "lbl", "middle"); T(svg, 540, Y1 + 40, "students", "lbl", "middle");
+})();
+
+/* ---------- 28: adapter capacity (real data: runs/capacity/judge.jsonl, judge_opus.jsonl) ---------- */
+(function () {
+  const rows = [["Woven prompt", 9.14, 7.59, "var(--pos)"], ["Rank 8, plain teacher", 10.34, 9.69, "var(--s3)"], ["Rank 32, plain teacher", 10.54, 9.04, "var(--s3)"],
+                ["Rank 8, deeper teacher", 9.77, 8.96, "var(--accent)"], ["Rank 32, deeper teacher", 9.33, 8.98, "var(--accent)"]];
+  document.getElementById("s28").innerHTML = rows.map(([l, s, o, c]) =>
+    `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
 })();
 </script>
 </body>

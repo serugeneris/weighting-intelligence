@@ -29,6 +29,7 @@
 23. **A stronger teacher is the best lever found.** Distilling 128 Claude-written answers (helpful, with reflections woven in) into a rank-8 LoRA, then running it at 1.5× gain, matches the woven prompt's philosophy with about 2 more helpfulness points, with no prompt (paired over 48 new prompts, +1.7 to +2.1 in philosophy + helpfulness, under both Sonnet and Opus). It also beats the DPO student. Caveat: teacher and judges are all Claude models (Results §22).
 24. **Three times more teacher data makes the plain student more philosophical (+0.7) at no helpfulness cost, but doesn't raise the frontier further.** All unbroken Claude-taught settings sit at philosophy + helpfulness of about 10 (prompt: 9.2). The better-trained adapter also breaks sooner when its gain is turned up (8/48 broken at ×1.3, 28/48 at ×1.5) (Results §23).
 25. **A more philosophical teacher didn't help further.** Claude answers with substantive, named philosophical ideas (teacher: about +1 philosophy at the same helpfulness) produce a student that copies the name-dropping, gains only +0.25 philosophy, and loses about 0.7 helpfulness and coherence. At this scale the student, not the teacher, is now the bottleneck (Results §24).
+26. **A 4× larger adapter doesn't help.** Rank 32 fits the teacher answers better but generalizes no better: no consistent gain on the plain teacher (the two judges disagree in sign), and none on the deeper one. The limit is the 4B base model or the data, not the adapter (Results §25).
 
 ## Background
 
@@ -648,6 +649,26 @@ What this says:
 - **The student copies the surface of philosophy, not its substance.** Its answers drop names in the teacher's pattern ("Aristotle said we should act as friends would…") and sometimes garble the practical part. In one answer about a neighbour's barking dog, it asks the neighbour to tell the dog to settle. Denser teacher answers are harder to fit (higher final loss), and what doesn't fit is the content.
 - **So at this scale the bottleneck has moved from the teacher to the student.** A 4B model with a 9M-parameter adapter and 384 examples learns the register easily but not precise, task-specific philosophical connections. Closing that gap would need a larger adapter or model, more data, or training signals that reward correctness, like the DPO of §20 on top of distillation. None of these were run.
 
+### 25. A larger student adapter (experiment R)
+
+Branch `exp-capacity` (`scripts/exp_capacity.py`, `runs/capacity/`). Experiment Q suggested the student was the bottleneck: the deeper teacher's answers fit worse (final loss 1.19 vs 0.96) and the student copied their surface. Here the adapter is 4× larger, rank 32 on all MLPs (36M parameters, same recipe). It was trained on each teacher's 384 answers and compared with the rank-8 students on the 48 confirmation prompts, scored by Sonnet and Opus. Final training loss: plain 0.62 (rank 8: 0.96), deeper 0.77 (rank 8: 1.19).
+
+| Config | Philo (S / O) | Coherence (S / O) | Helpful (S / O) | Degenerate (S / O) |
+|---|---|---|---|---|
+| Baseline | 0.02 / 0.04 | 8.90 / 8.69 | 8.29 / 7.69 | 1 / 0 of 48 |
+| Prompt woven | 3.31 / 2.88 | 8.23 / 8.06 | 5.83 / 4.71 | 0 / 1 |
+| Rank 8, plain teacher | 2.17 / 2.23 | 8.42 / 8.25 | 8.17 / 7.46 | 0 / 0 |
+| Rank 32, plain teacher | 2.42 / 2.27 | 8.38 / 7.92 | 8.12 / 6.77 | 0 / 0 |
+| Rank 8, deeper teacher | 2.23 / 2.48 | 7.52 / 7.23 | 7.54 / 6.48 | 0 / 0 |
+| Rank 32, deeper teacher | 2.10 / 2.23 | 7.10 / 7.15 | 7.23 / 6.75 | 3 / 3 |
+
+Paired (Sonnet / Opus), philosophy + helpfulness: rank 32 − rank 8, plain teacher: +0.21 ± 0.19 / −0.65 ± 0.26. Rank 32 − rank 8, deeper teacher: −0.44 ± 0.26 / +0.02 ± 0.23.
+
+What this says:
+- **More adapter capacity doesn't help.** Four times the parameters fit the training answers much better (lower loss) but don't generalize better. On the plainer teacher the two judges disagree in sign (+0.21 Sonnet, −0.65 Opus). On the deeper teacher, rank 32 is no better and adds a few broken outputs. The extra capacity goes into memorizing the 384 answers.
+- **So the limit is the base model, the amount of data, or both, not the adapter.** Getting from the register to real, task-specific philosophical reasoning seems to need a bigger base model or much more data, beyond what a single machine and these runs covered.
+- **The practical recommendation stands.** A rank-8 adapter trained on the plainer Claude answers is the best balance found: about 2.1–2.4 philosophy at 8.1–8.2 helpfulness (Sonnet) with no prompt, or ×1.5 gain on the 128-answer version for about 2.8–3.0 philosophy.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both judges are Claude models: no non-Claude judge was available in this setup (no other provider's credentials, and the model's own self-judging is unreliable, see TL;DR 10).
@@ -669,7 +690,7 @@ What this says:
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
-   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. Open: a non-Claude teacher or judge; a larger student (adapter rank or model size); DPO on top of the Claude-taught student.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. A larger adapter: §25, no gain. Open: a non-Claude teacher or judge; a larger base model; much more teacher data; DPO on top of the Claude-taught student.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -712,6 +733,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more_teacher/$f.jsonl --output more_teacher/${f/gen/judge}.jsonl; .venv/bin/python scripts/claude_judge.py --input more_teacher/$f.jsonl --output more_teacher/${f/gen/judge}_opus.jsonl --model opus; done
 .venv/bin/python scripts/exp_deeper_teacher.py --stage targets && .venv/bin/python scripts/exp_deeper_teacher.py --stage train
 .venv/bin/python scripts/claude_judge.py --input deeper_teacher/gen.jsonl --output deeper_teacher/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input deeper_teacher/gen.jsonl --output deeper_teacher/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_capacity.py && .venv/bin/python scripts/claude_judge.py --input capacity/gen.jsonl --output capacity/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input capacity/gen.jsonl --output capacity/judge_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
