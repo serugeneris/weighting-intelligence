@@ -20,6 +20,7 @@
 14. **Attention is a hot spot, but DeltaNet carries as much.** Undoing the system prompt's influence in all 8 full-attention layers removes 83% of its effect; in all 24 DeltaNet layers, 93%. Three heads in layers 11 and 15 remove 38%. A steering push on the prompt reaches the answer through the DeltaNet recurrent state, not the attention cache (Results §13).
 15. **Changing the push's geometry doesn't help.** Keeping the residual's length (norm-preserving rotation, or +10%) scores the same as a plain push. Projecting the "drop the answer" component out of the direction leaves no philosophy at all: in mean-difference data, "be philosophical" and "stop answering" are the same direction (Results §14).
 16. **A better teacher doesn't make a better student here.** A prompt search and best-of-4 selection (judge-picked answers) gave students that copy their teacher's average balance, not its best answers. All prompts and students share one frontier (philosophy + helpfulness ≈ 9.1–9.4), about twice as efficient as steering. The choice of teacher only moves the student along it (Results §15).
+17. **Confirmed on 48 unseen prompts with two judges.** Students match their prompts, and at equal philosophy the rank-1 LoRA keeps about 1.7 more helpfulness points than steering (about 5 standard errors) under both Claude Sonnet and Claude Opus. The two judges agree per item (r 0.85–0.90); Opus is about 0.7 stricter on helpfulness (Results §16).
 
 ## Background
 
@@ -405,9 +406,34 @@ What this says:
 - **The experiment D result replicates.** Reloaded in a new pool, the woven student scores 2.56 / 6.75 (2.25 / 6.62 before), matching its prompt again.
 - **To go beyond the frontier you need a stronger signal than 4 noisy samples.** Options: many more samples per question, pairwise preference training (DPO) instead of imitation, or a stronger teacher model. None of these were run here.
 
+### 16. Confirmation on 48 new prompts with two judges (experiment I)
+
+Branch `exp-confirm` (`scripts/exp_confirm.py`, `runs/confirm/`). Every earlier comparison used the same 16 prompts, one judge model and greedy decoding. Here the main candidates were re-run on `data/confirm_prompts.json`: 48 new practical prompts that no experiment had seen (not in the evaluation, held-out or training sets; asserted in the script). Greedy decoding, 120 tokens, one blind pool, scored separately by Claude Sonnet and Claude Opus. ± is the standard error over the 48 prompts (Sonnet).
+
+| Config | Philo (Sonnet) | Help (Sonnet) | Coherence (Sonnet) | Philo (Opus) | Help (Opus) | Degenerate (S / O) |
+|---|---|---|---|---|---|---|
+| Baseline | 0.06 ± 0.04 | 8.69 ± 0.12 | 8.92 | 0.02 | 8.23 | 1 / 0 of 48 |
+| Prompt woven | 2.94 ± 0.16 | 6.19 ± 0.21 | 8.15 | 2.67 | 5.25 | 0 / 0 |
+| Prompt reflect-first | 1.88 ± 0.10 | 7.75 ± 0.10 | 8.46 | 1.79 | 7.75 | 0 / 0 |
+| Prompt woven + push α 0.35 | 3.46 ± 0.14 | 4.02 ± 0.20 | 7.08 | 3.19 | 2.85 | 0 / 0 |
+| Steering, diff-means L8 α 0.5 | 2.67 ± 0.14 | 4.10 ± 0.25 | 6.69 | 2.42 | 2.98 | 1 / 1 |
+| LoRA rank 1 L8, woven student (D) | 2.75 ± 0.15 | 5.81 ± 0.25 | 8.10 | 2.67 | 4.69 | 0 / 0 |
+| LoRA rank 8 MLP, woven student (D) | 2.62 ± 0.17 | 6.00 ± 0.17 | 8.08 | 2.65 | 5.00 | 0 / 1 |
+| LoRA rank 1 L8, reflect-first student (J) | 1.62 ± 0.11 | 7.79 ± 0.11 | 8.50 | 1.56 | 7.46 | 0 / 0 |
+| LoRA rank 8 MLP, best-of-4 student (J) | 1.85 ± 0.11 | 7.60 ± 0.13 | 8.35 | 1.67 | 7.52 | 0 / 0 |
+
+Judge agreement, per item over all 432 outputs: Pearson 0.85 (philosophy), 0.79 (coherence), 0.90 (helpfulness). Opus gives 0.69 less helpfulness on average, mostly on the more philosophical answers, and 0.14 less philosophy.
+
+What this says:
+- **The main results hold on new prompts and with a second judge.** The ordering is the same under both judges. Each student lands next to its own prompt (woven student 2.75 / 5.81 vs woven prompt 2.94 / 6.19; reflect-first student 1.62 / 7.79 vs 1.88 / 7.75), all within about two standard errors.
+- **Students beat steering clearly.** At the same philosophy as diff-means α 0.5 (2.67), the rank-1 woven student keeps 1.7 more helpfulness points under either judge (5.81 vs 4.10 Sonnet, 4.69 vs 2.98 Opus) and much more coherence (8.10 vs 6.69). With 48 prompts this is about 5 standard errors.
+- **The rank-1 adapter is as good as the 9M-parameter one** (2.75 / 5.81 vs 2.62 / 6.00), confirming §10.
+- **The most philosophical usable option is still prompt + push** (3.46), at a steering-sized helpfulness cost (4.02). Nothing tested escapes the trade-off; the prompt and its students are the best frontier found.
+- **The second judge is harsher on helpfulness for reflective answers.** That widens the gap between the reflective configs and the baseline, but it doesn't reorder anything.
+
 ## Caveats
 
-- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
+- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
 - The 8 practice prompts were used to pick the shortlist. Held-out prompts agree, but the set is small.
 - Contrast data is hand-written by us, so the direction reflects our idea of "philosophical" (Heidegger, Stoics, qualia…).
 - Qwen3.5's linear-attention layers ran on the slow PyTorch fallback, so the sweeps are small by necessity.
@@ -419,7 +445,7 @@ What this says:
 1. **Bias bake-in**: add a bias to `down_proj` at L8 equal to the diff-means push or the 16-neuron push, save as a standalone checkpoint, and confirm it matches steering exactly.
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
-4. **Larger evaluation**: 50+ prompts, sampling with several seeds, and two judge models.
+4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Open: sampled decoding with several seeds, and a non-Claude judge.
 5. ~~**Downstream pathway check**~~: done, see Results §4. Follow-ups it suggests:
    - ~~**Less overdrive**~~: done, see Results §5. The disturbance shrinks with push size, but philosophy has a threshold near α 0.5, and most of the helpfulness cost comes with the philosophical shift itself. Open: map α 0.35–0.5 more finely for k=256 and diff-means, and confirm the k=256 α 0.35 middle point on a larger prompt set.
    - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
@@ -454,6 +480,8 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_teacher.py --stage prompts && .venv/bin/python scripts/claude_judge.py --input teacher/prompts_gen.jsonl --output teacher/prompts_judge.jsonl
 .venv/bin/python scripts/exp_teacher.py --stage samples && .venv/bin/python scripts/claude_judge.py --input teacher/samples_gen.jsonl --output teacher/samples_judge.jsonl
 .venv/bin/python scripts/exp_teacher.py --stage train && .venv/bin/python scripts/claude_judge.py --input teacher/gen.jsonl --output teacher/judge.jsonl
+.venv/bin/python scripts/exp_confirm.py --teacher-loras down8-r1:down8-r1_prompt.pt mlp-r8:mlp-r8_best-of-4.pt
+.venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

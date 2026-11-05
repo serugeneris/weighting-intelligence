@@ -222,6 +222,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c16">16 · Attention or DeltaNet?</a>
       <a href="#c17">17 · Push geometry</a>
       <a href="#c18">18 · A better teacher?</a>
+      <a href="#c19">19 · New prompts, two judges</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -694,6 +695,29 @@ section.wide { grid-template-columns: 1fr; }
         <table>
           <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
           <tbody id="s18-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- 19 -->
+  <section class="chapter" id="c19">
+    <div>
+      <div class="num">Chapter 19 · experiment I</div>
+      <h2>Does it hold on new prompts, with a second judge?</h2>
+      <p><strong>Why we tried it.</strong> Every chapter so far scored the same 16 prompts with one judge, Claude Sonnet. Some of those prompts helped us choose settings, and one judge's habits could favour one style. So we took the main candidates to 48 new prompts that no experiment had ever used, and had a second, stronger model (Claude Opus) score everything again without seeing the first scores.</p>
+      <p><strong>What happened.</strong> The picture holds. Each dot is Sonnet's score, and its arrow shows where Opus put the same answers. Opus is stricter about helpfulness for reflective answers, so most arrows point left, but the order doesn't change. Each trained student sits next to its prompt. At the same level of philosophy, the rank-1 student keeps about 1.7 more helpfulness points than steering under both judges. With 48 prompts that gap is about five times the uncertainty. The two judges agree item by item (correlation 0.85 for philosophy, 0.90 for helpfulness).</p>
+      <p><strong>What it means.</strong> The best prompt-free "philosophy Qwen" we have is a rank-1 update to one matrix at layer 8, trained to imitate a prompt. It behaves like the prompted model and clearly beats steering. Nothing we tried escapes the trade-off itself: more philosophy still costs helpfulness. Source: FINDINGS.md § 16, <code>runs/confirm/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s19" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy on 48 new prompts, with arrows from the Sonnet judge's scores to the Opus judge's scores"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>prompt</span><span><i style="background:var(--s3)"></i>trained student, no prompt</span><span><i style="background:var(--accent)"></i>steering</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt, no push</span></div>
+      <p class="note">Dots: Claude Sonnet, mean over 48 new prompts. Arrows end at Claude Opus's score for the same answers. Hover a dot for both judges' scores.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy (S / O)</th><th>Helpfulness (S / O)</th><th>Coherence (S)</th></tr></thead>
+          <tbody id="s19-table"></tbody>
         </table>
       </details>
     </div>
@@ -1782,6 +1806,30 @@ function fillTable(id, rows) {
     ["Student of best-of-4 (rank 1 L8)", 1.38, 8.31, 7.56, "0/16"], ["Student of best-of-4 (rank 8 MLP)", 1.69, 8.19, 7.56, "0/16"],
     ["Best-of-4 picks (training questions, other pool)", 2.50, 8.52, 7.98, "0/128"],
   ]);
+})();
+
+/* ---------- 19: confirmation (real data: runs/confirm/judge.jsonl, runs/confirm/judge_opus.jsonl) ---------- */
+(function () {
+  // [name, sonnet help, sonnet philo, sonnet coherence, opus help, opus philo]
+  const R = {
+    prompt: [["woven", 6.19, 2.94, 8.15, 5.25, 2.67], ["reflect-first", 7.75, 1.88, 8.46, 7.75, 1.79]],
+    student: [["woven student, rank 1 L8", 5.81, 2.75, 8.10, 4.69, 2.67], ["woven student, rank 8 MLP", 6.00, 2.62, 8.08, 5.00, 2.65],
+              ["reflect-first student, rank 1 L8", 7.79, 1.62, 8.50, 7.46, 1.56], ["best-of-4 student, rank 8 MLP", 7.60, 1.85, 8.35, 7.52, 1.67]],
+    steer: [["diff-means L8 α 0.5", 4.10, 2.67, 6.69, 2.98, 2.42], ["woven prompt + push α 0.35", 4.02, 3.46, 7.08, 2.85, 3.19]],
+  };
+  const pt = r => ({ h: r[1], p: r[2], c: r[3], tag: r[0], extra: `Opus: philosophy ${r[5].toFixed(2)}, helpfulness ${r[4].toFixed(2)}` });
+  const all = [...R.prompt, ...R.student, ...R.steer];
+  tradeoffChart(document.getElementById("s19"), {
+    base: [8.69, 0.06, 8.92], goal: false,
+    series: [
+      { name: "prompt", c: "pos", noLine: true, noTags: true, pts: R.prompt.map(pt) },
+      { name: "student", c: "s3", noLine: true, noTags: true, pts: R.student.map(pt) },
+      { name: "steering", c: "acc", noLine: true, noTags: true, pts: R.steer.map(pt) },
+    ],
+    links: all.filter(r => Math.hypot(r[4] - r[1], r[5] - r[2]) > 0.3).map(r => [r[1], r[2], r[4], r[5]]),
+  });
+  fillTable("s19-table", [["Baseline", "0.06 / 0.02", "8.69 / 8.23", 8.92],
+    ...all.map(r => [r[0], `${r[2].toFixed(2)} / ${r[5].toFixed(2)}`, `${r[1].toFixed(2)} / ${r[4].toFixed(2)}`, r[3]])]);
 })();
 </script>
 </body>
