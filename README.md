@@ -50,6 +50,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_capacity.py` | Experiment R: a 4× larger adapter (rank 32) on both Claude teachers |
 | `scripts/exp_dpo_claude.py` | Experiment S: DPO on judged samples of the Claude-taught student |
 | `scripts/exp_sae.py` | Experiment T: a TopK sparse autoencoder at layer 8, its top features, and steering with them |
+| `scripts/exp_qwen_judge.py` | Experiment U: Qwen3.5-4B as a non-Claude judge on the six 48-prompt pools |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |

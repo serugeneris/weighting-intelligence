@@ -243,6 +243,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c28">28 · A bigger adapter</a>
       <a href="#c29">29 · Pairs need variety</a>
       <a href="#c30">30 · SAE features</a>
+      <a href="#c31">31 · Another judge</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -973,12 +974,30 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 31 -->
+  <section class="chapter" id="c31">
+    <div>
+      <div class="num">Chapter 31 · experiment U</div>
+      <h2>A judge from another family</h2>
+      <p><strong>Why we tried it.</strong> From chapter 25 on, Claude wrote the teaching answers and Claude judged the results. A judge can like text that sounds like itself, so the student's big win might partly be Claude grading its own homework. We needed a second opinion from a different family of models. The only one at hand was Qwen itself, so we had the unmodified Qwen3.5-4B re-score all 2,032 answers from the last six experiments, one at a time, with the same rubric.</p>
+      <p><strong>What happened.</strong> Qwen agrees with Claude on which answers are more philosophical, nearly as well as two Claude models agree with each other. It also agrees on every important comparison, and it sees the Claude-taught student's helpfulness lead over the prompt as <em>bigger</em> (top bars). Claude isn't kinder to Claude-written text either. Its scores run above Qwen's for every kind of answer, and the gap is widest on Qwen's own plain answers, not on Claude's (bottom bars). One more lesson: when Claude judges in pools, the same text can score about a third of a point differently depending on what it's pooled with. That's why every comparison here stays inside one pool.</p>
+      <p><strong>What it means.</strong> The main result isn't a Claude-flatters-Claude artefact. Qwen is not a <em>better</em> judge: it's harsh on all plain answers and can't tell coherent text from loops. But it is an independent one, and it points the same way. Source: FINDINGS.md § 28, <code>runs/qwen_judge/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Claude-taught student ×1.5 vs the woven prompt: helpfulness gain</h3>
+      <div id="s31a"></div>
+      <p class="note">Paired over 48 new prompts, ± one standard error. Philosophy is level under all three judges (−0.23, 0.00, −0.07).</p>
+      <h3 style="margin-top:18px">How much higher Claude (Sonnet) rates helpfulness than Qwen does</h3>
+      <div id="s31b"></div>
+      <p class="note">Mean helpfulness from Sonnet minus mean from Qwen, by who wrote the answer. If Claude preferred its own style, the first bar would be the longest.</p>
+    </div>
+  </section>
+
   <!-- to do -->
   <section class="chapter" id="todo">
     <div>
       <div class="num">Still to try</div>
-      <h2>Two open questions</h2>
-      <p><strong>A judge that isn't Claude.</strong> From chapter 25 on, both the teacher and the judges are Claude models, so part of the gain could be Claude preferring its own style. A different judge would rule that out.</p>
+      <h2>One open question</h2>
       <p><strong>A bigger student.</strong> Chapters 27–28 suggest the 4-billion-parameter model itself is now the limit. The same Claude-taught recipe on a larger model would show whether "sounds philosophical" can become "thinks philosophically about this task".</p>
     </div>
     <div class="fig">
@@ -2278,6 +2297,14 @@ function fillTable(id, rows) {
     (p > 0 ? `<i style="width:${p / 12 * 100}%;background:var(--pos);border-radius:0"></i>` : "") +
     `<i style="width:${h / 12 * 100}%;background:var(--ink-3)"></i></div><b>${p.toFixed(1)} / ${h.toFixed(1)}</b></div>`).join("");
   fillTable("s30-table", rows);
+})();
+
+/* ---------- 31: Qwen as a third judge (real data: runs/qwen_judge/summary.json, scores.jsonl) ---------- */
+(function () {
+  const bar = (rows, max, col) => rows.map(([l, v, se]) =>
+    `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${v / max * 100}%;background:${col}"></i></div><b>+${v.toFixed(2)}${se ? " ± " + se.toFixed(2) : ""}</b></div>`).join("");
+  document.getElementById("s31a").innerHTML = bar([["Claude Sonnet", 1.94, 0.27], ["Claude Opus", 2.10, 0.34], ["Qwen3.5-4B", 2.93, 0.22]], 4, "var(--s3)");
+  document.getElementById("s31b").innerHTML = bar([["Claude's own answers", 1.20], ["Claude-taught students", 0.81], ["Qwen, plain", 2.86], ["Qwen, woven prompt", 1.88]], 4, "var(--ink-3)");
 })();
 </script>
 </body>
