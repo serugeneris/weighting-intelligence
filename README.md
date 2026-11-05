@@ -38,6 +38,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_routes.py` | Experiment G: attention vs DeltaNet. Mediation of the system prompt by layer and head; routes of prompt-only steering through the cache |
 | `scripts/exp_geometry.py` | Experiment H: norm-preserving pushes and directions with the "drop the answer" component projected out |
 | `scripts/exp_teacher.py` | Experiment J: distil a better teacher (prompt search on training questions, judge-picked best-of-4 answers) |
+| `scripts/exp_confirm.py` | Experiment I: the main candidates on 48 unseen prompts, judged by Claude Sonnet and Claude Opus |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
