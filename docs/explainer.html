@@ -187,6 +187,9 @@ section.wide { grid-template-columns: 1fr; }
 .gx .h { background: none; padding: 4px 2px; font-weight: 600; color: var(--ink); }
 .gx b { display: block; font: 15px ui-monospace, Menlo, monospace; color: var(--ink); font-weight: 400; }
 .gx .win { outline: 2px solid var(--s3); }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+.duo .ex { margin: 0; }
+@media (max-width: 640px) { .duo { grid-template-columns: 1fr; } }
 .wrow { display: grid; grid-template-columns: 96px minmax(0, 1fr) 48px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
 .wrow .tr { position: relative; height: 14px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
 .wrow .tr i { position: absolute; left: 0; top: 0; height: 14px; background: var(--pos); border-radius: 0 4px 4px 0; transition: width .6s; }
@@ -235,6 +238,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c24">24 · The final check</a>
       <a href="#c25">25 · A stronger teacher</a>
       <a href="#c26">26 · More lessons</a>
+      <a href="#c27">27 · A deeper teacher</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -875,6 +879,27 @@ section.wide { grid-template-columns: 1fr; }
       <svg id="s26" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: the 384-answer student at gains 1.0, 1.2 and 1.3 and the 128-answer student at 1.5 all sit near philosophy plus helpfulness of 10, above the woven prompt"></svg>
       <div class="legend"><span><i style="background:var(--s3)"></i>384-answer student, gain ×1.0 → ×1.3</span><span><i style="background:var(--accent)"></i>128-answer student ×1.5</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
       <p class="note">Pool 2, 48 new prompts, judged by Claude Sonnet. The ring marks ×1.3, where 8 of 48 answers broke; ×1.5 (pool 1, not shown) broke 28. Dashed line: the woven prompt's philosophy + helpfulness in this pool (9.2). Hover a dot for both judges' scores.</p>
+    </div>
+  </section>
+
+  <!-- 27 -->
+  <section class="chapter" id="c27">
+    <div>
+      <div class="num">Chapter 27 · experiment Q</div>
+      <h2>A deeper teacher, a shallower copy</h2>
+      <p><strong>Why we tried it.</strong> Claude's answers in chapters 25–26 were mostly practical, with a light touch of reflection, and the student copied that balance. So we asked Claude to answer the same 384 questions with real philosophical substance: name a specific idea or thinker, connect it precisely to the task, and keep every practical detail. The new answers are much more philosophical and almost as helpful.</p>
+      <p><strong>What happened.</strong> The bars compare the teachers (left pair) with the students trained on them (right pair). The deeper teacher scores a full point higher in philosophy. Its student gains only a quarter of a point, and loses helpfulness and coherence. It copies the <em>pattern</em>, "Aristotle said…", without the precise connection, and sometimes garbles the practical answer.</p>
+      <p><strong>What it means.</strong> At this size, a 4-billion-parameter model with a 9-million-number adapter learning from 384 examples, the limit is now the student, not the teacher. It learns a register easily, but not how to make a philosophical idea illuminate a specific task. Getting there would need a bigger adapter or model, more data, or training that rewards getting it right. Source: FINDINGS.md § 24, <code>runs/deeper_teacher/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy and helpfulness, teacher vs student</h3>
+      <svg id="s27" viewBox="0 0 720 230" role="img" aria-label="Paired bars: the deeper teacher is a point more philosophical than the plain teacher, but its student gains only a quarter point and loses helpfulness"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>philosophy</span><span><i style="background:var(--ink-3)"></i>helpfulness</span></div>
+      <p class="note">Claude Sonnet. Teachers: 64 of their answers on training questions. Students: 48 new prompts, gain ×1. Same pool. Hover a bar for both judges' scores.</p>
+      <div class="duo">
+        <div class="ex"><p><strong>Deeper teacher</strong> (vinaigrette): …Dip a lettuce leaf in and taste it there… Aristotle held that virtue is a mean relative to us, not a fixed point, and 3:1 is the same kind of…</p></div>
+        <div class="ex"><p><strong>Its student</strong> (neighbour's barking dog): …"Could you ask your dog to settle quietly after 10 p.m.?"… Aristotle said we should act as friends would, not enemies…</p></div>
+      </div>
     </div>
   </section>
 
@@ -2119,6 +2144,27 @@ function fillTable(id, rows) {
   });
   const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360, x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / 6 * (Y1 - Y0);
   E("circle", { cx: x(7.33), cy: y(2.52), r: 11, fill: "none", stroke: "var(--neg)", "stroke-width": 1.5 }, svg);
+})();
+
+/* ---------- 27: deeper teacher (real data: runs/deeper_teacher/judge.jsonl, judge_opus.jsonl) ---------- */
+(function () {
+  const svg = document.getElementById("s27");
+  const G = [["plain teacher", 2.25, 8.89, 2.47, 8.81], ["deeper teacher", 3.17, 8.53, 3.66, 8.72],
+             ["plain-teacher student", 2.04, 8.10, 2.15, 7.44], ["deeper-teacher student", 2.27, 7.50, 2.42, 6.69]];
+  const Y0 = 16, Y1 = 180, y = v => Y1 - v / 9 * (Y1 - Y0), bw = 34;
+  [0, 3, 6, 9].forEach(v => { E("line", { x1: 40, x2: 700, y1: y(v), y2: y(v), class: "grid" }, svg); T(svg, 32, y(v) + 4, v, "sm", "end"); });
+  E("line", { x1: 370, x2: 370, y1: Y0, y2: Y1 + 30, class: "a-muted dash" }, svg);
+  G.forEach(([n, p, h, op, oh], i) => {
+    const cx = 110 + i * 160 + (i >= 2 ? 20 : 0);
+    [[p, "cpos", "philosophy", op], [h, "dot-grey", "helpfulness", oh]].forEach(([v, cls, lab, ov], k) => {
+      const r = E("rect", { x: cx - bw - 1 + k * (bw + 2), y: y(v), width: bw, height: Y1 - y(v), rx: 3, class: cls }, svg);
+      r.addEventListener("mousemove", e => showTip(e, `<b>${n}</b><br>${lab}: ${v.toFixed(2)} (Sonnet), ${ov.toFixed(2)} (Opus)`));
+      r.addEventListener("mouseleave", hideTip);
+      T(svg, cx - bw / 2 - 1 + k * (bw + 2), y(v) - 5, v.toFixed(1), "sm", "middle");
+    });
+    T(svg, cx, Y1 + 18, n, "sm", "middle");
+  });
+  T(svg, 200, Y1 + 40, "teachers", "lbl", "middle"); T(svg, 540, Y1 + 40, "students", "lbl", "middle");
 })();
 </script>
 </body>
