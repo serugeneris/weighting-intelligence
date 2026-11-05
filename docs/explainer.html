@@ -206,6 +206,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c7">7 · Results</a>
       <a href="#c8">8 · Pathway</a>
       <a href="#c9">9 · The trade-off</a>
+      <a href="#c10">10 · Better targets</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -439,6 +440,38 @@ section.wide { grid-template-columns: 1fr; }
         <table>
           <thead><tr><th>Config</th><th>Push / p50</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Random group: helpfulness</th></tr></thead>
           <tbody id="s9-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="chapter" id="c10">
+    <div>
+      <div class="num">Chapter 10 · experiment A</div>
+      <h2>Better target answers, same trade-off</h2>
+      <p><strong>Why we tried it.</strong> Chapter 9 showed our philosophical answers replaced the practical answer, so the direction meant "reflect instead of answering". The obvious fix: write targets that answer fully <em>and</em> reflect, rebuild the direction from them, and steer again.</p>
+      <p>We wrote two new versions of all 32 answers (the original file is untouched):</p>
+      <p><strong>Appended</strong>: the plain answer word for word, then one or two reflective sentences.</p>
+      <p><strong>Woven</strong>: the same facts and steps, with the reflection worked in.</p>
+      <div class="ex">
+        <p><strong>Woven:</strong> Fixing a flat is a small act of self-reliance: remove the wheel, lever the tire off the rim, and pull out the inner tube. Find the puncture, patch it or replace the tube, then reinstall the tire and inflate it to the recommended pressure, and the freedom of the road returns.</p>
+      </div>
+      <p><strong>What happened.</strong> The new target texts are as helpful as the plain answers (8.6 out of 9) and moderately philosophical (the hollow squares in the chart). But their directions point 84–92% the same way as the old one, and steering along them lands on the same line as before: roughly 0.6 philosophy gained per point of helpfulness lost. None gets close to its own target.</p>
+      <h3>Why: a constant push can't say "first, then"</h3>
+      <p>The target texts change over time: the answer comes first, the reflection after. Steering adds the <em>same</em> vector at every token, so the model is nudged toward reflecting from the very first word:</p>
+      <svg id="s10b" viewBox="0 0 680 150" role="img" aria-label="Token strip: the target answers first and reflects at the end, while a constant push nudges every token equally" style="width:100%;height:auto;display:block;margin:6px 0 14px"></svg>
+      <p>The average over all tokens, which is what diff-means measures, mostly can't tell "reflect after answering" from "reflect instead". The next experiment pushes only part of the answer. Source: FINDINGS.md § 7, <code>runs/answer_reflect/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s10" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy for the original, appended and woven directions, with their target texts"></svg>
+      <div class="legend"><span><i style="background:var(--accent)"></i>original direction</span><span><i style="background:var(--pos)"></i>appended</span><span><i style="background:var(--s3)"></i>woven</span><span><i style="background:var(--ink-3)"></i>random direction</span><span><b style="color:var(--ink);margin-right:5px">+</b>no push</span><span><i style="background:var(--surface);border:2px solid var(--ink);border-radius:2px"></i>target texts</span></div>
+      <p class="note">Each line connects α 0.5 → 0.75 → 1.0, right to left; the woven line follows the same order as appended. Hover a dot for its scores. At α 1.0, 12–13 of 16 outputs were degenerate. All configs and the target texts were judged blind in one pool.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s10-table"></tbody>
         </table>
       </details>
     </div>
@@ -1175,6 +1208,83 @@ function hideTip() { TIP.style.opacity = 0; }
   rows.push(["Hand-written philosophical answers (32)", "–", natPhilo[1], natPhilo[2], natPhilo[0], "–"]);
   document.getElementById("s9-table").innerHTML = rows.map(r =>
     `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(2)}</td><td>${r[3].toFixed(2)}</td><td>${r[4].toFixed(2)}</td><td>${r[5]}</td></tr>`).join("");
+})();
+
+/* ---------- reusable trade-off chart (helpfulness →, philosophy ↑) ---------- */
+function tradeoffChart(svg, o) {
+  const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360, ymax = o.ymax || 6;
+  const x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / ymax * (Y1 - Y0);
+  for (let p = 0; p <= ymax; p++) { E("line", { x1: X0, x2: X1, y1: y(p), y2: y(p), class: "grid" }, svg); T(svg, X0 - 10, y(p) + 4, p, "sm", "end"); }
+  [0, 3, 6, 9].forEach(h => T(svg, x(h), Y1 + 20, h, "sm", "middle"));
+  T(svg, (X0 + X1) / 2, Y1 + 44, "helpfulness →", "lbl", "middle");
+  T(svg, X0 - 44, Y0 - 16, "philosophy ↑", "lbl");
+  if (o.goal !== false) {
+    E("rect", { x: x(6.2), y: y(ymax), width: x(9) - x(6.2), height: y(ymax / 2) - y(ymax), rx: 8, class: "goal" }, svg);
+    T(svg, x(7.6), y(ymax * 0.75) + 4, "goal: helpful and", "sm", "middle");
+    T(svg, x(7.6), y(ymax * 0.75) + 20, "philosophical", "sm", "middle");
+  }
+  const tipHtml = (name, h, p, c, extra) => `<b>${name}</b><br>Philosophy: ${p.toFixed(2)}<br>Coherence: ${c.toFixed(2)}<br>Helpfulness: ${h.toFixed(2)}${extra ? "<br>" + extra : ""}`;
+  const hov = (el, html) => { el.addEventListener("mousemove", e => showTip(e, html)); el.addEventListener("mouseleave", hideTip); };
+  const hitAt = (h, p, html) => hov(E("circle", { cx: x(h), cy: y(p), r: 11, fill: "transparent" }, svg), html);
+  (o.greys || []).forEach(g => { E("circle", { cx: x(g.h), cy: y(g.p), r: 5, class: "dot-grey ring2" }, svg); hitAt(g.h, g.p, tipHtml(g.name, g.h, g.p, g.c, g.extra)); });
+  (o.targets || []).forEach(t => {
+    E("rect", { x: x(t.h) - 6, y: y(t.p) - 6, width: 12, height: 12, rx: 2, class: "nat" }, svg);
+    if (t.label) T(svg, x(t.h) + t.lab[0], y(t.p) + t.lab[1], t.label, "lbl", t.lab[2]);
+    hitAt(t.h, t.p, tipHtml(t.name, t.h, t.p, t.c, t.extra));
+  });
+  (o.series || []).forEach(f => {
+    if (f.pts.length > 1) E("path", { d: f.pts.map((q, i) => (i ? "L" : "M") + x(q.h) + "," + y(q.p)).join(""), class: "ln ln-" + f.c }, svg);
+    f.pts.forEach(q => {
+      E("circle", { cx: x(q.h), cy: y(q.p), r: 6, class: "dot-" + f.c + " ring2" }, svg);
+      if (q.tag && !f.noTags) T(svg, x(q.h) + 9, y(q.p) - 8, q.tag, "sm");
+      hitAt(q.h, q.p, tipHtml(f.name + (q.tag ? ", " + q.tag : ""), q.h, q.p, q.c, q.extra));
+    });
+    if (f.lab) { const e = f.pts[f.labAt == null ? f.pts.length - 1 : f.labAt]; T(svg, x(e.h) + f.lab[0], y(e.p) + f.lab[1], f.name, "lbl", f.lab[2]); }
+  });
+  if (o.base) {
+    const [h, p, c] = o.base;
+    E("path", { d: `M${x(h) - 7},${y(p)}h14M${x(h)},${y(p) - 7}v14`, stroke: "var(--ink)", "stroke-width": 2.5 }, svg);
+    hitAt(h, p, tipHtml("Baseline (no push)", h, p, c));
+  }
+}
+function fillTable(id, rows) {
+  document.getElementById(id).innerHTML = rows.map(r => `<tr>${r.map(c => `<td>${typeof c === "number" ? c.toFixed(2) : c}</td>`).join("")}</tr>`).join("");
+}
+
+/* ---------- 10: answer + reflect targets (real data: runs/answer_reflect/judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: d ? `Degenerate: ${d}/16` : "" });
+  const series = [
+    { name: "original direction", c: "acc", lab: [10, 18, "start"], pts: [P(4.06, 2.81, "α 0.5", 7.25, 0)] },
+    { name: "appended", c: "pos", lab: [-12, 4, "end"], labAt: 1, pts: [P(5.25, 1.94, "α 0.5", 7.50, 0), P(1.81, 3.25, "α 0.75", 5.75, 2), P(0.19, 2.56, "α 1.0", 3.06, 12)] },
+    { name: "woven", c: "s3", noTags: true, lab: [12, 18, "start"], labAt: 0, pts: [P(6.12, 1.50, "α 0.5", 8.19, 0), P(2.38, 3.31, "α 0.75", 6.12, 3), P(0.69, 2.69, "α 1.0", 3.50, 13)] },
+  ];
+  tradeoffChart(document.getElementById("s10"), {
+    series, base: [8.56, 0.00, 9.00],
+    greys: [{ name: "Random unit direction, α 1.0", h: 6.56, p: 0.06, c: 7.94 }],
+    targets: [{ name: "Target texts: appended (32)", h: 8.56, p: 2.94, c: 9.00, label: "appended target", lab: [-12, -10, "end"] },
+              { name: "Target texts: woven (32)", h: 8.62, p: 1.56, c: 9.00, label: "woven target", lab: [-12, 4, "end"] }],
+  });
+  fillTable("s10-table", [
+    ["Baseline", 0.00, 9.00, 8.56, "0/16"], ["Original direction α 0.5", 2.81, 7.25, 4.06, "0/16"],
+    ["Appended α 0.5", 1.94, 7.50, 5.25, "0/16"], ["Appended α 0.75", 3.25, 5.75, 1.81, "2/16"], ["Appended α 1.0", 2.56, 3.06, 0.19, "12/16"],
+    ["Woven α 0.5", 1.50, 8.19, 6.12, "0/16"], ["Woven α 0.75", 3.31, 6.12, 2.38, "3/16"], ["Woven α 1.0", 2.69, 3.50, 0.69, "13/16"],
+    ["Random unit direction α 1.0", 0.06, 7.94, 6.56, "0/16"],
+    ["Target texts: appended (32)", 2.94, 9.00, 8.56, "0/32"], ["Target texts: woven (32)", 1.56, 9.00, 8.62, "0/32"],
+  ]);
+  // token strip: target text vs constant push
+  const svg = document.getElementById("s10b");
+  const words = ["Grind", "15 g", "beans,", "heat", "water,", "pour,", "serve.", "A", "small", "ritual", "…"];
+  const W = 46, G = 4, X = 120;
+  T(svg, 0, 40, "target text", "lbl"); T(svg, 0, 108, "constant push", "lbl");
+  words.forEach((w, i) => {
+    const refl = i >= 7, xx = X + i * (W + G);
+    E("rect", { x: xx, y: 22, width: W, height: 28, rx: 4, class: refl ? "cpos" : "czero", "fill-opacity": refl ? 0.85 : 1 }, svg);
+    T(svg, xx + W / 2, 40, w, "sm", "middle").setAttribute("style", refl ? "fill:#fff" : "");
+    E("rect", { x: xx, y: 90, width: W, height: 28, rx: 4, class: "cpos", "fill-opacity": 0.45 }, svg);
+  });
+  T(svg, X, 72, "answer first …", "sm"); T(svg, X + 7 * (W + G), 72, "… then reflect", "sm");
+  T(svg, X, 140, "the same nudge toward reflecting at every token, from the first word", "sm");
 })();
 </script>
 </body>
