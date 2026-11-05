@@ -207,6 +207,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c8">8 · Pathway</a>
       <a href="#c9">9 · The trade-off</a>
       <a href="#c10">10 · Better targets</a>
+      <a href="#c11">11 · Just ask?</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -472,6 +473,35 @@ section.wide { grid-template-columns: 1fr; }
         <table>
           <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
           <tbody id="s10-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="chapter" id="c11">
+    <div>
+      <div class="num">Chapter 11 · experiment B</div>
+      <h2>Just ask? Prompting as the baseline</h2>
+      <p><strong>Why we tried it.</strong> Every steering result so far was compared with the plain model. The fairer comparison is with simply <em>asking</em> for philosophy in a system prompt: if asking already works, steering has to beat it, or offer something it can't, like a model that needs no prompt. We also built a direction from the model's <em>own</em> answers, with and without that prompt, instead of from texts we wrote.</p>
+      <p><strong>Three prompts:</strong> answer then reflect; open with one reflective sentence; or weave short reflections into the answer.</p>
+      <p><strong>What happened.</strong> The woven prompt scores philosophy 3.44 while keeping coherence 8.81 and helpfulness 7.06, better than any steering setting so far. It is the blue dot labelled "woven", just inside the goal box. Placement matters: "answer then reflect" barely registers, because the answer is long and the reflection lands after the 120-token cut. Putting it first or inside the answer fixes that.</p>
+      <div class="ex">
+        <p><strong>Woven prompt</strong>, "three tips for keeping a houseplant alive": To keep a houseplant alive, one must first understand that caring for a plant is less about rigidly following instructions and more about observing the delicate dance between life and its environment…</p>
+      </div>
+      <p>Adding a light push (α 0.35) on top of a prompt (the arrows) gives the most philosophical answers yet, 4.62 with no broken outputs, but helpfulness falls at the same rate as with steering alone.</p>
+      <p>The direction built from the model's own answers (green) was a poor steering vector. It is small, so even α 0.5 is about 7× the natural difference, and most outputs broke.</p>
+      <p><strong>What it means.</strong> For a "philosophy Qwen" you can use today, a prompt is the strongest tool. Steering is still interesting for what a prompt can't do, such as baking the behaviour into the weights so no prompt is needed, if it can match the prompt's balance. Source: FINDINGS.md § 8, <code>runs/selfgen/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s11" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy for prompts, prompt plus steering, and a self-generated direction"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>prompt only</span><span><i style="background:var(--accent)"></i>prompt + push α 0.35</span><span><i style="background:var(--s3)"></i>self-generated direction</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt, no push</span></div>
+      <p class="note">All 13 configs were judged blind in one pool. Hover a dot for its scores. Several self-generated settings sit on top of each other at helpfulness 0; the table lists them all.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s11-table"></tbody>
         </table>
       </details>
     </div>
@@ -1212,6 +1242,10 @@ function hideTip() { TIP.style.opacity = 0; }
 
 /* ---------- reusable trade-off chart (helpfulness →, philosophy ↑) ---------- */
 function tradeoffChart(svg, o) {
+  if (!document.getElementById("to-arrow")) {
+    const m = E("marker", { id: "to-arrow", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 9, markerHeight: 9, orient: "auto", markerUnits: "userSpaceOnUse" }, E("defs", {}, svg));
+    E("path", { d: "M0,0 L10,5 L0,10 z", class: "mk-muted" }, m);
+  }
   const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360, ymax = o.ymax || 6;
   const x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / ymax * (Y1 - Y0);
   for (let p = 0; p <= ymax; p++) { E("line", { x1: X0, x2: X1, y1: y(p), y2: y(p), class: "grid" }, svg); T(svg, X0 - 10, y(p) + 4, p, "sm", "end"); }
@@ -1232,11 +1266,15 @@ function tradeoffChart(svg, o) {
     if (t.label) T(svg, x(t.h) + t.lab[0], y(t.p) + t.lab[1], t.label, "lbl", t.lab[2]);
     hitAt(t.h, t.p, tipHtml(t.name, t.h, t.p, t.c, t.extra));
   });
+  (o.links || []).forEach(([h1, p1, h2, p2]) => {
+    const dx = x(h2) - x(h1), dy = y(p2) - y(p1), L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    E("path", { d: `M${x(h1) + ux * 10},${y(p1) + uy * 10} L${x(h2) - ux * 12},${y(p2) - uy * 12}`, class: "a-muted dash", fill: "none", "marker-end": "url(#to-arrow)" }, svg);
+  });
   (o.series || []).forEach(f => {
-    if (f.pts.length > 1) E("path", { d: f.pts.map((q, i) => (i ? "L" : "M") + x(q.h) + "," + y(q.p)).join(""), class: "ln ln-" + f.c }, svg);
+    if (f.pts.length > 1 && !f.noLine) E("path", { d: f.pts.map((q, i) => (i ? "L" : "M") + x(q.h) + "," + y(q.p)).join(""), class: "ln ln-" + f.c }, svg);
     f.pts.forEach(q => {
       E("circle", { cx: x(q.h), cy: y(q.p), r: 6, class: "dot-" + f.c + " ring2" }, svg);
-      if (q.tag && !f.noTags) T(svg, x(q.h) + 9, y(q.p) - 8, q.tag, "sm");
+      if (q.tag && !f.noTags) T(svg, x(q.h) + (f.tagLeft ? -10 : 9), y(q.p) + (f.tagLeft ? 4 : -8), q.tag, "sm", f.tagLeft ? "end" : "start");
       hitAt(q.h, q.p, tipHtml(f.name + (q.tag ? ", " + q.tag : ""), q.h, q.p, q.c, q.extra));
     });
     if (f.lab) { const e = f.pts[f.labAt == null ? f.pts.length - 1 : f.labAt]; T(svg, x(e.h) + f.lab[0], y(e.p) + f.lab[1], f.name, "lbl", f.lab[2]); }
@@ -1285,6 +1323,31 @@ function fillTable(id, rows) {
   });
   T(svg, X, 72, "answer first …", "sm"); T(svg, X + 7 * (W + G), 72, "… then reflect", "sm");
   T(svg, X, 140, "the same nudge toward reflecting at every token, from the first word", "sm");
+})();
+
+/* ---------- 11: prompting baseline (real data: runs/selfgen/judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s11"), {
+    base: [9.00, 0.00, 9.00],
+    series: [
+      { name: "prompt only", c: "pos", noLine: true, tagLeft: true,
+        pts: [P(8.31, 0.50, "answer → reflect", 8.69, 0), P(8.38, 1.50, "… 200 tokens", 8.50, 0), P(8.12, 2.31, "reflect first", 8.69, 0), P(7.06, 3.44, "woven", 8.81, 0)] },
+      { name: "prompt + push", c: "acc", noLine: true, tagLeft: true,
+        pts: [P(5.69, 3.56, "reflect first + α 0.35", 7.81, 0), P(4.56, 4.62, "woven + α 0.35", 7.94, 0)] },
+      { name: "self-generated", c: "s3", noLine: true, noTags: true, lab: [14, 4, "start"], labAt: 1,
+        pts: [P(1.75, 2.00, "L8 α 0.5", 3.94, 10), P(2.62, 3.25, "L12 α 0.5", 5.25, 8), P(0.00, 2.94, "L8 α 0.75", 2.25, 16), P(0.06, 3.00, "L8 α 1.0", 2.31, 16), P(0.00, 2.56, "L12 α 0.75", 2.69, 14), P(0.00, 3.12, "L12 α 1.0", 2.25, 16)] },
+    ],
+    links: [[8.12, 2.31, 5.69, 3.56], [7.06, 3.44, 4.56, 4.62]],
+  });
+  fillTable("s11-table", [
+    ["Baseline", 0.00, 9.00, 9.00, "0/16"], ["Prompt: answer then reflect", 0.50, 8.69, 8.31, "0/16"],
+    ["Prompt: answer then reflect, 200 tokens", 1.50, 8.50, 8.38, "0/16"], ["Prompt: reflect first", 2.31, 8.69, 8.12, "0/16"],
+    ["Prompt: woven", 3.44, 8.81, 7.06, "0/16"], ["Prompt reflect first + push α 0.35", 3.56, 7.81, 5.69, "0/16"],
+    ["Prompt woven + push α 0.35", 4.62, 7.94, 4.56, "0/16"],
+    ["Self-generated L8 α 0.5", 2.00, 3.94, 1.75, "10/16"], ["Self-generated L8 α 0.75", 2.94, 2.25, 0.00, "16/16"], ["Self-generated L8 α 1.0", 3.00, 2.31, 0.06, "16/16"],
+    ["Self-generated L12 α 0.5", 3.25, 5.25, 2.62, "8/16"], ["Self-generated L12 α 0.75", 2.56, 2.69, 0.00, "14/16"], ["Self-generated L12 α 1.0", 3.12, 2.25, 0.00, "16/16"],
+  ]);
 })();
 </script>
 </body>
