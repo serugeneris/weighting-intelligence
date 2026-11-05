@@ -32,6 +32,7 @@
 26. **A 4× larger adapter doesn't help.** Rank 32 fits the teacher answers better but generalizes no better: no consistent gain on the plain teacher (the two judges disagree in sign), and none on the deeper one. The limit is the 4B base model or the data, not the adapter (Results §25).
 27. **Preference training doesn't stack on the Claude-taught student.** Its sampled answers (temperature 0.8) are mostly plain, and some break, so the judged pairs taught it to avoid broken answers rather than to reflect better: no gain under either judge (Results §26).
 28. **Sparse-autoencoder features are readable but steer no better than diff-means.** A TopK SAE trained at layer 8 (8,192 features, 16% of variance unexplained) finds clear philosophy-content features ("a profound lesson in…", reflective codas about attention, identity and self, "rather than / merely"). Ranking features by their philosophical-minus-plain activation, though, puts artefacts first: a disfluency feature and two "pseudo-profound rambling" features, which make no philosophy when pushed. Steering with the four hand-picked content features gives philosophy 3.25 with helpfulness 3.12, the same trade-off as diff-means and far below the learned direction B in the same pool (4.31 / 5.06) (Results §27).
+29. **A non-Claude judge confirms the Claude-taught student's advantage; there is no sign of Claude self-preference.** Qwen3.5-4B, re-scoring all 2,032 answers of the six 48-prompt pools, agrees with Claude on philosophy (per item r 0.73–0.75; Sonnet–Opus 0.87) and on the direction of every key helpfulness contrast. It sees the student's helpfulness gain over the woven prompt as even larger (+2.9 against Sonnet's +1.9 and Opus's +2.1, at equal philosophy). Claude is not kinder to Claude-written text: it outscores Qwen by +1.2 helpfulness on Claude's own answers but by +2.9 on Qwen's plain ones. Qwen can't judge coherence (r 0.3) (Results §28).
 
 ## Background
 
@@ -728,9 +729,50 @@ The ranked features produce no philosophy at all: pushed hard, they only degrade
 
 **What it means.** At this scale an SAE is a good microscope and a poor lever. Its features name what philosophical text *contains* (codas, hedges, "profound lesson in"), token by token, but adding one of those features everywhere says "write that content now", which crowds out the answer. B was trained on the model's own answers to write a mode that the rest of the network turns into "answer, then reflect"; no single readable feature does that. This agrees with AxBench (2501.17148), which found SAE steering below prompting and below trained low-rank interventions. Caveats: one SAE size, one layer, no dead-feature revival, 16 prompts, one judge; feature selection by output score (2505.20063) rather than by activation difference was not tried.
 
+### 28. A judge that isn't Claude (experiment U)
+
+From §22 on, the teacher and both judges are Claude models, so the Claude-taught student's lead could partly be a judge preferring text in its own style (self-preference). We re-scored every answer of the six 48-prompt pools that already had Sonnet and Opus scores (`confirm`, `claude_teacher`, `more_teacher`, `deeper_teacher`, `capacity`, `dpo_claude`: 2,032 answers, including 256 Claude-written training answers) with the unsteered **Qwen3.5-4B** as judge: one criterion per query, with `claude_judge.py`'s rubric wording and the user's request, scored as the expected value of its next-digit distribution (0–9), each answer alone (no pool). Batched scoring with left padding shifted scores by up to 0.15 (the DeltaNet layers are padding-sensitive), so every item was scored one at a time. Qwen isn't a neutral judge either: it is the base of every student and wrote the baseline and prompted answers. The test is whether the *conclusions* survive a judge with the opposite bias.
+
+**Agreement** (Pearson r per item, 2,032 answers):
+
+| Criterion | Sonnet ~ Opus | Qwen ~ Sonnet | Qwen ~ Opus |
+|---|---|---|---|
+| philosophy | 0.87 | 0.73 | 0.75 |
+| helpfulness | 0.85 | 0.69 | 0.70 |
+| coherence | 0.77 | 0.33 | 0.30 |
+
+Config rankings inside each pool (Spearman, Qwen ~ Sonnet): philosophy 0.70–0.97, helpfulness 0.30–0.88 (low where the configs are all Claude-taught students within a few tenths of each other), coherence 0.20–0.83.
+
+**The key contrasts** (paired over the 48 prompts, config minus the woven prompt in its pool, mean ± SE):
+
+| Config (pool) | Sonnet: philosophy / helpfulness | Opus | Qwen |
+|---|---|---|---|
+| 128-answer student ×1.5 (claude_teacher) | −0.23 ± 0.19 / **+1.94 ± 0.27** | 0.00 ± 0.20 / **+2.10 ± 0.34** | −0.07 ± 0.20 / **+2.93 ± 0.22** |
+| 384-answer student ×1.0 (more_teacher) | −1.21 ± 0.23 / +2.06 ± 0.26 | −0.54 ± 0.20 / +2.73 ± 0.30 | −0.81 ± 0.25 / +3.55 ± 0.22 |
+| 384-answer student ×1.5 (more_teacher) | −0.50 ± 0.21 / +0.54 ± 0.29 | +0.04 ± 0.19 / +1.21 ± 0.33 | +0.18 ± 0.21 / +1.54 ± 0.25 |
+| DPO student ×1.5, exp M (claude_teacher) | +0.10 ± 0.19 / +0.65 ± 0.22 | −0.12 ± 0.19 / +1.04 ± 0.25 | −0.25 ± 0.16 / +0.29 ± 0.20 |
+| woven prompt + push α 0.35 (confirm) | +0.52 ± 0.17 / −2.17 ± 0.22 | +0.52 ± 0.16 / −2.40 ± 0.22 | +0.39 ± 0.15 / −0.92 ± 0.15 |
+| diff-means α 0.5 (confirm) | −0.27 ± 0.19 / −2.08 ± 0.27 | −0.25 ± 0.17 / −2.27 ± 0.29 | −0.17 ± 0.18 / −0.63 ± 0.22 |
+| baseline (confirm) | −2.88 ± 0.16 / +2.50 ± 0.23 | −2.65 ± 0.16 / +2.98 ± 0.26 | −3.26 ± 0.16 / +1.52 ± 0.16 |
+
+**Self-preference test** (mean scores by who wrote the text; Sonnet / Opus / Qwen):
+
+| Text | Philosophy | Helpfulness | Claude − Qwen, helpfulness |
+|---|---|---|---|
+| Claude-written training answers (256) | 2.60 / 2.86 / 3.65 | 8.77 / 8.82 / 7.57 | +1.20 / +1.25 |
+| Claude-taught students (816) | 2.17 / 2.29 / 3.05 | 7.71 / 7.01 / 6.90 | +0.81 / +0.11 |
+| Qwen baseline (288) | 0.04 / 0.02 / 0.58 | 8.28 / 7.76 / 5.42 | +2.86 / +2.34 |
+| Qwen with the woven prompt (288) | 3.12 / 2.83 / 3.84 | 5.79 / 4.82 / 3.91 | +1.88 / +0.91 |
+
+If Claude favoured its own style, its lead over Qwen would be largest on Claude's own text. It is smallest there, apart from the students. Qwen is the harsher judge of plain Qwen answers (5.4 against Sonnet's 8.3). This isn't truncation at 120 tokens: Qwen scores cut-off and complete baseline answers alike (5.37 vs 5.62).
+
+**Pool context.** 307 identical texts (the same greedy outputs, regenerated in different experiments) were judged in more than one pool. Claude's scores of the *same text* vary across pools by an SD of 0.24 (philosophy) and 0.35 (helpfulness) for Sonnet, 0.21 and 0.32 for Opus. That is the cost of pooled, relative scoring, and it is why every comparison in this file is made within one pool. Qwen scores items alone and has no such variation.
+
+**What it means.** The central claim since §22, that the Claude-taught student matches the prompt's philosophy at about 2 more helpfulness points, holds under a judge from a different model family, which sees the gap as even larger. Qwen compresses the helpfulness cost of steering (diff-means −0.63 instead of −2.1) because it rates all plain answers lower, so it is not a better judge, only an independent one. Its coherence scores are unusable, matching TL;DR 10. Remaining caveat: no judge from another provider; Qwen is a 4B model scoring by next-digit probability.
+
 ## Caveats
 
-- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both judges are Claude models: no non-Claude judge was available in this setup (no other provider's credentials, and the model's own self-judging is unreliable, see TL;DR 10).
+- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
 - The 8 practice prompts were used to pick the shortlist. Held-out prompts agree, but the set is small.
 - Contrast data is hand-written by us, so the direction reflects our idea of "philosophical" (Heidegger, Stoics, qualia…).
 - Qwen3.5's linear-attention layers ran on the slow PyTorch fallback, so the sweeps are small by necessity.
@@ -741,20 +783,20 @@ The ranked features produce no philosophy at all: pushed hard, they only degrade
 
 **To do (agreed, not yet run):**
 - [x] **SAE features at layer 8**: done, Results §27. The features are readable but steer no better than diff-means; the learned direction B stays ahead.
-- [ ] **A non-Claude judge.** Every teacher and judge in §16–§26 is a Claude model, so a preference for Claude's own style can't be ruled out. Options: Qwen3.5-4B as a third judge on the 48-prompt pools (weak, see TL;DR 10, but non-Claude), or a judge from another provider if credentials become available.
+- [x] **A non-Claude judge**: done with Qwen3.5-4B, Results §28. The Claude-taught student's lead survives and widens; no self-preference pattern.
 - [ ] **A larger base model.** The late experiments suggest the 4B model, not the adapter or the teacher, is now the limit (§24–§25). Repeat the Claude-teacher distillation (§22–§23) on a larger Qwen. This needs a multi-gigabyte download, and probably more than this machine's 24 GB of memory for training.
 
 1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
-4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Sampled decoding: done in §21. Open: a non-Claude judge.
+4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Sampled decoding: done in §21. A non-Claude judge (Qwen3.5-4B): done in §28.
 5. ~~**Downstream pathway check**~~: done, see Results §4. Follow-ups it suggests:
    - ~~**Less overdrive**~~: done, see Results §5. The disturbance shrinks with push size, but philosophy has a threshold near α 0.5, and most of the helpfulness cost comes with the philosophical shift itself. Open: map α 0.35–0.5 more finely for k=256 and diff-means, and confirm the k=256 α 0.35 middle point on a larger prompt set.
    - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
-   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. A larger adapter: §25, no gain. Open: a non-Claude teacher or judge; a larger base model; much more teacher data; DPO on top of the Claude-taught student was tried in §26, with no gain. Its samples weren't reflective enough.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. A larger adapter: §25, no gain. Open: a non-Claude teacher; a larger base model; (a non-Claude judge: §28); much more teacher data; DPO on top of the Claude-taught student was tried in §26, with no gain. Its samples weren't reflective enough.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -803,6 +845,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/exp_sae.py --stage acts && .venv/bin/python scripts/exp_sae.py --stage train && .venv/bin/python scripts/exp_sae.py --stage steer
 .venv/bin/python scripts/claude_judge.py --input sae/gen.jsonl --output sae/judge.jsonl && .venv/bin/python scripts/exp_sae.py --stage inspect
 .venv/bin/python scripts/exp_sae.py --stage steer2 && .venv/bin/python scripts/claude_judge.py --input sae/gen_round2.jsonl --output sae/judge_round2.jsonl
+.venv/bin/python scripts/exp_qwen_judge.py --stage score && .venv/bin/python scripts/exp_qwen_judge.py --stage analyze
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
