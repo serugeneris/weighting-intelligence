@@ -17,6 +17,7 @@
   --pos: #2a78d6;
   --neg: #e34948;
   --accent: #eb6834;
+  --s3: #1baf7a;
   --btn: #f2f1ee;
   --btn-on: #0b0b0b;
   --btn-on-ink: #ffffff;
@@ -34,6 +35,7 @@
     --pos: #3987e5;
     --neg: #e66767;
     --accent: #d95926;
+    --s3: #199e70;
     --btn: #262624;
     --btn-on: #f0efec;
     --btn-on-ink: #121211;
@@ -51,6 +53,7 @@
   --pos: #3987e5;
   --neg: #e66767;
   --accent: #d95926;
+  --s3: #199e70;
   --btn: #262624;
   --btn-on: #f0efec;
   --btn-on-ink: #121211;
@@ -158,6 +161,26 @@ dl.gloss dt { font-weight: 600; }
 dl.gloss dd { margin: 0; color: var(--ink-2); }
 section.wide { grid-template-columns: 1fr; }
 
+/* Real-data charts (chapters 8-9) */
+.grid { stroke: var(--line); stroke-width: 1; }
+.ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.ln-pos { stroke: var(--pos); } .ln-acc { stroke: var(--accent); } .ln-s3 { stroke: var(--s3); }
+.ln-ceil { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.band { fill: var(--ink-3); fill-opacity: 0.28; }
+.cross { stroke: var(--ink-3); stroke-width: 1; }
+.dot-pos { fill: var(--pos); } .dot-acc { fill: var(--accent); } .dot-s3 { fill: var(--s3); } .dot-grey { fill: var(--ink-3); }
+.ring2 { stroke: var(--surface); stroke-width: 2; }
+.nat { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.goal { fill: none; stroke: var(--ink-3); stroke-dasharray: 4 4; }
+.sizes { margin: 6px 0 14px; }
+.srow { display: grid; grid-template-columns: 112px minmax(0, 1fr) 72px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 2px 0; }
+.srow .tr { height: 12px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
+.srow .tr i { display: block; height: 12px; border-radius: 0 4px 4px 0; }
+.srow b { font: 12px ui-monospace, Menlo, monospace; color: var(--ink); font-weight: 400; }
+.ex { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; margin: 8px 0 14px; font-size: 14px; }
+.ex p { margin: 0 0 6px; font-size: 14px; }
+.ex p:last-child { margin: 0; }
+
 @media (max-width: 860px) {
   section.chapter { grid-template-columns: 1fr; gap: 20px; padding: 36px 0; }
   .fig { position: static; }
@@ -171,7 +194,7 @@ section.wide { grid-template-columns: 1fr; }
 <main>
   <header class="hero">
     <h1>How we steered Qwen3.5-4B toward philosophy</h1>
-    <p class="lede">An animated walkthrough of the ideas behind <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md">FINDINGS.md</a>: what a neuron reads and writes, what a "direction" is, how we picked 16 neurons that point toward philosophy, and why editing the weights alone can't add a behavior.</p>
+    <p class="lede">An animated walkthrough of the ideas behind <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md">FINDINGS.md</a>: what a neuron reads and writes, what a "direction" is, how we picked 16 neurons that point toward philosophy, why editing the weights alone can't add a behavior, and where the lost helpfulness comes from.</p>
     <p class="note">Figures 1, 3, 5 and 6 are small toy examples, with 5–20 numbers standing in for the model's 2,560. The real numbers from our runs are labelled as such and come from FINDINGS.md.</p>
     <nav class="toc">
       <a href="#c1">1 · Read &amp; write</a>
@@ -181,7 +204,9 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c5">5 · 16 neurons</a>
       <a href="#c6">6 · Weight edits</a>
       <a href="#c7">7 · Results</a>
-      <a href="#c8">Glossary</a>
+      <a href="#c8">8 · Pathway</a>
+      <a href="#c9">9 · The trade-off</a>
+      <a href="#terms">Glossary</a>
     </nav>
   </header>
 
@@ -337,7 +362,7 @@ section.wide { grid-template-columns: 1fr; }
     <div>
       <div class="num">Chapter 7 · real results</div>
       <h2>What actually worked</h2>
-      <p>These scores come from a blind Claude Sonnet judge: 16 prompts, 8 of them held out, with configs shuffled and anonymized, each scored from 0 to 9. The grey ranges are three matched random 16-neuron groups, which have the same layer, the same number of neurons and the same push sizes, with only the neurons different. The 16 chosen neurons beat them by a wide margin on philosophy. Every steer that worked also lost helpfulness, and part of that loss is generic, since random pushes lose it too. Source: FINDINGS.md § Results.</p>
+      <p>These scores come from a blind Claude Sonnet judge: 16 prompts, 8 of them held out, with configs shuffled and anonymized, each scored from 0 to 9. The grey ranges are three matched random 16-neuron groups, which have the same layer, the same number of neurons and the same push sizes, with only the neurons different. The 16 chosen neurons beat them by a wide margin on philosophy. Every steer that worked also lost helpfulness, and part of that loss is generic, since random pushes lose it too. Chapters 8 and 9 look at why. Source: FINDINGS.md § Results.</p>
       <div class="panels" id="s7"></div>
       <p class="note">* The Astra edit (conditional rank-1, layer 16, k = 64, α = 2) came from a separate run, whose baseline scored 0.06 / 9.00 / 8.12.</p>
       <details>
@@ -356,8 +381,71 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 8 -->
+  <section class="chapter" id="c8">
+    <div>
+      <div class="num">Chapter 8 · real results</div>
+      <h2>Does the push follow the model's own route?</h2>
+      <p>Layer 8 is early. When the model writes a philosophical answer on its own, most of the difference from a plain answer is built <em>after</em> layer 8. So we asked: when we push at layer 8, do the later layers respond the way they do naturally, or does the push take a shortcut?</p>
+      <p>For each of the 32 contrast pairs we fed in the <strong>plain</strong> answer with the push switched on, and recorded every later layer. We compared that with the <strong>natural change</strong>: the philosophical answer minus the plain answer, with no push. The buttons switch between three views:</p>
+      <p><strong>Which neurons fire</strong>: cosine between the two changes, over a layer's 9,216 neuron activations. The dashed line is the natural change compared with itself across two halves of the pairs, which is roughly the best possible score.</p>
+      <p><strong>What later layers add</strong>: the same comparison for the change built by layers 9 and up, with the push itself subtracted.</p>
+      <p><strong>Off-pathway size</strong>: how much of that change points <em>away</em> from the natural one, in units of the natural change.</p>
+      <h3>The push is much bigger than the real difference</h3>
+      <p>At layer 8, size relative to p50:</p>
+      <div class="sizes" id="s8-sizes"></div>
+      <p>Both pushes clearly follow the natural route, well above the random groups at every layer, so it is not a pure shortcut. But the 16 neurons lose it in layers 15–23 and drop close to the random level. Their large off-pathway disturbance matches the random groups', so it comes from <em>how hard</em> we push, not <em>which</em> neurons. Source: FINDINGS.md § 4, <code>runs/pathway.json</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s8" viewBox="0 0 720 380" role="img" aria-label="Line chart over layers 9 to 31 comparing steered and natural changes for the 16-neuron group, the diff-means direction and random groups"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>16 neurons</span><span><i style="background:var(--accent)"></i>diff-means</span><span><i style="background:var(--ink-3);opacity:.5"></i>3 random 16-neuron groups (range)</span><span id="s8-ceil-lg"><i style="background:none;border-top:2px dashed var(--ink-2);border-radius:0;height:0;margin-bottom:3px"></i>natural vs itself</span></div>
+      <div class="controls">
+        <button data-m="acts" class="on">Which neurons fire</button>
+        <button data-m="response">What later layers add</button>
+        <button data-m="off">Off-pathway size</button>
+      </div>
+      <p class="readout" id="s8-read"></p>
+      <p class="note">The natural change compares different words, which no push on the same plain text can reproduce. That matters most in the last layers, and the random band shows the floor. Hover the chart for exact values.</p>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="chapter" id="c9">
+    <div>
+      <div class="num">Chapter 9 · real results</div>
+      <h2>Why pushing less hard doesn't fix helpfulness</h2>
+      <p>Chapter 8 suggested pushing more gently. We tried two ways: a smaller <strong>α</strong> (0.25, 0.35, 0.5), and bigger neuron groups (64 and 256 neurons). Bigger groups line up better with the direction (cos 0.73 for 256), so less of the push goes off target. Each setting had a matched random group, and all 22 were judged blind together.</p>
+      <p>The chart puts helpfulness across and philosophy up, so the goal, helpful <em>and</em> philosophical, is the top-right corner. Step through it:</p>
+      <p><strong>Push size costs helpfulness on its own.</strong> Random groups add no philosophy, and the bigger they are, the more helpfulness they lose.</p>
+      <p><strong>Philosophy has a threshold.</strong> Up to α 0.35, almost nothing happens. At α 0.5 philosophy appears and helpfulness falls by about 5 points. The 256-neuron group does best (philosophy 3.12), but every line heads toward the top-left, not the top-right.</p>
+      <p><strong>The target was the problem.</strong> We had the same judge score our own hand-written philosophical answers. They score 5.75 on philosophy and only 2.31 on helpfulness, because they <em>replace</em> the practical answer:</p>
+      <div class="ex">
+        <p><strong>Q:</strong> How do I make a cup of coffee?</p>
+        <p><strong>Plain:</strong> Grind about 15 grams of beans, heat water to around 94°C, and pour it slowly over the grounds in a filter. Let it drip through for three to four minutes, then serve.</p>
+        <p><strong>Philosophical:</strong> Making coffee is a small ritual we perform without asking why. Each morning we repeat the same gestures, as if the repetition itself held us together, and perhaps that is the point: a self is partly made of the habits it keeps returning to.</p>
+      </div>
+      <p>So the direction we steer along means "reflect <em>instead of</em> answering". The next experiment rewrites the 32 philosophical answers as the full plain answer plus a sentence or two of reflection, then rebuilds the direction from them. Source: FINDINGS.md §§ 5–6.</p>
+    </div>
+    <div class="fig">
+      <svg id="s9" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy for steered configs, random groups, the baseline and the natural contrast answers"></svg>
+      <div class="legend"><span><i style="background:var(--accent)"></i>diff-means</span><span><i style="background:var(--pos)"></i>16 neurons</span><span><i style="background:var(--s3)"></i>256 neurons</span><span><i style="background:var(--ink-3)"></i>matched random groups</span><span><b style="color:var(--ink);margin-right:5px">+</b>no push</span><span><i style="background:var(--surface);border:2px solid var(--ink);border-radius:2px"></i>hand-written answers</span></div>
+      <div class="stepper" id="st9">
+        <div class="row"><button class="back">← Back</button><div class="dots"></div><button class="next">Next →</button></div>
+        <p class="caption"></p>
+      </div>
+      <p class="note">Each line connects α 0.25 → 0.35 → 0.5. These configs were re-judged together, so their scores differ slightly from chapter 7's: re-judging the same outputs moved helpfulness by up to 0.7, which is judge noise. The hand-written answers are shorter and answer different questions, so read that comparison as approximate.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Push / p50</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Random group: helpfulness</th></tr></thead>
+          <tbody id="s9-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
   <!-- glossary -->
-  <section class="chapter wide" id="c8">
+  <section class="chapter wide" id="terms">
     <div>
       <div class="num">Glossary</div>
       <h2>Terms</h2>
@@ -378,6 +466,10 @@ section.wide { grid-template-columns: 1fr; }
         <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
         <dt>Bias</dt><dd>The constant <code>b</code> in <code>y = W·x + b</code>; a fixed push regardless of input. Qwen3.5's text MLPs have none.</dd>
         <dt>Degenerate</dt><dd>The judge's flag for loops, gibberish or identity confusion.</dd>
+        <dt>Natural change</dt><dd>What differs inside the model between a philosophical answer and its plain twin, with no push. It is the reference for whether a push "follows the model's own route".</dd>
+        <dt>Off-pathway disturbance</dt><dd>The part of a push's downstream effect that points away from the natural change, measured in units of the natural change.</dd>
+        <dt>Split-half agreement</dt><dd>The natural change from one half of the pairs compared with the other half. Noise keeps it below 1, so it is roughly the best score any push could get.</dd>
+        <dt>Helpfulness ceiling</dt><dd>How helpful the target answers themselves are. Ours scored 2.31 out of 9, because the philosophical answers replace the practical one.</dd>
       </dl>
     </div>
   </section>
@@ -898,6 +990,191 @@ function toggleGroup(buttons, active) { buttons.forEach(b => b.classList.toggle(
     if (es[0].isIntersecting) { root.querySelectorAll(".b").forEach(b => b.style.width = b.dataset.w + "%"); io.disconnect(); }
   }, { threshold: 0.3 });
   io.observe(root);
+})();
+
+/* shared tooltip helpers for the real-data charts */
+const TIP = document.getElementById("tip");
+function showTip(e, html) {
+  TIP.innerHTML = html; TIP.style.opacity = 1;
+  TIP.style.left = Math.min(e.clientX + 14, innerWidth - 290) + "px"; TIP.style.top = e.clientY + 14 + "px";
+}
+function hideTip() { TIP.style.opacity = 0; }
+
+/* ---------- 8: pathway check (real data: runs/pathway.json) ---------- */
+(function () {
+  const D = {"layers":[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+    "acts":{"omp":[0.353,0.391,0.3,0.371,0.395,0.458,0.393,0.407,0.368,0.367,0.439,0.471,0.484,0.544,0.531,0.549,0.642,0.567,0.623,0.57,0.613,0.733,0.731],"dm":[0.656,0.597,0.543,0.541,0.504,0.486,0.357,0.384,0.403,0.414,0.491,0.568,0.591,0.6,0.546,0.64,0.663,0.465,0.568,0.624,0.609,0.728,0.707],"rlo":[0.03,0.013,0.036,0.06,0.141,0.17,0.199,0.245,0.233,0.215,0.222,0.219,0.221,0.3,0.281,0.217,0.363,0.311,0.366,0.267,0.328,0.518,0.446],"rhi":[0.054,0.056,0.106,0.126,0.23,0.242,0.254,0.292,0.28,0.249,0.277,0.309,0.338,0.358,0.352,0.299,0.451,0.374,0.41,0.324,0.389,0.603,0.488],"ceil":[0.616,0.746,0.718,0.778,0.803,0.865,0.845,0.868,0.829,0.841,0.757,0.737,0.751,0.761,0.719,0.712,0.755,0.733,0.801,0.797,0.824,0.897,0.911]},
+    "response":{"omp":[0.308,0.321,0.256,0.28,0.305,0.441,0.301,0.313,0.264,0.311,0.196,0.198,0.233,0.27,0.284,0.334,0.375,0.393,0.396,0.42,0.416,0.42,0.551],"dm":[0.451,0.439,0.363,0.332,0.306,0.353,0.2,0.216,0.191,0.318,0.262,0.307,0.39,0.422,0.443,0.507,0.538,0.507,0.579,0.603,0.593,0.597,0.696],"rlo":[0,0.069,0.054,0.076,0.099,0.16,0.112,0.126,0.115,0.133,0.094,0.105,0.109,0.146,0.152,0.178,0.217,0.26,0.223,0.244,0.212,0.24,0.221],"rhi":[0.032,0.088,0.096,0.109,0.114,0.176,0.129,0.132,0.119,0.142,0.123,0.154,0.172,0.216,0.211,0.244,0.274,0.324,0.283,0.314,0.274,0.267,0.299]},
+    "off":{"omp":[4.709,3.999,4.987,4.895,4.409,3.157,3.367,2.88,2.736,2.011,1.811,1.509,1.324,1.14,1.052,0.918,0.843,0.817,0.777,0.733,0.739,0.748,0.711],"dm":[2.388,1.735,1.877,1.76,1.627,1.23,1.316,1.169,1.16,0.915,0.861,0.761,0.724,0.653,0.612,0.558,0.529,0.528,0.516,0.516,0.538,0.564,0.618],"rlo":[4.173,3.709,4.54,4.381,3.987,2.848,3.076,2.625,2.514,1.802,1.632,1.387,1.223,1.064,0.975,0.846,0.78,0.769,0.72,0.671,0.662,0.65,0.62],"rhi":[4.914,4.53,5.036,4.614,4.133,2.945,3.196,2.736,2.632,1.918,1.769,1.54,1.381,1.234,1.137,0.999,0.935,0.972,0.854,0.81,0.803,0.764,0.658]}};
+  const META = {
+    acts: { title: "Which neurons fire: cosine with the natural change", max: 1, ticks: [0, 0.25, 0.5, 0.75, 1], f: v => v.toFixed(2),
+      read: "<b>Which neurons fire.</b> Right after the push (L9–12), the full direction moves the neurons almost as faithfully as the natural change matches itself: 0.66 vs 0.62 at L9. The 16 neurons sit at 0.30–0.47 until L20. The random groups start near 0." },
+    response: { title: "What later layers add: cosine with the natural change", max: 0.8, ticks: [0, 0.2, 0.4, 0.6, 0.8], f: v => v.toFixed(2),
+      read: "<b>What later layers add.</b> Both pushes beat the random groups at every layer. In L15–23 the 16 neurons fall back toward the random band: 0.20 vs 0.11–0.15 at L20. The full direction recovers in the last layers, reaching 0.70 at L31." },
+    off: { title: "Off-pathway size, in units of the natural change", max: 5.2, ticks: [0, 1, 2, 3, 4, 5], f: v => v.toFixed(1) + "×",
+      read: "<b>Off-pathway size.</b> Right after the push, the 16 neurons set off a disturbance about 5× the natural change, the same as the random groups. The full direction's is less than half that. Every curve shrinks in later layers as the natural change builds up." },
+  };
+  const svg = document.getElementById("s8"), out = document.getElementById("s8-read");
+  const X0 = 60, X1 = 590, Y0 = 48, Y1 = 318, Ls = D.layers, n = Ls.length;
+  const x = l => X0 + (l - 9) / 22 * (X1 - X0);
+  E("rect", { x: x(14.5), y: Y0, width: x(23.5) - x(14.5), height: Y1 - Y0, class: "shade" }, svg);
+  T(svg, (x(14.5) + x(23.5)) / 2, Y0 + 16, "L15–23", "sm", "middle");
+  const gGrid = E("g", {}, svg);
+  const title = T(svg, X0 - 44, 24, "", "ttl");
+  [9, 12, 15, 18, 21, 24, 27, 31].forEach(l => T(svg, x(l), Y1 + 20, "L" + l, "sm", "middle"));
+  T(svg, (X0 + X1) / 2, Y1 + 44, "layer (the push enters at L8)", "sm", "middle");
+  const band = E("path", { class: "band" }, svg);
+  const ceil = E("path", { class: "ln-ceil" }, svg);
+  const lDm = E("path", { class: "ln ln-acc" }, svg), lOmp = E("path", { class: "ln ln-pos" }, svg);
+  const eDm = E("circle", { r: 4, class: "dot-acc" }, svg), eOmp = E("circle", { r: 4, class: "dot-pos" }, svg);
+  const tDm = T(svg, X1 + 12, 0, "diff-means"), tOmp = T(svg, X1 + 12, 0, "16 neurons");
+  const tCeil = T(svg, X1 + 12, 0, "natural vs itself", "sm");
+  const cross = E("line", { class: "cross", y1: Y0, y2: Y1, opacity: 0 }, svg);
+  const hit = E("rect", { x: X0 - 10, y: Y0, width: X1 - X0 + 20, height: Y1 - Y0, fill: "transparent" }, svg);
+  let m = "acts", cur = null;
+  const ypx = (key, arr) => arr.map(v => Y1 - Math.min(v, META[key].max) / META[key].max * (Y1 - Y0));
+  function target(key) {
+    const d = D[key];
+    return { omp: ypx(key, d.omp), dm: ypx(key, d.dm), lo: ypx(key, d.rlo), hi: ypx(key, d.rhi),
+             ceil: d.ceil ? ypx(key, d.ceil) : ypx(key, d.rhi), ceilOn: d.ceil ? 1 : 0 };
+  }
+  const line = ys => ys.map((y, i) => (i ? "L" : "M") + x(Ls[i]).toFixed(1) + "," + y.toFixed(1)).join("");
+  function drawGrid(key) {
+    gGrid.innerHTML = "";
+    META[key].ticks.forEach(t => {
+      const y = Y1 - t / META[key].max * (Y1 - Y0);
+      E("line", { x1: X0, x2: X1, y1: y, y2: y, class: "grid" }, gGrid);
+      T(gGrid, X0 - 8, y + 4, META[key].f(t), "sm", "end");
+    });
+    title.textContent = META[key].title;
+  }
+  function paint(s) {
+    band.setAttribute("d", line(s.hi) + s.lo.map((y, i) => "L" + x(Ls[n - 1 - i]).toFixed(1) + "," + s.lo[n - 1 - i].toFixed(1)).join("") + "Z");
+    ceil.setAttribute("d", line(s.ceil)); ceil.setAttribute("opacity", s.ceilOn);
+    lDm.setAttribute("d", line(s.dm)); lOmp.setAttribute("d", line(s.omp));
+    eDm.setAttribute("cx", X1); eDm.setAttribute("cy", s.dm[n - 1]);
+    eOmp.setAttribute("cx", X1); eOmp.setAttribute("cy", s.omp[n - 1]);
+    // direct labels: keep at least 16px apart
+    const labs = [[tDm, s.dm[n - 1]], [tOmp, s.omp[n - 1]]].concat(s.ceilOn > 0.5 ? [[tCeil, s.ceil[n - 1]]] : []).sort((a, b) => a[1] - b[1]);
+    let prev = -1e9;
+    labs.forEach(([t, y]) => { const yy = Math.max(y + 4, prev + 16); t.setAttribute("y", yy); prev = yy; });
+    tCeil.setAttribute("opacity", s.ceilOn);
+  }
+  function show(key, ms) {
+    const from = cur, to = target(key);
+    drawGrid(key); m = key; out.innerHTML = META[key].read;
+    document.getElementById("s8-ceil-lg").style.visibility = to.ceilOn ? "visible" : "hidden";
+    if (!from) { paint(to); cur = to; return; }
+    tween(ms, p => {
+      const s = {};
+      for (const k of ["omp", "dm", "lo", "hi", "ceil"]) s[k] = to[k].map((v, i) => lerp(from[k][i], v, p));
+      s.ceilOn = lerp(from.ceilOn, to.ceilOn, p);
+      paint(s); cur = s;
+    });
+  }
+  const btns = [...document.querySelectorAll("#c8 .controls button")];
+  btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(b.dataset.m, 700); });
+  hit.addEventListener("mousemove", e => {
+    const r = svg.getBoundingClientRect(), sx = (e.clientX - r.left) / r.width * 720;
+    const i = Math.max(0, Math.min(n - 1, Math.round((sx - X0) / (X1 - X0) * 22)));
+    cross.setAttribute("x1", x(Ls[i])); cross.setAttribute("x2", x(Ls[i])); cross.setAttribute("opacity", 1);
+    const d = D[m], f = META[m].f;
+    showTip(e, `<b>Layer ${Ls[i]}</b><br>16 neurons: ${f(d.omp[i])}<br>Diff-means: ${f(d.dm[i])}<br>Random groups: ${f(d.rlo[i])}–${f(d.rhi[i])}` +
+      (d.ceil ? `<br>Natural vs itself: ${f(d.ceil[i])}` : ""));
+  });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); hideTip(); });
+  show("acts", 0);
+
+  // push sizes at L8 (× p50)
+  const sizes = [["Natural difference", 0.24, "var(--ink-2)", "0.24"], ["Diff-means α 0.5", 0.50, "var(--accent)", "0.50"],
+                 ["Random groups", 0.98, "var(--ink-3)", "0.97–0.99"], ["16 neurons α 0.5", 1.11, "var(--pos)", "1.11"]];
+  document.getElementById("s8-sizes").innerHTML = sizes.map(([l, v, c, t]) =>
+    `<div class="srow"><span>${l}</span><div class="tr"><i style="width:${v / 1.2 * 100}%;background:${c}"></i></div><b>${t}</b></div>`).join("");
+})();
+
+/* ---------- 9: the trade-off (real data: runs/claude_judge_dose.jsonl, runs/claude_judge_natural.jsonl) ---------- */
+(function () {
+  // [helpfulness, philosophy, alpha, coherence, push/p50]
+  const fams = [
+    { name: "diff-means", c: "acc", lab: [-8, 22, "end"], pts: [[8.50, 0.12, 0.25, 8.94, 0.25], [8.12, 0.44, 0.35, 8.75, 0.35], [3.94, 2.75, 0.5, 6.75, 0.50]], rand: null },
+    { name: "16 neurons", c: "pos", lab: [-10, 4, "end"], pts: [[8.19, 0.06, 0.25, 8.69, 0.56], [6.81, 0.38, 0.35, 8.06, 0.78], [2.56, 2.38, 0.5, 5.94, 1.11]],
+      rand: [[8.50, 0.00, 8.94, 0.49], [6.50, 0.00, 7.19, 0.70], [3.94, 0.12, 5.62, 0.97]] },
+    { name: "64 neurons", c: null, pts: [[7.88, 0.25, 0.25, 8.75, 0.44], [6.81, 0.56, 0.35, 7.94, 0.61], [2.88, 2.12, 0.5, 5.69, 0.88]],
+      rand: [[8.38, 0.00, 8.69, 0.43], [8.62, 0.00, 9.00, 0.60], [4.62, 0.00, 6.31, 0.87]] },
+    { name: "256 neurons", c: "s3", lab: [0, -14, "middle"], pts: [[8.56, 0.12, 0.25, 9.00, 0.34], [6.75, 1.44, 0.35, 8.19, 0.48], [3.38, 3.12, 0.5, 6.12, 0.68]],
+      rand: [[8.69, 0.06, 9.00, 0.40], [7.75, 0.00, 8.38, 0.55], [6.75, 0.06, 7.94, 0.78]] },
+  ];
+  const base = [8.56, 0.00, 9.00], natPlain = [8.81, 0.00, 9.00], natPhilo = [2.31, 5.75, 8.50];
+  const svg = document.getElementById("s9");
+  const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360;
+  const x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / 6 * (Y1 - Y0);
+  for (let p = 0; p <= 6; p++) { E("line", { x1: X0, x2: X1, y1: y(p), y2: y(p), class: "grid" }, svg); T(svg, X0 - 10, y(p) + 4, p, "sm", "end"); }
+  [0, 3, 6, 9].forEach(h => T(svg, x(h), Y1 + 20, h, "sm", "middle"));
+  T(svg, (X0 + X1) / 2, Y1 + 44, "helpfulness →", "lbl", "middle");
+  T(svg, X0 - 44, Y0 - 16, "philosophy ↑", "lbl");
+  E("rect", { x: x(6.2), y: y(6), width: x(9) - x(6.2), height: y(3) - y(6), rx: 8, class: "goal" }, svg);
+  T(svg, x(7.6), y(4.5) + 4, "goal: helpful and", "sm", "middle");
+  T(svg, x(7.6), y(4.5) + 20, "philosophical", "sm", "middle");
+  const tipFor = (name, a, h, p, c, push) =>
+    `<b>${name}</b>${a ? `, α ${a}` : ""}${push != null ? `<br>Push: ${push.toFixed(2)} × p50` : ""}<br>Philosophy: ${p.toFixed(2)}<br>Coherence: ${c.toFixed(2)}<br>Helpfulness: ${h.toFixed(2)}`;
+  function hover(el, html) {
+    el.addEventListener("mousemove", e => showTip(e, html));
+    el.addEventListener("mouseleave", hideTip);
+  }
+  function dot(g, h, p, cls, r, html) {
+    const c = E("circle", { cx: x(h), cy: y(p), r, class: cls + " ring2" }, g);
+    const hc = E("circle", { cx: x(h), cy: y(p), r: 11, fill: "transparent" }, g);
+    hover(hc, html);
+    return c;
+  }
+  // step 1: baseline + matched random groups
+  const gRand = E("g", {}, svg);
+  fams.forEach(f => (f.rand || []).forEach((r, i) =>
+    dot(gRand, r[0], r[1], "dot-grey", 5, tipFor(`Random group matched to ${f.name}`, f.pts[i][2], r[0], r[1], r[2], r[3]))));
+  const gBase = E("g", {}, svg);
+  E("path", { d: `M${x(base[0]) - 7},${y(0)}h14M${x(base[0])},${y(0) - 7}v14`, stroke: "var(--ink)", "stroke-width": 2.5 }, gBase);
+  hover(E("circle", { cx: x(base[0]), cy: y(0), r: 11, fill: "transparent" }, gBase), tipFor("Baseline (no push)", null, base[0], base[1], base[2]));
+  // step 2: steered families (64 neurons only in the table, to keep three colors)
+  const gFam = E("g", {}, svg);
+  fams.filter(f => f.c).forEach(f => {
+    E("path", { d: f.pts.map((q, i) => (i ? "L" : "M") + x(q[0]) + "," + y(q[1])).join(""), class: "ln ln-" + f.c }, gFam);
+    f.pts.forEach(q => dot(gFam, q[0], q[1], "dot-" + f.c, 6, tipFor(f.name, q[2], q[0], q[1], q[3], q[4])));
+    const e = f.pts[2];
+    T(gFam, x(e[0]) + f.lab[0], y(e[1]) + f.lab[1], f.name, "lbl", f.lab[2]);
+  });
+  // step 3: the hand-written contrast answers
+  const gNat = E("g", {}, svg);
+  [[natPhilo, "Hand-written philosophical answers (the target)"], [natPlain, "Hand-written plain answers"]].forEach(([q, name]) => {
+    E("rect", { x: x(q[0]) - 6, y: y(q[1]) - 6, width: 12, height: 12, rx: 2, class: "nat" }, gNat);
+    hover(E("circle", { cx: x(q[0]), cy: y(q[1]), r: 11, fill: "transparent" }, gNat), tipFor(name, null, q[0], q[1], q[2]));
+  });
+  T(gNat, x(natPhilo[0]) + 14, y(natPhilo[1]) + 5, "our philosophical answers: the target", "lbl");
+  T(gNat, x(natPlain[0]) + 8, Y1 + 44, "our plain answers", "lbl", "end");
+  const arrow = E("path", { d: `M${x(base[0]) - 14},${y(0) - 10} L${x(natPhilo[0]) + 14},${y(natPhilo[1]) + 12}`, class: "a-muted dash", fill: "none" }, gNat);
+
+  const groups = [gRand, gBase, gFam, gNat];
+  const showUpTo = { 0: [gRand, gBase], 1: [gRand, gBase, gFam], 2: groups };
+  function render(k) {
+    groups.forEach(g => {
+      const on = showUpTo[k].includes(g);
+      g.style.pointerEvents = on ? "auto" : "none";
+      anim(g, { opacity: on ? 1 : 0 }, 450);
+    });
+  }
+  groups.forEach(g => g.setAttribute("opacity", 0));
+  stepper(document.getElementById("st9"), [
+    "<b>Pushing costs helpfulness by itself.</b> The cross is the model with no push. The grey dots are random neuron groups: they add no philosophy, and the bigger they are, the more helpfulness they lose (down to 3.94).",
+    "<b>Philosophy has a threshold.</b> Each line goes α 0.25 → 0.35 → 0.5. Up to α 0.35 almost nothing happens; at α 0.5 philosophy jumps and helpfulness falls. 256 neurons does best (3.12), but every line bends to the top-<em>left</em>.",
+    "<b>The target was the problem.</b> Our own philosophical answers score 5.75 on philosophy and 2.31 on helpfulness, because they replace the practical answer. Steering moves the model toward that corner, so lost helpfulness is part of the deal. Next: answers that help first and then reflect, aiming for the top-right.",
+  ], render);
+
+  // table view
+  const rows = [["Baseline (no push)", "0", base[1], base[2], base[0], "–"]];
+  fams.forEach(f => f.pts.forEach((q, i) => rows.push([`${f.name} α ${q[2]}`, q[4].toFixed(2), q[1], q[3], q[0], f.rand ? f.rand[i][0].toFixed(2) : "–"])));
+  rows.push(["Hand-written plain answers (32)", "–", natPlain[1], natPlain[2], natPlain[0], "–"]);
+  rows.push(["Hand-written philosophical answers (32)", "–", natPhilo[1], natPhilo[2], natPhilo[0], "–"]);
+  document.getElementById("s9-table").innerHTML = rows.map(r =>
+    `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(2)}</td><td>${r[3].toFixed(2)}</td><td>${r[4].toFixed(2)}</td><td>${r[5]}</td></tr>`).join("");
 })();
 </script>
 </body>
