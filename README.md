@@ -32,6 +32,9 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_answer_reflect.py` | Experiment A: directions from "answer + reflect" contrast data (`data/contrast_pairs_v2.json`) |
 | `scripts/exp_selfgen.py` | Experiment B: prompting baseline, prompt + steering, and a direction from the model's own prompted answers |
 | `scripts/exp_token_window.py` | Experiment C: steering only part of the answer (late, early, prompt-only windows) |
+| `scripts/exp_distill.py`, `scripts/distill_probe.py` | Experiment D: distil the woven prompt into LoRA weights (MLP, token mixers, rank-1 at L8); probe the rank-1 push |
+| `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
+| `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
 | `data/` | Contrast pairs and evaluation prompts |
 | `docs/explainer.html` | The interactive explainer, served by GitHub Pages |

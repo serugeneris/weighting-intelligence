@@ -181,6 +181,7 @@ section.wide { grid-template-columns: 1fr; }
 .ex p { margin: 0 0 6px; font-size: 14px; }
 .ex p:last-child { margin: 0; }
 .wbars { margin-top: 10px; }
+.srow.wl { grid-template-columns: 150px minmax(0, 1fr) 72px; }
 .wrow { display: grid; grid-template-columns: 96px minmax(0, 1fr) 48px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
 .wrow .tr { position: relative; height: 14px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
 .wrow .tr i { position: absolute; left: 0; top: 0; height: 14px; background: var(--pos); border-radius: 0 4px 4px 0; transition: width .6s; }
@@ -215,6 +216,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c10">10 · Better targets</a>
       <a href="#c11">11 · Just ask?</a>
       <a href="#c12">12 · When to push</a>
+      <a href="#c13">13 · Into the weights</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -540,6 +542,34 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 13 -->
+  <section class="chapter" id="c13">
+    <div>
+      <div class="num">Chapter 13 · experiment D</div>
+      <h2>Moving the prompt into the weights</h2>
+      <p><strong>Why we tried it.</strong> Chapter 11 showed that simply asking works best. But a prompt isn't a "philosophy Qwen": take it away and the model is plain again. So we trained the model to answer <em>without</em> the prompt the way it answers <em>with</em> it. This is called <em>context distillation</em>: the prompted model is the teacher and the same model, unprompted, is the student.</p>
+      <p>We don't retrain the whole model. A <em>LoRA</em> adds a small low-rank correction <code>B·A</code> to a few weight matrices and leaves the originals frozen. We tried three sizes: rank 8 on every MLP (9 million numbers), rank 8 on the attention and DeltaNet layers only (4.9 million), and rank 1 on a single matrix, layer 8's <code>down_proj</code>, where all our steering happens (11,776 numbers). The training data was 128 practical questions, none of them used for evaluation.</p>
+      <p><strong>What happened.</strong> All three land next to the prompt (green dots near the blue one), held-out prompts included, and well above every steering setting at that helpfulness (grey). Even the rank-1 update writes "To make scrambled eggs is to engage in a small alchemy of heat and time…" with no prompt.</p>
+      <p><strong>Why the tiny one works.</strong> A rank-1 LoRA adds <code>B × (A·a)</code>: a push along one direction B, whose size depends on the token through <code>A·a</code>. A steering vector is the same kind of push at a fixed size. The bars show what the trained one does: it pushes about 0.2·p50 on the prompt and the first answer tokens, less later. That is below even the natural difference, while steering needed 0.5·p50 at every token. Experiment C showed the opening sets the mode, and the trained update spends its push there. It also points somewhere else: its direction B has cosine only 0.13 with our diff-means direction.</p>
+      <p><strong>What it means.</strong> We now have a prompt-free philosophical Qwen that keeps the prompt's balance. Its ceiling is the teacher: it copies the prompt's trade-off but can't beat it. Source: FINDINGS.md § 10, <code>runs/distill/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s13" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy: three LoRA adapters without a prompt land next to the prompted model, above the steering settings"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>LoRA, no prompt</span><span><i style="background:var(--ink-3)"></i>steering (earlier pools)</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt, no push</span></div>
+      <p class="note">Prompt, LoRAs and baseline were judged blind in one pool. The grey steering dots come from earlier pools and are shown for reference. Hover a dot for its scores.</p>
+      <h3>How hard does each one push at layer 8?</h3>
+      <div id="s13-push"></div>
+      <p class="note">Mean size of the push as a fraction of p50, on the 16 evaluation prompts (<code>runs/distill/probe.json</code>). The rank-1 LoRA's push depends on the token; steering adds the same vector everywhere.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s13-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
   <!-- glossary -->
   <section class="chapter wide" id="terms">
     <div>
@@ -557,6 +587,8 @@ section.wide { grid-template-columns: 1fr; }
         <dt>t-statistic, consistency</dt><dd>Read-side statistics: how much more a neuron fires on philosophical answers than on plain ones, relative to the noise, and in what share of pairs.</dd>
         <dt>OMP (orthogonal matching pursuit)</dt><dd>A greedy method that picks k columns and refits their weights with least squares to approximate a target vector.</dd>
         <dt>÷cos² rescale</dt><dd>Corrects the OMP undershoot, so the push along the direction equals α.</dd>
+        <dt>LoRA</dt><dd>A trainable low-rank correction <code>B·A</code> added to a frozen weight matrix. Rank 1 means one read vector A and one write vector B.</dd>
+        <dt>Context distillation</dt><dd>Training a model to behave, without a prompt, the way it behaves with one, using its own prompted answers as targets.</dd>
         <dt>Matched random control</dt><dd>Random neurons in the same layer, the same number of them, the same |doses| with random signs. It separates "these neurons" from "any push".</dd>
         <dt>Outer product u·vᵀ</dt><dd>Column times row; a rank-1 matrix whose every column is a multiple of u.</dd>
         <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
@@ -1418,6 +1450,34 @@ function fillTable(id, rows) {
   const btns = [...document.querySelectorAll("#s12-btns button")];
   btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(b.dataset.k); });
   show("full");
+})();
+
+/* ---------- 13: distillation (real data: runs/distill/judge.jsonl, runs/distill/probe.json) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s13"), {
+    base: [9.00, 0.00, 9.00],
+    greys: [
+      { name: "Steering: diff-means α 0.5", h: 4.62, p: 3.00, c: 7.62 },
+      { name: "Steering: k=256 neurons α 0.35", h: 6.75, p: 1.44, c: 8.19 },
+      { name: "Steering: appended direction α 0.5", h: 5.25, p: 1.94, c: 7.50 },
+      { name: "Steering: woven direction α 0.5", h: 6.12, p: 1.50, c: 8.19 },
+    ],
+    series: [
+      { name: "woven prompt", c: "pos", lab: [-12, -8, "end"], pts: [P(6.44, 2.94, "", 8.12, 0)] },
+      { name: "LoRA, no prompt", c: "s3", noLine: true, lab: [14, 14, "start"], labAt: 2,
+        pts: [P(6.25, 2.38, "rank 8, all MLPs", 7.94, 0), P(6.19, 2.50, "rank 8, attention + DeltaNet", 7.88, 0), P(6.62, 2.25, "rank 1, L8 down_proj", 8.12, 1)], noTags: true },
+    ],
+  });
+  fillTable("s13-table", [
+    ["Baseline", 0.00, 9.00, 9.00, "0/16"], ["Prompt woven (no LoRA)", 2.94, 8.12, 6.44, "0/16"],
+    ["LoRA rank 8, all MLPs (9.0M)", 2.38, 7.94, 6.25, "0/16"], ["LoRA rank 8, attention + DeltaNet (4.9M)", 2.50, 7.88, 6.19, "0/16"],
+    ["LoRA rank 1, L8 down_proj (11,776)", 2.25, 8.12, 6.62, "1/16"],
+  ]);
+  const rows = [["Steering α 0.5", 0.50, "var(--accent)", "every token"], ["Natural L8 difference", 0.24, "var(--ink-3)", "for scale"],
+                ["LoRA: prompt", 0.21, "var(--s3)", ""], ["LoRA: answer start", 0.19, "var(--s3)", "first 10"], ["LoRA: whole answer", 0.12, "var(--s3)", ""]];
+  document.getElementById("s13-push").innerHTML = rows.map(([l, v, c]) =>
+    `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 0.55 * 100}%;background:${c}"></i></div><b>${v.toFixed(2)}·p50</b></div>`).join("");
 })();
 </script>
 </body>
