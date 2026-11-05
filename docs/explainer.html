@@ -220,6 +220,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c14">14 · Which layers</a>
       <a href="#c15">15 · Where the prompt acts</a>
       <a href="#c16">16 · Attention or DeltaNet?</a>
+      <a href="#c17">17 · Push geometry</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -643,6 +644,32 @@ section.wide { grid-template-columns: 1fr; }
       <h3>Which memory carries a push on the prompt?</h3>
       <div id="s16-route"></div>
       <p class="note">Prompt pushed at layer 8 (α 1.5). The answer is generated with no push from a cache that mixes the pushed and plain prompt. Philosophy (0–9) from the blind judge, 16 prompts.</p>
+    </div>
+  </section>
+
+  <!-- 17 -->
+  <section class="chapter" id="c17">
+    <div>
+      <div class="num">Chapter 17 · experiment H</div>
+      <h2>Changing the push's shape, not its size</h2>
+      <p><strong>Why we tried it.</strong> Two cheap fixes were still untested, both from papers on steering models away from refusals.</p>
+      <p><strong>Keep the length.</strong> Adding an arrow to the hidden state also makes it longer, and later layers have never seen hidden states that long (left diagram). A norm-preserving push <em>turns</em> the state toward the direction by the same angle but keeps its length, so it stays on the circle.</p>
+      <p><strong>Remove "stop answering".</strong> Our direction came from philosophical texts that <em>replace</em> the answer. Chapter 10's texts kept the answer and added a reflection. The difference between the two directions should mean "stop answering", and removing it should leave a cleaner "reflect" direction. But the right diagram shows the catch: the three directions are almost parallel, so very little is left after the removal.</p>
+      <p><strong>What happened.</strong> Keeping the length changed nothing (orange dots on top of the blue ones). Removing "stop answering" removed the philosophy too (green): nothing at α 0.5, and at α 1.0 the answer breaks without becoming philosophical.</p>
+      <p><strong>What it means.</strong> In mean-difference data, "be philosophical" and "stop answering" are the same arrow. No change of shape separates them. That leaves the two things that did keep helpfulness: asking (chapter 11) and a trained update whose push depends on the token (chapter 13). Source: FINDINGS.md § 14, <code>runs/geometry/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s17a" viewBox="0 0 720 250" role="img" aria-label="Left: adding a push makes the hidden state longer, a norm-preserving push turns it along the circle. Right: the original, appended and stop-answering directions are nearly parallel"></svg>
+      <svg id="s17" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy for plain, norm-preserving and stop-answering-removed pushes"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>plain push</span><span><i style="background:var(--accent)"></i>length kept (or +10%)</span><span><i style="background:var(--s3)"></i>"stop answering" removed</span><span><b style="color:var(--ink);margin-right:5px">+</b>no push</span></div>
+      <p class="note">All configs judged blind in one pool. Settings that broke most answers sit near helpfulness 0; the table lists them all.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s17-table"></tbody>
+        </table>
+      </details>
     </div>
   </section>
 
@@ -1657,6 +1684,51 @@ function fillTable(id, rows) {
   const rows = [["Nothing (baseline)", 0.00, "help 9.00"], ["Attention cache only", 0.00, "help 8.88"], ["DeltaNet state only", 1.19, "help 6.94"], ["Both", 2.88, "help 3.12"]];
   document.getElementById("s16-route").innerHTML = rows.map(([l, v, h]) =>
     `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 4 * 100}%;background:var(--pos)"></i></div><b>${v.toFixed(2)}</b></div>`).join("");
+})();
+
+/* ---------- 17: push geometry (real data: runs/geometry/judge.jsonl) ---------- */
+(function () {
+  const a = document.getElementById("s17a");
+  const arrow = (x1, y1, x2, y2, cls, dash) => E("line", { x1, y1, x2, y2, class: cls + (dash ? " dash" : ""), "stroke-width": 2.5, "marker-end": "url(#to-arrow)" }, a);
+  // left: the push lengthens h; a norm-preserving push keeps h on its circle
+  const ox = 60, oy = 205, R = 150, rad = d => d * Math.PI / 180;
+  E("path", { d: `M${ox + R * Math.cos(rad(15))},${oy - R * Math.sin(rad(15))} A${R},${R} 0 0 0 ${ox + R * Math.cos(rad(75))},${oy - R * Math.sin(rad(75))}`, class: "a-muted dash", fill: "none" }, a);
+  const hx = ox + R * Math.cos(rad(35)), hy = oy - R * Math.sin(rad(35));
+  const px = hx - 20, py = hy - 62, L = Math.hypot(px - ox, py - oy), rx = ox + (px - ox) / L * R, ry = oy + (py - oy) / L * R;
+  arrow(ox, oy, px, py, "a-muted", true);
+  arrow(ox, oy, hx, hy, "ln ln-pos"); T(a, hx + 8, hy + 6, "h", "lbl");
+  arrow(hx, hy, px, py, "a-muted"); T(a, hx - 2, hy - 30, "push", "sm");
+  arrow(ox, oy, rx, ry, "ln ln-acc");
+  T(a, px + 8, py - 2, "h + push: longer", "sm"); T(a, rx - 10, ry + 4, "length kept", "sm", "end");
+  T(a, 0, 18, "Keep the length", "lbl");
+  // right: original, appended, and their difference ("stop answering") are almost parallel
+  const qx = 400, qy = 200;
+  const ex = qx + 260 * Math.cos(rad(25)), ey = qy - 260 * Math.sin(rad(25));
+  const ax = qx + 104 * Math.cos(rad(2)), ay = qy - 104 * Math.sin(rad(2));
+  arrow(qx, qy, ex, ey, "ln ln-pos"); T(a, ex + 6, ey + 4, "original", "sm");
+  arrow(qx, qy, ax, ay, "ln ln-s3"); T(a, ax - 30, ay + 20, "appended (40% as long)", "sm");
+  arrow(ax, ay, ex, ey, "a-muted", true); T(a, 590, 170, "difference =", "sm"); T(a, 590, 185, "\"stop answering\"", "sm");
+  T(a, 380, 18, "Remove \"stop answering\"", "lbl");
+  T(a, 380, 236, "cosines 0.92 and 0.97: little is left", "sm");
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s17"), {
+    base: [8.75, 0.00, 9.00],
+    series: [
+      { name: "plain push", c: "pos", tagLeft: true, pts: [P(4.38, 2.88, "α 0.5", 7.50, 0), P(1.25, 4.00, "α 0.75", 5.12, 6)] },
+      { name: "length kept", c: "acc", noLine: true, noTags: true,
+        pts: [P(4.62, 2.75, "α 0.5", 7.56, 0), P(1.31, 3.50, "α 0.75", 4.94, 3), P(0.06, 2.19, "α 1.0", 2.00, 15), P(0.00, 1.19, "α 1.5", 0.50, 16), P(1.31, 3.81, "+10%, α 0.75", 4.88, 4), P(0.19, 2.00, "+10%, α 1.0", 2.50, 14)] },
+      { name: "\"stop answering\" removed", c: "s3", noLine: true, noTags: true, lab: [-12, -14, "end"], labAt: 0,
+        pts: [P(8.56, 0.00, "original ⊥ drop, α 0.5", 9.00, 0), P(1.69, 0.44, "original ⊥ drop, α 1.0", 4.75, 1), P(8.44, 0.06, "woven ⊥ drop, α 0.5", 8.94, 0), P(2.88, 0.00, "woven ⊥ drop, α 1.0", 4.00, 4)] },
+    ],
+  });
+  fillTable("s17-table", [
+    ["Baseline", 0.00, 9.00, 8.75, "0/16"], ["Plain push α 0.5", 2.88, 7.50, 4.38, "0/16"], ["Plain push α 0.75", 4.00, 5.12, 1.25, "6/16"],
+    ["Length kept α 0.5", 2.75, 7.56, 4.62, "0/16"], ["Length kept α 0.75", 3.50, 4.94, 1.31, "3/16"], ["Length kept α 1.0", 2.19, 2.00, 0.06, "15/16"], ["Length kept α 1.5", 1.19, 0.50, 0.00, "16/16"],
+    ["Length +10% α 0.75", 3.81, 4.88, 1.31, "4/16"], ["Length +10% α 1.0", 2.00, 2.50, 0.19, "14/16"],
+    ["Original ⊥ stop-answering α 0.5", 0.00, 9.00, 8.56, "0/16"], ["Original ⊥ stop-answering α 1.0", 0.44, 4.75, 1.69, "1/16"],
+    ["Appended ⊥ stop-answering α 0.5 (same vector)", 0.00, 8.88, 8.56, "0/16"], ["Appended ⊥ stop-answering α 1.0 (same vector)", 0.50, 5.06, 1.81, "0/16"],
+    ["Woven ⊥ stop-answering α 0.5", 0.06, 8.94, 8.44, "0/16"], ["Woven ⊥ stop-answering α 1.0", 0.00, 4.00, 2.88, "4/16"],
+  ]);
 })();
 </script>
 </body>
