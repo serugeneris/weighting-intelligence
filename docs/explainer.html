@@ -242,6 +242,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c27">27 · A deeper teacher</a>
       <a href="#c28">28 · A bigger adapter</a>
       <a href="#c29">29 · Pairs need variety</a>
+      <a href="#c30">30 · SAE features</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -939,17 +940,49 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 30 -->
+  <section class="chapter" id="c30">
+    <div>
+      <div class="num">Chapter 30 · experiment T</div>
+      <h2>Readable features, weak levers</h2>
+      <p><strong>Why we tried it.</strong> Every steering vector so far was an average: the difference between philosophical and plain answers. A <em>sparse autoencoder</em> (SAE) is a different tool. It learns to rewrite each hidden state as a few active "features" out of thousands, and each feature often means something you can name. Maybe one of them would mean "reflective register" more cleanly than our average. No SAE exists for this model, so we trained one at layer 8, on 300,000 tokens of text the project had already generated.</p>
+      <p><strong>What happened.</strong> The SAE works as a microscope: several features clearly track philosophical content (table). One fires on the "a profound lesson in…" template, one on short codas about attention, one on identity and the self, one on "rather than / merely". But the features that best separate philosophical from plain answers came out as artefacts: one fires on ungrammatical words, two on the rambling loops of earlier broken runs. Pushing those makes no philosophy at all, just worse grammar. Pushing the four real content features, picked by hand after reading them, does make philosophy, but it <em>replaces</em> the answer ("making scrambled eggs is not about a single method but about how we think"). That is the same trade-off as the averaged direction, and well below the learned direction B (bars).</p>
+      <p><strong>What it means.</strong> Features describe what philosophical text contains, word by word. Adding one everywhere says "write that now", which crowds out the answer. The learned direction B works differently: it sets a mode at the start of the answer that the rest of the model turns into "answer, then reflect". No single readable feature does that. Source: FINDINGS.md § 27, <code>runs/sae/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>What the top features fire on</h3>
+      <table>
+        <thead><tr><th>Feature</th><th>Fires most on (the bold word)</th><th>Kind</th></tr></thead>
+        <tbody>
+          <tr><td>275 (ranked 1st)</td><td>"clothes you need <b>wear</b>"</td><td>broken grammar</td></tr>
+          <tr><td>6074</td><td>"it remains true that <b>there</b> is no way"</td><td>rambling</td></tr>
+          <tr><td>3424</td><td>"useful fictions <b>rather</b> than sharp boundaries"</td><td>hedge</td></tr>
+          <tr><td>3565</td><td>"What else only gets <b>attention</b> once it breaks?"</td><td>reflective coda</td></tr>
+          <tr><td>2031</td><td>"the nature of change and <b>identity</b>"</td><td>self, identity</td></tr>
+          <tr><td>7238</td><td>"a profound lesson <b>in</b> how we…"</td><td>"profound X" template</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin-top:18px">Steering with each: philosophy and helpfulness</h3>
+      <div id="s30"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>philosophy</span><span><i style="background:var(--ink-3)"></i>helpfulness</span></div>
+      <p class="note">Mean over 16 prompts, blind Claude Sonnet judge, each score 0–9; bar length is their sum on a 0–12 scale. "Content features" = 3424 + 3565 + 2031 + 7238, chosen after reading them. Pushes are sized in p50 units at layer 8. Two blind pools of the same prompts (the content features were a second round); baseline and B appear in both and agree within 0.2.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table><thead><tr><th>Config</th><th>Philosophy</th><th>Helpfulness</th><th>Coherence</th><th>Degenerate</th></tr></thead><tbody id="s30-table"></tbody></table>
+      </details>
+    </div>
+  </section>
+
   <!-- to do -->
   <section class="chapter" id="todo">
     <div>
       <div class="num">Still to try</div>
-      <h2>Three open questions</h2>
-      <p><strong>Learned features instead of averaged directions.</strong> A <em>sparse autoencoder</em> breaks the hidden state into thousands of learned features, each active only now and then. One of them might mean "reflective register" more cleanly than our averaged direction. None exists for this model yet, so we would train a small one at layer 8. The code is drafted but not run.</p>
+      <h2>Two open questions</h2>
       <p><strong>A judge that isn't Claude.</strong> From chapter 25 on, both the teacher and the judges are Claude models, so part of the gain could be Claude preferring its own style. A different judge would rule that out.</p>
       <p><strong>A bigger student.</strong> Chapters 27–28 suggest the 4-billion-parameter model itself is now the limit. The same Claude-taught recipe on a larger model would show whether "sounds philosophical" can become "thinks philosophically about this task".</p>
     </div>
     <div class="fig">
-      <p class="note">Listed under "To do" in FINDINGS.md, with the drafted script <code>scripts/exp_sae.py</code>.</p>
+      <p class="note">Listed under "To do" in FINDINGS.md.</p>
     </div>
   </section>
 
@@ -977,6 +1010,7 @@ section.wide { grid-template-columns: 1fr; }
         <dt>DPO (Direct Preference Optimization)</dt><dd>Training on pairs of answers: raise the probability of the preferred one relative to the rejected one, compared with a frozen copy of the starting model.</dd>
         <dt>Matched random control</dt><dd>Random neurons in the same layer, the same number of them, the same |doses| with random signs. It separates "these neurons" from "any push".</dd>
         <dt>Outer product u·vᵀ</dt><dd>Column times row; a rank-1 matrix whose every column is a multiple of u.</dd>
+        <dt>Sparse autoencoder (SAE)</dt><dd>A small network trained to rewrite each hidden state as a sum of a few active "features" out of thousands (here 32 of 8,192). Features are often readable; adding one's direction is a way to steer.</dd>
         <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
         <dt>Bias</dt><dd>The constant <code>b</code> in <code>y = W·x + b</code>; a fixed push regardless of input. Qwen3.5's text MLPs have none.</dd>
         <dt>Degenerate</dt><dd>The judge's flag for loops, gibberish or identity confusion.</dd>
@@ -2231,6 +2265,19 @@ function fillTable(id, rows) {
                 ["+ DPO", 10.08, 9.81, "var(--accent)"], ["+ DPO, ×1.2", 9.85, 9.40, "var(--accent)"]];
   document.getElementById("s29").innerHTML = rows.map(([l, s, o, c]) =>
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
+})();
+
+/* ---------- 30: SAE features (real data: runs/sae/judge.jsonl, judge_round2.jsonl) ---------- */
+(function () {
+  // [label, philosophy, helpfulness, coherence, degenerate]
+  const rows = [["Baseline", 0.00, 8.94, 9.00, "0/16"], ["Averaged direction (diff-means) α 0.5", 3.19, 3.69, 7.00, "0/16"],
+                ["Learned direction B 0.6", 4.31, 5.06, 8.00, "0/16"], ["Top-ranked 8 features 0.8", 0.00, 4.12, 4.25, "3/16"],
+                ["Content features 0.8", 3.25, 3.12, 6.19, "0/16"], ["Content features 1.2", 3.12, 0.62, 4.81, "4/16"]];
+  document.getElementById("s30").innerHTML = rows.map(([l, p, h]) =>
+    `<div class="srow wl wv"><span>${l}</span><div class="tr" style="display:flex;gap:2px;background:none">` +
+    (p > 0 ? `<i style="width:${p / 12 * 100}%;background:var(--pos);border-radius:0"></i>` : "") +
+    `<i style="width:${h / 12 * 100}%;background:var(--ink-3)"></i></div><b>${p.toFixed(1)} / ${h.toFixed(1)}</b></div>`).join("");
+  fillTable("s30-table", rows);
 })();
 </script>
 </body>

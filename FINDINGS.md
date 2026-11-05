@@ -31,6 +31,7 @@
 25. **A more philosophical teacher didn't help further.** Claude answers with substantive, named philosophical ideas (teacher: about +1 philosophy at the same helpfulness) produce a student that copies the name-dropping, gains only +0.25 philosophy, and loses about 0.7 helpfulness and coherence. At this scale the student, not the teacher, is now the bottleneck (Results §24).
 26. **A 4× larger adapter doesn't help.** Rank 32 fits the teacher answers better but generalizes no better: no consistent gain on the plain teacher (the two judges disagree in sign), and none on the deeper one. The limit is the 4B base model or the data, not the adapter (Results §25).
 27. **Preference training doesn't stack on the Claude-taught student.** Its sampled answers (temperature 0.8) are mostly plain, and some break, so the judged pairs taught it to avoid broken answers rather than to reflect better: no gain under either judge (Results §26).
+28. **Sparse-autoencoder features are readable but steer no better than diff-means.** A TopK SAE trained at layer 8 (8,192 features, 16% of variance unexplained) finds clear philosophy-content features ("a profound lesson in…", reflective codas about attention, identity and self, "rather than / merely"). Ranking features by their philosophical-minus-plain activation, though, puts artefacts first: a disfluency feature and two "pseudo-profound rambling" features, which make no philosophy when pushed. Steering with the four hand-picked content features gives philosophy 3.25 with helpfulness 3.12, the same trade-off as diff-means and far below the learned direction B in the same pool (4.31 / 5.06) (Results §27).
 
 ## Background
 
@@ -691,6 +692,42 @@ What this says:
 - **The pairs taught the wrong lesson.** Sampled at temperature 0.8, this student's answers are mostly plain (philosophy about 0.6), and 6–11% break. So the pairs mostly separated broken or flat answers from ordinary ones, which greedy decoding already avoids. In §20 the starting student's samples were reflective, and the pairs could pick out *better* reflection. Preference training needs samples that already vary along the dimension you want to improve.
 - **The Claude-taught student's style is fragile under sampling, at least at 160 tokens and temperature 0.8.** The rank-1 woven student held up under temperature 0.7 (§21). This one wasn't re-checked at 0.7 on the evaluation prompts, which is the caveat on its §22–23 results.
 
+### 27. Sparse-autoencoder features at layer 8 (experiment T)
+
+LITERATURE.md H6 asks whether learned features steer more cleanly than an averaged direction. No public SAE exists for Qwen3.5-4B (Qwen publishes residual SAEs for the 2B, 9B and 27B models, not 4B), so we trained one. A TopK SAE (8,192 features, k = 32, decoder untied, inputs centred and scaled) was fit on 300,000 layer-8 residual tokens from 7,264 texts this project had already generated (every `runs/**/*gen*.jsonl`: plain, prompted, steered and broken answers with their chat prompts; tokens above 4× the median norm dropped). After 3,000 Adam steps it leaves 16.3% of the variance unexplained, with 5,100 of 8,192 features alive (the rest never fire; we did no dead-feature resampling). Features were ranked by mean activation on the 32 contrast pairs' philosophical answers minus the plain ones (answer tokens).
+
+**What the top features are** (`runs/sae/inspect.json`, top-activating contexts over 1,500 texts):
+
+| Feature | Fires on | Top contexts | Kind |
+|---|---|---|---|
+| 275 (rank 1) | 15.6% of tokens | ungrammatical tokens: "clothes you need **wear**", "it is that I am not what I **is**" | disfluency |
+| 6074, 6257 | 1.7%, 9.7% | broken pseudo-profound loops from earlier steering runs: "it remains true that **there** is no way" | rambling |
+| 3424 | 2.6% | "useful fictions **rather** than sharp boundaries", "or **merely** sorts things" | hedge / contrast |
+| 3565 | 5.4% | Claude-style codas: "What else only gets **attention** once it breaks", "a **reminder** that" | reflective coda |
+| 2031 | 2.0% | "a metaphor for the nature of change and **identity**", "refiguring the **self**" | self / identity |
+| 7238 | 2.1% | "a profound lesson **in how**", "a profound meditation **on**" | "profound X of" template |
+
+The ranking picks up artefacts as readily as content, because the hand-written philosophical contrast answers differ from the plain ones in fluency too. The top feature's direction is almost orthogonal to diff-means (cosine 0.02) and to B (0.01); the weighted top-8 combination has cosine 0.33 with diff-means and 0.07 with B.
+
+**Steering** (16 evaluation prompts, push added to layer 8's MLP output at every token, size a·p50 along the unit decoder direction; blind Sonnet judge, two pools):
+
+| Config | Philosophy | Coherence | Helpfulness | Degenerate |
+|---|---|---|---|---|
+| *Pool 1* baseline | 0.00 | 9.00 | 8.94 | 0/16 |
+| diff-means α 0.5 | 3.19 | 7.00 | 3.69 | 0/16 |
+| learned direction B 0.6·p50 | 4.50 | 8.00 | 4.88 | 0/16 |
+| top-1 feature (275) 0.5 / 0.8·p50 | 0.00 / 0.00 | 8.38 / 6.88 | 8.25 / 6.44 | 0 / 1 |
+| top-8 combination 0.5 / 0.8·p50 | 0.00 / 0.00 | 8.38 / 4.25 | 8.31 / 4.12 | 0 / 3 |
+| *Pool 2 (post hoc)* learned direction B 0.6·p50 | 4.31 | 8.00 | 5.06 | 0/16 |
+| content features 3424+3565+2031+7238, 0.5·p50 | 0.00 | 9.00 | 8.75 | 0/16 |
+| content features, 0.8·p50 | 3.25 | 6.19 | 3.12 | 0/16 |
+| content features, 1.2·p50 | 3.12 | 4.81 | 0.62 | 4/16 |
+| feature 7238 alone, 0.8 / 1.2·p50 | 1.12 / 2.31 | 7.00 / 3.12 | 4.94 / 1.19 | 0 / 12 |
+
+The ranked features produce no philosophy at all: pushed hard, they only degrade grammar ("stir with a spoon till they mixed well"), as a disfluency feature should. The content features, chosen by hand after reading their contexts (so post hoc), do produce philosophy, but they replace the answer rather than adding to it ("The question 'how to make scrambled eggs' is not about a single method but about how we think"). They sit on the same philosophy-for-helpfulness line as diff-means (TL;DR 6), with the same threshold near 0.5–0.8·p50. The learned direction B stays ahead by about 3 points of philosophy + helpfulness in the same pool.
+
+**What it means.** At this scale an SAE is a good microscope and a poor lever. Its features name what philosophical text *contains* (codas, hedges, "profound lesson in"), token by token, but adding one of those features everywhere says "write that content now", which crowds out the answer. B was trained on the model's own answers to write a mode that the rest of the network turns into "answer, then reflect"; no single readable feature does that. This agrees with AxBench (2501.17148), which found SAE steering below prompting and below trained low-rank interventions. Caveats: one SAE size, one layer, no dead-feature revival, 16 prompts, one judge; feature selection by output score (2505.20063) rather than by activation difference was not tried.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both judges are Claude models: no non-Claude judge was available in this setup (no other provider's credentials, and the model's own self-judging is unreliable, see TL;DR 10).
@@ -703,7 +740,7 @@ What this says:
 ## Suggested next steps
 
 **To do (agreed, not yet run):**
-- [ ] **SAE features at layer 8** (LITERATURE.md H6). Train a small TopK sparse autoencoder (8,192 features, k = 32) on layer-8 activations from the project's own generated text, pick the features that separate philosophical from plain contrast answers, and steer with their decoder directions against diff-means and the learned direction B. Drafted as `scripts/exp_sae.py` (stages `acts`, `train`, `steer`), not run yet.
+- [x] **SAE features at layer 8**: done, Results §27. The features are readable but steer no better than diff-means; the learned direction B stays ahead.
 - [ ] **A non-Claude judge.** Every teacher and judge in §16–§26 is a Claude model, so a preference for Claude's own style can't be ruled out. Options: Qwen3.5-4B as a third judge on the 48-prompt pools (weak, see TL;DR 10, but non-Claude), or a judge from another provider if credentials become available.
 - [ ] **A larger base model.** The late experiments suggest the 4B model, not the adapter or the teacher, is now the limit (§24–§25). Repeat the Claude-teacher distillation (§22–§23) on a larger Qwen. This needs a multi-gigabyte download, and probably more than this machine's 24 GB of memory for training.
 
@@ -763,6 +800,9 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/exp_capacity.py && .venv/bin/python scripts/claude_judge.py --input capacity/gen.jsonl --output capacity/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input capacity/gen.jsonl --output capacity/judge_opus.jsonl --model opus
 .venv/bin/python scripts/exp_dpo_claude.py --stage samples && .venv/bin/python scripts/claude_judge.py --input dpo_claude/samples_gen.jsonl --output dpo_claude/samples_judge.jsonl
 .venv/bin/python scripts/exp_dpo_claude.py --stage train && .venv/bin/python scripts/claude_judge.py --input dpo_claude/gen.jsonl --output dpo_claude/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input dpo_claude/gen.jsonl --output dpo_claude/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_sae.py --stage acts && .venv/bin/python scripts/exp_sae.py --stage train && .venv/bin/python scripts/exp_sae.py --stage steer
+.venv/bin/python scripts/claude_judge.py --input sae/gen.jsonl --output sae/judge.jsonl && .venv/bin/python scripts/exp_sae.py --stage inspect
+.venv/bin/python scripts/exp_sae.py --stage steer2 && .venv/bin/python scripts/claude_judge.py --input sae/gen_round2.jsonl --output sae/judge_round2.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
