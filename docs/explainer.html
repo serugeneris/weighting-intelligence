@@ -217,6 +217,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c11">11 · Just ask?</a>
       <a href="#c12">12 · When to push</a>
       <a href="#c13">13 · Into the weights</a>
+      <a href="#c14">14 · Which layers</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -565,6 +566,33 @@ section.wide { grid-template-columns: 1fr; }
         <table>
           <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
           <tbody id="s13-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="chapter" id="c14">
+    <div>
+      <div class="num">Chapter 14 · experiment E</div>
+      <h2>Which layers, and how many?</h2>
+      <p><strong>Why we tried it.</strong> Chapter 8 found our layer-8 push 2–5× bigger than the real difference at that layer, and drifting off the model's own route in the middle layers. Two fixes come to mind. Push several layers gently instead of one hard. Or copy the natural route exactly: the residual stream is a running sum, so if each layer is pushed by the <em>step</em> the natural difference takes at that layer, the running total follows the natural difference layer by layer. We also never checked whether layer 8 was a good choice, so we tried single layers from 4 to 24.</p>
+      <p><strong>What happened.</strong> Spreading the push (orange) lands on the same trade-off as before: gentle pushes do little, and stronger ones lose helpfulness at the usual rate. Copying the natural route all the way to layer 24 (green) gives the most philosophical output without a prompt so far, but almost no help. It lands near the black square, the hand-written philosophical answers we built the direction from. That makes sense: those texts <em>replace</em> the answer with reflection, and that's exactly the route we copied.</p>
+      <p>The bars below the chart show the layer sweep. Only the middle layers, 8 to 16, respond to a modest push. Layer 4 ignores it, and layers 20–24 barely react.</p>
+      <p><strong>What it means.</strong> Where and how widely we push a <em>constant</em> vector changes little. The rank-1 LoRA of chapter 13 sits at the same layer 8 and pushes less, but its push depends on the token. That is the difference that mattered. Source: FINDINGS.md § 11, <code>runs/multilayer/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s14" viewBox="0 0 720 420" role="img" aria-label="Scatter plot of helpfulness against philosophy for pushes spread over several layers and pushes that copy the natural layer-by-layer route"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>layer 8 only, α 0.5</span><span><i style="background:var(--accent)"></i>spread over 3–11 layers</span><span><i style="background:var(--s3)"></i>natural route</span><span><b style="color:var(--ink);margin-right:5px">+</b>no push</span></div>
+      <p class="note">All configs judged blind in one pool. The black square is the hand-written philosophical answers (chapter 9), judged in another pool. Three runs that copy the natural route at 2–3× size broke almost every answer and sit at helpfulness 0; the table lists them.</p>
+      <h3>One layer at a time, α 0.5</h3>
+      <svg id="s14b" viewBox="0 0 720 200" role="img" aria-label="Philosophy and helpfulness for a push at a single layer, layers 4 to 24"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>philosophy</span><span><i style="background:var(--ink-3)"></i>helpfulness</span></div>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s14-table"></tbody>
         </table>
       </details>
     </div>
@@ -1478,6 +1506,50 @@ function fillTable(id, rows) {
                 ["LoRA: prompt", 0.21, "var(--s3)", ""], ["LoRA: answer start", 0.19, "var(--s3)", "first 10"], ["LoRA: whole answer", 0.12, "var(--s3)", ""]];
   document.getElementById("s13-push").innerHTML = rows.map(([l, v, c]) =>
     `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 0.55 * 100}%;background:${c}"></i></div><b>${v.toFixed(2)}·p50</b></div>`).join("");
+})();
+
+/* ---------- 14: multi-layer and layer sweep (real data: runs/multilayer/judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s14"), {
+    base: [8.81, 0.00, 9.00], goal: false,
+    targets: [{ name: "Hand-written philosophical answers (32, another pool)", h: 2.31, p: 5.75, c: 8.94, label: "hand-written targets", lab: [12, 4, "start"] }],
+    series: [
+      { name: "layer 8 only", c: "pos", noTags: true, pts: [P(4.62, 2.38, "α 0.5", 7.50, 0)] },
+      { name: "spread", c: "acc", noLine: true, noTags: true,
+        pts: [P(5.44, 2.31, "L8–16, α 0.5", 7.50, 0), P(0.75, 3.12, "L8–16, α 1.0", 3.44, 10), P(7.44, 1.12, "L4–20, α 0.5", 8.38, 0),
+              P(1.62, 4.06, "L4–20, α 1.0", 5.00, 5), P(7.38, 0.50, "L4–24 every 2, α 0.5", 8.44, 0), P(2.19, 4.19, "L4–24 every 2, α 1.0", 5.69, 1)] },
+      { name: "natural route", c: "s3", noLine: true, noTags: true, lab: [12, -8, "start"], labAt: 1,
+        pts: [P(7.25, 1.19, "×1 up to L12", 8.38, 0), P(1.62, 4.75, "×1 up to L24", 6.12, 2), P(0.56, 2.25, "×2 up to L12", 2.31, 14)] },
+    ],
+  });
+  fillTable("s14-table", [
+    ["Baseline", 0.00, 9.00, 8.81, "0/16"], ["Single L8 α 0.5", 2.38, 7.50, 4.62, "0/16"],
+    ["Spread L8–16 α 0.5", 2.31, 7.50, 5.44, "0/16"], ["Spread L8–16 α 1.0", 3.12, 3.44, 0.75, "10/16"],
+    ["Spread L4–20 α 0.5", 1.12, 8.38, 7.44, "0/16"], ["Spread L4–20 α 1.0", 4.06, 5.00, 1.62, "5/16"],
+    ["Spread L4–24 every 2 α 0.5", 0.50, 8.44, 7.38, "0/16"], ["Spread L4–24 every 2 α 1.0", 4.19, 5.69, 2.19, "1/16"],
+    ["Natural route ×1 up to L12", 1.19, 8.38, 7.25, "0/16"], ["Natural route ×1 up to L24", 4.75, 6.12, 1.62, "2/16"],
+    ["Natural route ×2 up to L12", 2.25, 2.31, 0.56, "14/16"], ["Natural route ×2 up to L24", 1.19, 0.94, 0.00, "16/16"],
+    ["Natural route ×3 up to L12", 0.38, 0.06, 0.00, "16/16"], ["Natural route ×3 up to L24", 0.25, 0.00, 0.00, "16/16"],
+    ["Single L4 α 0.5", 0.12, 8.75, 8.06, "0/16"], ["Single L12 α 0.5", 2.12, 5.94, 4.31, "0/16"], ["Single L16 α 0.5", 2.88, 7.31, 5.06, "0/16"],
+    ["Single L20 α 0.5", 0.38, 8.56, 7.94, "0/16"], ["Single L24 α 0.5", 0.06, 8.81, 8.31, "0/16"],
+    ["Single L4 2× natural", 0.00, 9.00, 8.81, "0/16"], ["Single L8 2× natural", 2.06, 7.50, 5.00, "0/16"], ["Single L12 2× natural", 2.06, 5.00, 3.50, "7/16"],
+    ["Single L16 2× natural", 3.81, 5.56, 2.44, "0/16"], ["Single L20 2× natural", 2.06, 5.88, 4.44, "0/16"], ["Single L24 2× natural", 0.38, 6.44, 6.31, "1/16"],
+  ]);
+  // layer sweep: paired columns
+  const svg = document.getElementById("s14b");
+  const L = [[4, 0.12, 8.06], [8, 2.38, 4.62], [12, 2.12, 4.31], [16, 2.88, 5.06], [20, 0.38, 7.94], [24, 0.06, 8.31]];
+  const Y0 = 20, Y1 = 160, X0 = 60, step = 108, bw = 26, y = v => Y1 - v / 9 * (Y1 - Y0);
+  [0, 3, 6, 9].forEach(v => { E("line", { x1: X0 - 10, x2: 700, y1: y(v), y2: y(v), class: "grid" }, svg); T(svg, X0 - 16, y(v) + 4, v, "sm", "end"); });
+  L.forEach(([l, p, h], i) => {
+    const cx = X0 + 40 + i * step;
+    const bp = E("rect", { x: cx - bw - 1, y: y(p), width: bw, height: Math.max(Y1 - y(p), 1), rx: 3, class: "cpos" }, svg);
+    const bh = E("rect", { x: cx + 1, y: y(h), width: bw, height: Y1 - y(h), rx: 3, class: "dot-grey" }, svg);
+    [bp, bh].forEach(b => { b.addEventListener("mousemove", e => showTip(e, `<b>Layer ${l}, α 0.5</b><br>Philosophy: ${p.toFixed(2)}<br>Helpfulness: ${h.toFixed(2)}`)); b.addEventListener("mouseleave", hideTip); });
+    T(svg, cx, Y1 + 20, "L" + l, "sm", "middle");
+    T(svg, cx - bw / 2 - 1, y(p) - 6, p.toFixed(1), "sm", "middle");
+  });
+  T(svg, 380, Y1 + 38, "layer pushed →", "lbl", "middle");
 })();
 </script>
 </body>

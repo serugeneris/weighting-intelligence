@@ -15,6 +15,7 @@
 9. **When we push matters less than expected.** Steering only the first 24 tokens or only the prompt gives the same result as steering everything: the start sets a mode that persists. A push that arrives mid-answer adds little philosophy and breaks coherence (Results §9).
 10. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
 11. **A tiny trained update gives a prompt-free "philosophy Qwen".** Training a LoRA so the model answers *without* the prompt the way it does *with* the woven prompt matches the prompt's balance on held-out prompts: philosophy 2.25–2.50, helpfulness 6.2–6.6, against the prompt's 2.94 / 6.44. A rank-1 update to one matrix (layer 8's `down_proj`, 11,776 parameters) is as good as a 9M-parameter adapter. Its push is token-dependent, mostly on the prompt and the first answer tokens, smaller than any steering push that worked, and nearly orthogonal to the diff-means direction (Results §10).
+12. **Where and how widely we push doesn't change the trade-off.** Spreading the push over 3–11 layers, or recreating the natural difference layer by layer, stays on the same 0.5–0.8 philosophy-per-helpfulness-point line. Only the middle layers (L8–L16) respond to a modest push. Recreating the natural trajectory up to L24 gives the most philosophical prompt-free output so far (4.75) but copies the hand-written targets' unhelpfulness (Results §11).
 
 ## Background
 
@@ -267,6 +268,39 @@ What this says:
 - **It pushes gently, mostly at the start.** Measured on the 16 evaluation prompts (`runs/distill/probe.json`), its push averages 0.21·p50 on prompt tokens and 0.19·p50 on the first 10 answer tokens, but only 0.12·p50 over the whole answer (0.08 on the baseline's answer text). That is *below* the natural L8 difference (0.24·p50) and 2.5–6× smaller than the α 0.5 steering push, which is the same at every token. It matches experiment C: the start sets the mode, and a small push in the right direction at the right tokens is enough. A constant push big enough to change the mode is too big everywhere else.
 - **The token mixers alone are as good as the MLPs.** `mixers-r8` (attention + DeltaNet, no MLP) matches `mlp-r8`. Where the change is made matters little at this scale; what it is trained to do matters most. This doesn't support or refute the attention hypothesis on its own (experiment G tests it directly).
 
+### 11. Several layers, other layers (experiment E)
+
+Branch `exp-multilayer` (`scripts/exp_multilayer.py`, `runs/multilayer/`). The pathway check (§4) found the L8 push 2–5× bigger than the natural L8 difference, and losing the natural route in the middle layers. Two ways to push more gently and more naturally:
+- **spread**: the same total push split over several layers, each along its own diff-means direction, `Σ_L (α/n)·p50_L·unit(dm_L)`.
+- **natural path ×g up to L K**: push every layer up to K by g times the *increment* of the natural difference, `g·(dm_L − dm_{L−1})`. The residual stream is a running sum, so at g = 1 the steered offset after each layer equals the natural philosophical-minus-plain difference at that layer, before the model reacts to it.
+- **layer sweep** (LITERATURE.md H5, "abstraction lives in the middle"): one layer at a time, L4–L24, at α 0.5 and at 2× that layer's own natural difference.
+
+All 25 configs were judged blind in one pool (16 prompts, 8 held out, 120 tokens).
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.81 | 0/16 |
+| Single L8 α 0.5 (the usual) | 2.38 | 7.50 | 4.62 | 0/16 |
+| Spread L8–16 (3 layers) α 0.5 / 1.0 | 2.31 / 3.12 | 7.50 / 3.44 | 5.44 / 0.75 | 0 / 10 of 16 |
+| Spread L4–20 (5 layers) α 0.5 / 1.0 | 1.12 / 4.06 | 8.38 / 5.00 | 7.44 / 1.62 | 0 / 5 of 16 |
+| Spread L4–24 every 2 (11 layers) α 0.5 / 1.0 | 0.50 / 4.19 | 8.44 / 5.69 | 7.38 / 2.19 | 0 / 1 of 16 |
+| Natural path ×1 up to L12 / L24 | 1.19 / 4.75 | 8.38 / 6.12 | 7.25 / 1.62 | 0 / 2 of 16 |
+| Natural path ×2 up to L12 / L24 | 2.25 / 1.19 | 2.31 / 0.94 | 0.56 / 0.00 | 14 / 16 of 16 |
+| Natural path ×3 up to L12 / L24 | 0.38 / 0.25 | 0.06 / 0.00 | 0.00 / 0.00 | 16 / 16 of 16 |
+| Single L4 α 0.5 / 2×natural | 0.12 / 0.00 | 8.75 / 9.00 | 8.06 / 8.81 | 0 / 0 of 16 |
+| Single L12 α 0.5 / 2×natural | 2.12 / 2.06 | 5.94 / 5.00 | 4.31 / 3.50 | 0 / 7 of 16 |
+| Single L16 α 0.5 / 2×natural | 2.88 / 3.81 | 7.31 / 5.56 | 5.06 / 2.44 | 0 / 0 of 16 |
+| Single L20 α 0.5 / 2×natural | 0.38 / 2.06 | 8.56 / 5.88 | 7.94 / 4.44 | 0 / 0 of 16 |
+| Single L24 α 0.5 / 2×natural | 0.06 / 0.38 | 8.81 / 6.44 | 8.31 / 6.31 | 0 / 1 of 16 |
+
+Single L8 at 2× its natural difference (0.48·p50) is nearly the same push as α 0.5 and scores the same (2.06 / 7.50 / 5.00).
+
+What this says:
+- **Spreading the push doesn't escape the trade-off.** Every config that adds philosophy lies on the same line as single-layer steering: about 0.5–0.8 philosophy gained per helpfulness point lost (single L8: 0.57; spread L8–16 α 0.5: 0.69; spread L4–20 α 1.0: 0.56). Gentler per-layer pushes mostly just do less.
+- **Recreating the natural trajectory recreates the target texts, including their unhelpfulness.** Natural path ×1 up to L24 gives the highest philosophy of any prompt-free intervention so far (4.75), at helpfulness 1.62. That is close to how the judge scores the hand-written philosophical answers themselves (5.75 / 2.31, §6). The push does what it was built to do: it moves the model toward texts that *replace* the answer. Doubling it breaks the model.
+- **The middle layers are where a push works (H5, partly supported).** At α 0.5, only L8–L16 respond (philosophy 2.1–2.9). L4 does nothing even at 2× its natural difference; L20 and L24 need 2× natural to show anything, and then lose coherence. L16 at α 0.5 is slightly better than L8 (philosophy 2.88 vs 2.38, helpfulness 5.06 vs 4.62), but that is within judge noise.
+- **So the place and spread of a constant push matter less than its form.** No layer or combination reaches the prompt's balance. The rank-1 LoRA of §10 sits at the same L8 site with a smaller push; what it adds is a token-dependent size.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -284,7 +318,7 @@ What this says:
 4. **Larger evaluation**: 50+ prompts, sampling with several seeds, and two judge models.
 5. ~~**Downstream pathway check**~~: done, see Results §4. Follow-ups it suggests:
    - ~~**Less overdrive**~~: done, see Results §5. The disturbance shrinks with push size, but philosophy has a threshold near α 0.5, and most of the helpfulness cost comes with the philosophical shift itself. Open: map α 0.35–0.5 more finely for k=256 and diff-means, and confirm the k=256 α 0.35 middle point on a larger prompt set.
-   - **Mid-layer re-injection**: the 16-neuron group loses the natural pathway in L15–23. Add a second, smaller push there, using the natural change at L15–18 as the target. This is the cheapest version of step 6.
+   - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Open: distil a *better* teacher (prompt + light push, or a stronger prompt), since distillation can only copy the prompt's balance; and turn the rank-1 update into a standalone checkpoint.
@@ -308,6 +342,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_selfgen.py && .venv/bin/python scripts/claude_judge.py --input selfgen/gen.jsonl --output selfgen/judge.jsonl
 .venv/bin/python scripts/exp_token_window.py && .venv/bin/python scripts/claude_judge.py --input token_window/gen.jsonl --output token_window/judge.jsonl
 .venv/bin/python scripts/exp_distill.py && .venv/bin/python scripts/claude_judge.py --input distill/gen.jsonl --output distill/judge.jsonl
+.venv/bin/python scripts/exp_multilayer.py && .venv/bin/python scripts/claude_judge.py --input multilayer/gen.jsonl --output multilayer/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
