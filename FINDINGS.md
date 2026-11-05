@@ -1,13 +1,13 @@
 # Steering Qwen3.5-4B toward philosophy — findings so far
 
-*Status: exploratory, 2026-11-04. Model: `Qwen/Qwen3.5-4B` (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
+*Status: exploratory, 2026-11-04 (experiments D–K added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
 
 ## TL;DR
 
 1. **Single neurons do not make Qwen3.5-4B philosophical.** Neither the neurons that *fire* most differently on philosophical text nor the neurons whose output column best *points* at the philosophy direction work alone. At low doses they do nothing; at high doses they break the model, and random neurons break it in the same way.
 2. **A group of 16 neurons in layer 8 does work**, if they are chosen by write-alignment (matching pursuit on `W_down` columns) and dosed correctly. Blind Claude judge, 16 prompts (8 held out): philosophy **2.56/9 vs 0.00 baseline vs 0.07 for matched random 16-neuron groups**, 0/16 degenerate outputs, same effect on held-out prompts. This is 0.17% of one layer's neurons.
 3. **The full diff-means direction at layer 8 is still the best knob**: philosophy 3.00, coherence 7.62, helpfulness 4.62, 0/16 degenerate. Every effective steer costs helpfulness (baseline 8.44 → 3–5), and part of that cost is generic: matched random pushes also drop it to about 5.
-4. **Astra-style weight edits (masked rank-1 on `down_proj`, no bias) are safe but nearly inert for this goal.** Best edit: philosophy 0.06 → 0.50 with *no* loss in coherence or helpfulness. A pure weight edit can only amplify or remove what neurons already write; it cannot add a constant push, and on practical prompts nothing "philosophical" is being written to amplify.
+4. **Astra-style weight edits (masked rank-1 on `down_proj`, no bias) are safe but nearly inert for this goal.** Best edit: philosophy 0.06 → 0.50 with *no* loss in coherence or helpfulness. A pure weight edit can only amplify or remove what neurons already write; it cannot add a constant push, and on practical prompts nothing "philosophical" is being written to amplify. *Refined in Results §18: a trained rank-1 edit with a dense read side does add the behaviour (TL;DR 19).*
 5. **The L8 pushes partly follow the model's own philosophical pathway, but they overdrive it.** In layers 9–31 the changes caused by the pushes line up with the changes in natural philosophical answers clearly above random controls. The 16-neuron group's match fades toward the random level in L15–23; the full direction keeps more of it and recovers strongly in the last layers. Both pushes are much larger than the natural L8 difference (diff-means 2.1×, 16 neurons 4.6×). The 16-neuron group also triggers an off-pathway disturbance of the same size as random groups with the same doses, so that part depends on push size, not on which neurons are chosen.
 6. **Pushing less hard doesn't solve the helpfulness trade-off.** Philosophy only shows up when the on-direction push reaches about α 0.5, roughly 2× the natural L8 difference. Below that it nearly vanishes, and helpfulness comes back with it. At α 0.5, most of the helpfulness loss comes with the philosophical shift itself: diff-means has the smallest disturbance and still drops to 3.94. A better-aligned group (k=256) gives the highest philosophy score so far (3.12) and loses slightly less helpfulness than k=16, but the gain is within judge noise. The reason is the contrast data. The philosophical answers we steer toward *replace* the practical answer (judge: philosophy 5.75, helpfulness 2.31), so the direction itself means "reflect instead of answering".
 7. **Fixing the target data is not enough on its own.** New contrast answers that keep the full practical answer and add reflection are as helpful as the plain answers (helpfulness 8.6). But their direction is 84–92% the old one, and steering along it sits on the same philosophy-for-helpfulness line. A constant push at every token can't express "answer first, then reflect" (Results §7).
@@ -22,6 +22,7 @@
 16. **A better teacher doesn't make a better student here.** A prompt search and best-of-4 selection (judge-picked answers) gave students that copy their teacher's average balance, not its best answers. All prompts and students share one frontier (philosophy + helpfulness ≈ 9.1–9.4), about twice as efficient as steering. The choice of teacher only moves the student along it (Results §15).
 17. **Confirmed on 48 unseen prompts with two judges.** Students match their prompts, and at equal philosophy the rank-1 LoRA keeps about 1.7 more helpfulness points than steering (about 5 standard errors) under both Claude Sonnet and Claude Opus. The two judges agree per item (r 0.85–0.90); Opus is about 0.7 stricter on helpfulness (Results §16).
 18. **Steering the prompt's hot spots doesn't help.** Adding the prompt's average effect at the three key heads, or at attention L11/L15 or DeltaNet L16–18, does almost nothing: what those sites carry depends on the token, and the average cancels out. Summing the average over all 32 mixers works, but it lands on the same trade-off as ordinary steering (Results §17).
+19. **The prompt-free philosophy Qwen is a single rank-1 weight edit.** Baking the rank-1 LoRA into layer 8's `down_proj` (no bias, no hooks) scores the same as the adapter (2.62 / 8.44 / 6.75). Hand-built rank-1 edits failed because they read from a few neurons that don't fire on practical prompts. The trained edit reads a dense mix of all 9,216 neurons that fires at the start of every answer (Results §18).
 
 ## Background
 
@@ -460,6 +461,22 @@ What this says:
 - **Spreading the prompt's mean effect over all 32 mixers works, but not better than steering.** At ×2 it reaches 2.50 / 6.00, the same in both pools, and sits about 0.6 helpfulness points above the diff-means line at equal philosophy. That is within judge noise on 16 prompts. At ×2.5–3 it falls back onto the same line (3.06 / 4.25, 3.94 / 2.88). Like experiment E, a constant push spread over many layers stays on the steering trade-off.
 - **H3 for steering: not supported.** Head-level steering at the sites that matter most for the prompt does not beat the residual push in this model, at least with mean (prompt-derived) vectors. The token-dependent route (the LoRA of §10) remains the only prompt-free intervention that reaches the prompt's frontier.
 
+### 18. A prompt-free philosophy Qwen in one weight edit (baking experiment D)
+
+Branch `exp-bake` (`scripts/bake_lora.py`, `runs/bake/`). The rank-1 LoRA of §10 adds `scale·B·(A·a)` to layer 8's `down_proj` output, which is the same as editing that weight once: `W_down,8 ← W_down,8 + scale·B·Aᵀ`. That is a rank-1, bias-free edit, the same *form* as the Astra-style edits of §3, which were nearly inert. The script merges it into the stored weight (its size: 10% of ‖W_down,8‖) and regenerates the 16 evaluation prompts with no prompt and no adapter. `--out DIR` saves the full model.
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.75 | 0/16 |
+| Rank-1 LoRA (adapter) | 2.81 | 8.19 | 6.81 | 1/16 |
+| Same update baked into `W_down,8` | 2.62 | 8.44 | 6.75 | 0/16 |
+
+5 of 16 generations are byte-identical to the adapter's. The rest drift after 0–470 characters, because the merged weight is rounded to bf16 while the adapter computed its correction in float32. The judged scores match within noise.
+
+What this says:
+- **A standalone, prompt-free philosophical Qwen3.5-4B is one rank-1 edit to one matrix.** No prompt, no hooks, no bias.
+- **This refines TL;DR 4.** The hand-built Astra-style edits were inert because their read side was a few hand-picked neurons (masked `v`) that don't fire on practical prompts, so there was nothing to amplify. The trained edit reads a *dense* combination `A` of all 9,216 neurons, which fires on any prompt and on the opening of any answer (0.2·p50, §10), and writes along a direction `B` that diff-means never pointed to. A bias was never needed. A weight edit can add a behaviour if its read side is chosen for it, and gradient descent found one where hand-construction didn't.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
@@ -471,7 +488,7 @@ What this says:
 
 ## Suggested next steps
 
-1. **Bias bake-in**: add a bias to `down_proj` at L8 equal to the diff-means push or the 16-neuron push, save as a standalone checkpoint, and confirm it matches steering exactly.
+1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
 4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Open: sampled decoding with several seeds, and a non-Claude judge.
@@ -480,7 +497,7 @@ What this says:
    - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
-   - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Open: turn the rank-1 update into a standalone checkpoint.
+   - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
    - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. Open: DPO on judged pairs, many more samples per question, or a stronger teacher model.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
@@ -513,6 +530,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge_opus.jsonl --model opus
 .venv/bin/python scripts/exp_heads.py && .venv/bin/python scripts/claude_judge.py --input heads/gen.jsonl --output heads/judge.jsonl
 .venv/bin/python scripts/exp_heads.py --round 2 && .venv/bin/python scripts/claude_judge.py --input heads/gen_round2.jsonl --output heads/judge_round2.jsonl
+.venv/bin/python scripts/bake_lora.py                            # merge the rank-1 LoRA into W_down at L8 (add --out DIR to save the model)
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
