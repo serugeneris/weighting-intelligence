@@ -44,6 +44,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_gate.py` | Experiment L: the rank-1 LoRA split into gate (read side A) and direction (write side B); constant pushes along B |
 | `scripts/exp_dpo.py` | Experiment M: preference training (DPO) on judged answer pairs, starting from experiment J's student |
 | `scripts/exp_robust.py` | Experiment N: the new candidates (learned direction B, amplified LoRA, DPO) on 48 unseen prompts, greedy and sampled |
+| `scripts/exp_claude_teacher.py` | Experiment O: a stronger teacher. Distil Claude-written answers into a LoRA; judged by Sonnet and Opus on 48 prompts |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
