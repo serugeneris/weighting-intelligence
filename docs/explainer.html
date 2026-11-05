@@ -242,6 +242,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c27">27 · A deeper teacher</a>
       <a href="#c28">28 · A bigger adapter</a>
       <a href="#c29">29 · Pairs need variety</a>
+      <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -935,6 +936,20 @@ section.wide { grid-template-columns: 1fr; }
       <h3>Philosophy + helpfulness on 48 new prompts</h3>
       <div id="s29"></div>
       <p class="note">Sum of philosophy and helpfulness, mean over 48 new prompts, one pool. First number Claude Sonnet, second Claude Opus. The bars show Sonnet on a 0–12 scale.</p>
+    </div>
+  </section>
+
+  <!-- to do -->
+  <section class="chapter" id="todo">
+    <div>
+      <div class="num">Still to try</div>
+      <h2>Three open questions</h2>
+      <p><strong>Learned features instead of averaged directions.</strong> A <em>sparse autoencoder</em> breaks the hidden state into thousands of learned features, each active only now and then. One of them might mean "reflective register" more cleanly than our averaged direction. None exists for this model yet, so we would train a small one at layer 8. The code is drafted but not run.</p>
+      <p><strong>A judge that isn't Claude.</strong> From chapter 25 on, both the teacher and the judges are Claude models, so part of the gain could be Claude preferring its own style. A different judge would rule that out.</p>
+      <p><strong>A bigger student.</strong> Chapters 27–28 suggest the 4-billion-parameter model itself is now the limit. The same Claude-taught recipe on a larger model would show whether "sounds philosophical" can become "thinks philosophically about this task".</p>
+    </div>
+    <div class="fig">
+      <p class="note">Listed under "To do" in FINDINGS.md, with the drafted script <code>scripts/exp_sae.py</code>.</p>
     </div>
   </section>
 
