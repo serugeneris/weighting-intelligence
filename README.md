@@ -31,6 +31,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/natural_ceiling.py` | Helpfulness ceiling: judge the natural contrast-pair answers alongside steered anchors |
 | `scripts/exp_answer_reflect.py` | Experiment A: directions from "answer + reflect" contrast data (`data/contrast_pairs_v2.json`) |
 | `scripts/exp_selfgen.py` | Experiment B: prompting baseline, prompt + steering, and a direction from the model's own prompted answers |
+| `scripts/exp_token_window.py` | Experiment C: steering only part of the answer (late, early, prompt-only windows) |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
 | `data/` | Contrast pairs and evaluation prompts |
 | `docs/explainer.html` | The interactive explainer, served by GitHub Pages |
