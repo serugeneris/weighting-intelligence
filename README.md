@@ -46,6 +46,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_robust.py` | Experiment N: the new candidates (learned direction B, amplified LoRA, DPO) on 48 unseen prompts, greedy and sampled |
 | `scripts/exp_claude_teacher.py` | Experiment O: a stronger teacher. Distil Claude-written answers into a LoRA; judged by Sonnet and Opus on 48 prompts |
 | `scripts/exp_more_teacher.py` | Experiment P: 3× more Claude-written answers (`data/train_questions_extra.json`), and a gain sweep |
+| `scripts/exp_deeper_teacher.py` | Experiment Q: a more philosophical teacher (Claude answers naming specific ideas) on the same 384 questions |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
