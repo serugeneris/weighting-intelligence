@@ -180,6 +180,12 @@ section.wide { grid-template-columns: 1fr; }
 .ex { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; margin: 8px 0 14px; font-size: 14px; }
 .ex p { margin: 0 0 6px; font-size: 14px; }
 .ex p:last-child { margin: 0; }
+.wbars { margin-top: 10px; }
+.wrow { display: grid; grid-template-columns: 96px minmax(0, 1fr) 48px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
+.wrow .tr { position: relative; height: 14px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
+.wrow .tr i { position: absolute; left: 0; top: 0; height: 14px; background: var(--pos); border-radius: 0 4px 4px 0; transition: width .6s; }
+.wrow .tr u { position: absolute; top: -3px; width: 2px; height: 20px; background: var(--ink); }
+.wrow b { font: 12px ui-monospace, Menlo, monospace; color: var(--ink); font-weight: 400; }
 
 @media (max-width: 860px) {
   section.chapter { grid-template-columns: 1fr; gap: 20px; padding: 36px 0; }
@@ -208,6 +214,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c9">9 · The trade-off</a>
       <a href="#c10">10 · Better targets</a>
       <a href="#c11">11 · Just ask?</a>
+      <a href="#c12">12 · When to push</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -504,6 +511,32 @@ section.wide { grid-template-columns: 1fr; }
           <tbody id="s11-table"></tbody>
         </table>
       </details>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="chapter" id="c12">
+    <div>
+      <div class="num">Chapter 12 · experiment C</div>
+      <h2>When to push: only part of the answer</h2>
+      <p><strong>Why we tried it.</strong> Chapter 10 ended with a puzzle: the target answers help first and reflect after, but a constant push nudges every token from the first word. So what if we push only part of the answer? Push late, and maybe the model answers first and then reflects. Push early, and maybe it opens reflectively and then gets down to business.</p>
+      <p>The same layer-8 direction is switched on only during a window of the generation. Pick a window to see which tokens get the push and how the 16 answers scored. The black tick on each bar is the woven prompt from chapter 11, which uses no push.</p>
+      <p><strong>What happened.</strong> Pushing late doesn't add a closing reflection. It breaks the answer: the steered tokens clash with the plain text already written, and the answer slides into vague metaphysics, sometimes looping (up to 13 of 16 broken).</p>
+      <p>Pushing only the start, or even only the prompt, works about as well as pushing everything. The beginning sets a "mode" that the model keeps, and when only the prompt is pushed, attention carries it into the whole answer.</p>
+      <p><strong>What it means.</strong> The trade-off doesn't come from <em>when</em> we push. A single direction sets one mode for the whole answer, and the woven prompt still gets a better balance. Source: FINDINGS.md § 9, <code>runs/token_window/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s12" viewBox="0 0 720 170" role="img" aria-label="Prompt and answer tokens, with the pushed tokens highlighted for the chosen window"></svg>
+      <div class="controls" id="s12-btns">
+        <button data-k="full" class="on">Every token</button>
+        <button data-k="early">First 24</button>
+        <button data-k="prompt">Prompt only</button>
+        <button data-k="late40">After 40</button>
+        <button data-k="late80">After 80</button>
+      </div>
+      <div class="wbars" id="s12-bars"></div>
+      <p class="readout" id="s12-read"></p>
+      <p class="note">Answers are 160 tokens; each answer box stands for 10 tokens. Scores are the mean over 16 prompts, judged blind in one pool with the baseline (helpfulness 8.94) and the woven prompt. More settings are listed in FINDINGS.md § 9.</p>
     </div>
   </section>
 
@@ -1348,6 +1381,43 @@ function fillTable(id, rows) {
     ["Self-generated L8 α 0.5", 2.00, 3.94, 1.75, "10/16"], ["Self-generated L8 α 0.75", 2.94, 2.25, 0.00, "16/16"], ["Self-generated L8 α 1.0", 3.00, 2.31, 0.06, "16/16"],
     ["Self-generated L12 α 0.5", 3.25, 5.25, 2.62, "8/16"], ["Self-generated L12 α 0.75", 2.56, 2.69, 0.00, "14/16"], ["Self-generated L12 α 1.0", 3.12, 2.25, 0.00, "16/16"],
   ]);
+})();
+
+/* ---------- 12: token windows (real data: runs/token_window/judge.jsonl) ---------- */
+(function () {
+  const C = {
+    full:   { a: 0.5,  push: (i, pr) => true, v: [3.75, 7.50, 4.44], d: 0, t: "<b>Every token, α 0.5.</b> The usual steering: philosophical from the first word, helpfulness about half." },
+    early:  { a: 0.75, push: (i, pr) => pr || i < 3, v: [3.69, 7.56, 3.88], d: 0, t: "<b>Prompt + first 24 tokens, α 0.75.</b> Almost identical to pushing everything: the opening sets the mode and the model keeps it." },
+    prompt: { a: 1.0,  push: (i, pr) => pr, v: [3.31, 7.75, 4.50], d: 1, t: "<b>Prompt only, α 1.0.</b> No answer token is pushed, yet the answer turns philosophical: attention reads the pushed prompt." },
+    late40: { a: 0.75, push: (i, pr) => !pr && i >= 4, v: [2.00, 5.12, 4.69], d: 4, t: "<b>After token 40, α 0.75.</b> Less philosophy, lower coherence, 4 of 16 broken: the push clashes with the plain text already written." },
+    late80: { a: 1.0,  push: (i, pr) => !pr && i >= 8, v: [1.69, 3.62, 4.38], d: 13, t: "<b>After token 80, α 1.0.</b> The second half drifts into vague metaphysics and loops: 13 of 16 broken." },
+  };
+  const woven = [3.56, 8.56, 6.94];
+  const svg = document.getElementById("s12");
+  T(svg, 0, 34, "prompt", "lbl"); T(svg, 0, 104, "answer", "lbl");
+  const pr = [], an = [];
+  for (let i = 0; i < 6; i++) pr.push(E("rect", { x: 80 + i * 40, y: 16, width: 34, height: 26, rx: 4 }, svg));
+  for (let i = 0; i < 16; i++) an.push(E("rect", { x: 80 + i * 39, y: 86, width: 33, height: 26, rx: 4 }, svg));
+  [0, 40, 80, 120, 160].forEach(t => T(svg, 80 + (t / 10) * 39, 132, t, "sm", "middle"));
+  T(svg, 80, 160, "answer tokens →", "sm");
+  const lg = T(svg, 340, 34, "", "sm");
+  const bars = document.getElementById("s12-bars"), read = document.getElementById("s12-read");
+  const names = ["Philosophy", "Coherence", "Helpfulness"];
+  bars.innerHTML = names.map((n, k) => `<div class="wrow"><span>${n}</span><div class="tr"><i></i><u style="left:calc(${woven[k] / 9 * 100}% - 1px)" title="woven prompt: ${woven[k]}"></u></div><b></b></div>`).join("")
+    + `<div class="wrow"><span>Broken</span><div class="tr"><i style="background:var(--neg)"></i></div><b></b></div>`;
+  function show(k) {
+    const c = C[k];
+    pr.forEach((r, i) => r.setAttribute("class", c.push(i, true) ? "cpos" : "czero"));
+    an.forEach((r, i) => r.setAttribute("class", c.push(i, false) ? "cpos" : "czero"));
+    lg.textContent = `blue = pushed (α ${c.a})`;
+    const rows = bars.querySelectorAll(".wrow");
+    c.v.forEach((v, j) => { rows[j].querySelector("i").style.width = (v / 9 * 100) + "%"; rows[j].querySelector("b").textContent = v.toFixed(2); });
+    rows[3].querySelector("i").style.width = (c.d / 16 * 100) + "%"; rows[3].querySelector("b").textContent = c.d + "/16";
+    read.innerHTML = c.t;
+  }
+  const btns = [...document.querySelectorAll("#s12-btns button")];
+  btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(b.dataset.k); });
+  show("full");
 })();
 </script>
 </body>

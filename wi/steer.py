@@ -178,6 +178,37 @@ class Steerable:
             for h in hooks:
                 h.remove()
 
+    @contextlib.contextmanager
+    def steer_window(self, vectors: dict[int, torch.Tensor], start: int = 0, stop: int | None = None,
+                     prompt: bool = True):
+        """Like steer(vectors=...), but only during part of generation (use with generate(), KV cache on).
+        prompt: also steer the prompt (prefill) positions.
+        start/stop: steer the decode steps whose input token is generated token j with start <= j < stop
+        (j counts from 1; the prefill produces token 1, so start=1 steers every generated token)."""
+        state = {"j": 0}
+        hooks = []
+
+        def counter(_m, args, kwargs):
+            ids = kwargs.get("input_ids", args[0] if args else None)
+            emb = kwargs.get("inputs_embeds")
+            T = (ids if ids is not None else emb).shape[1]
+            state["j"] = 0 if T > 1 else state["j"] + 1
+
+        hooks.append(self.model.register_forward_pre_hook(counter, with_kwargs=True))
+        for L, v in vectors.items():
+            v = v.to(self.device, torch.bfloat16)
+
+            def hook(_m, _i, o, v=v):
+                j = state["j"]
+                on = prompt if j == 0 else (j >= start and (stop is None or j < stop))
+                return o + v if on else o
+            hooks.append(self.down[L].register_forward_hook(hook))
+        try:
+            yield
+        finally:
+            for h in hooks:
+                h.remove()
+
     @torch.no_grad()
     def generate(self, prompts: list[str], max_new_tokens: int = 120, temperature: float = 0.0, seed: int = 0) -> list[str]:
         self.tok.padding_side = "left"

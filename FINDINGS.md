@@ -12,7 +12,8 @@
 6. **Pushing less hard doesn't solve the helpfulness trade-off.** Philosophy only shows up when the on-direction push reaches about α 0.5, roughly 2× the natural L8 difference. Below that it nearly vanishes, and helpfulness comes back with it. At α 0.5, most of the helpfulness loss comes with the philosophical shift itself: diff-means has the smallest disturbance and still drops to 3.94. A better-aligned group (k=256) gives the highest philosophy score so far (3.12) and loses slightly less helpfulness than k=16, but the gain is within judge noise. The reason is the contrast data. The philosophical answers we steer toward *replace* the practical answer (judge: philosophy 5.75, helpfulness 2.31), so the direction itself means "reflect instead of answering".
 7. **Fixing the target data is not enough on its own.** New contrast answers that keep the full practical answer and add reflection are as helpful as the plain answers (helpfulness 8.6). But their direction is 84–92% the old one, and steering along it sits on the same philosophy-for-helpfulness line. A constant push at every token can't express "answer first, then reflect" (Results §7).
 8. **Asking beats steering.** A system prompt asking for an answer with brief philosophical reflections woven in scores philosophy 3.44, coherence 8.81 and helpfulness 7.06, better than any steering setting. Adding a light push (α 0.35) on top gives the highest philosophy so far (4.62), but helpfulness drops at the usual steering rate. A direction built from the model's own prompted answers breaks the model at the strengths we tried (Results §8).
-9. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
+9. **When we push matters less than expected.** Steering only the first 24 tokens or only the prompt gives the same result as steering everything: the start sets a mode that persists. A push that arrives mid-answer adds little philosophy and breaks coherence (Results §9).
+10. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
 
 ## Background
 
@@ -214,6 +215,31 @@ What this says:
 - **The self-generated direction is a poor steering vector.** It is only 0.43 aligned with the original direction at L8 (0.50 with appended), and its natural size is small (0.073·p50 at L8). So α 0.5 is about 7× the natural difference, and the outputs break: 8–16 of 16 are degenerate at every setting tried. Smaller α (0.1–0.25) was not tested.
 - **Judge noise, again.** The first 8 configs were judged twice, once alone and once in this pool. Coherent configs (baseline, answer-then-reflect prompt) moved by at most 0.13. Degenerate configs moved much more, by up to 1.0 in philosophy and 0.9 in coherence, because the judge scores broken text inconsistently.
 
+### 9. Steering only part of the answer (experiment C)
+
+Branch `exp-token-window` (`scripts/exp_token_window.py`, `runs/token_window/`). Experiment A suggested that a constant push can't express "answer first, then reflect". Here the original L8 direction is applied only during part of the generation, using `Steerable.steer_window`:
+- **late N**: generated tokens N and later only.
+- **early N**: the prompt plus the first N generated tokens.
+- **prompt-only**: the prompt tokens only. The push then reaches the answer only through attention to the prompt.
+
+A full window reproduces `steer()` exactly (checked in the script). Answers are 160 tokens long so a late window has room. The baseline, full steering and the woven prompt from experiment B were regenerated at that length in the same blind pool.
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.94 | 0/16 |
+| Full steering α=0.5 | 3.75 | 7.50 | 4.44 | 0/16 |
+| Late 40 α=0.5 / 0.75 / 1.0 | 0.69 / 2.00 / 2.38 | 7.81 / 5.12 / 3.00 | 7.31 / 4.69 / 2.81 | 1 / 4 / 13 of 16 |
+| Late 80 α=0.75 / 1.0 | 1.00 / 1.69 | 6.81 / 3.62 | 6.75 / 4.38 | 0 / 13 of 16 |
+| Late 40, appended direction α=0.75 | 2.00 | 5.75 | 5.12 | 3/16 |
+| Early 24 α=0.75 | 3.69 | 7.56 | 3.88 | 0/16 |
+| Prompt-only α=1.0 / 1.5 | 3.31 / 3.12 | 7.75 / 5.69 | 4.50 / 1.50 | 1 / 5 of 16 |
+| Prompt woven (no push) | 3.56 | 8.56 | 6.94 | 0/16 |
+
+What this says:
+- **A late push doesn't add a reflection; it breaks the answer.** Pushes that start mid-answer give less philosophy for the same helpfulness lost, and many more broken outputs (13/16 at α 1.0). The steered tokens clash with the unsteered text the model has already written. Instead of closing with a reflection, the answer drifts into vague metaphysics ("to grasp the nature of being, one must see that everything is always already known to be otherwise").
+- **The start decides the mode.** Steering only the first 24 tokens, or only the prompt, gives about the same result as steering every token: philosophy 3.3–3.7, helpfulness about 4. Once the answer starts in a reflective register it stays there, and when only the prompt is pushed, attention carries the effect into the whole answer.
+- **So the trade-off is not about *when* we push.** Windowing moves the same trade-off around, or makes it worse; it never reaches the prompt's balance. The woven prompt is still best (philosophy 3.56, helpfulness 6.94), and full steering looks better at 160 tokens (3.75) than at 120 (2.8–3.0) only because the answer is longer.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -252,5 +278,6 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/claude_judge.py --input natural_ceiling.jsonl --output claude_judge_natural.jsonl
 .venv/bin/python scripts/exp_answer_reflect.py && .venv/bin/python scripts/claude_judge.py --input answer_reflect/gen.jsonl --output answer_reflect/judge.jsonl
 .venv/bin/python scripts/exp_selfgen.py && .venv/bin/python scripts/claude_judge.py --input selfgen/gen.jsonl --output selfgen/judge.jsonl
+.venv/bin/python scripts/exp_token_window.py && .venv/bin/python scripts/claude_judge.py --input token_window/gen.jsonl --output token_window/judge.jsonl
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
