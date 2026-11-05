@@ -24,6 +24,7 @@
 18. **Steering the prompt's hot spots doesn't help.** Adding the prompt's average effect at the three key heads, or at attention L11/L15 or DeltaNet L16–18, does almost nothing: what those sites carry depends on the token, and the average cancels out. Summing the average over all 32 mixers works, but it lands on the same trade-off as ordinary steering (Results §17).
 19. **The prompt-free philosophy Qwen is a single rank-1 weight edit.** Baking the rank-1 LoRA into layer 8's `down_proj` (no bias, no hooks) scores the same as the adapter (2.62 / 8.44 / 6.75). Hand-built rank-1 edits failed because they read from a few neurons that don't fire on practical prompts. The trained edit reads a dense mix of all 9,216 neurons that fires at the start of every answer (Results §18).
 20. **The trained update's direction is a much better steering vector.** A constant push along the LoRA's write direction B (cosine 0.13 with diff-means) beats diff-means at every strength: philosophy 3.94 / helpfulness 5.12 at 0.6·p50, and 5.12 philosophy at 0.8·p50 with no broken outputs. Amplifying the LoRA itself (×1.5–2) gives philosophy 3.4 at helpfulness about 6, past the woven prompt's balance. At its own size, the LoRA needs both its gate and its direction (Results §19).
+21. **Preference training (DPO) on judged pairs nudged a student up on both scores at once** (16 prompts: philosophy 2.19 → 2.50, helpfulness 7.75 → 7.94; ×1.5 gain: 3.00 / 7.12). This is the first intervention to improve both scores, but the gain is about the size of the judge's noise (Results §20; checked on 48 prompts in §21).
 
 ## Background
 
@@ -510,6 +511,25 @@ What this says:
 - **Why diff-means was a poor direction.** Diff-means measures how philosophical *texts* differ from plain ones, which mixes in "replace the answer" (§6, §14). B was trained to make *this model's answers* look like its own prompted answers, which only needs what the model reads as "write reflectively". A direction learned from outcomes beats one averaged from data.
 - Caveat: one pool of 16 prompts. The new candidates are checked on 48 unseen prompts in §21.
 
+### 20. Preference training on judged pairs (experiment M)
+
+Branch `exp-dpo` (`scripts/exp_dpo.py`, `runs/dpo/`). Experiment J found that imitation copies the teacher's *average*: training on the best of 4 answers didn't help. Direct Preference Optimization (DPO; Rafailov et al., 2023) trains on *pairs* instead. It raises the probability of the preferred answer relative to the rejected one, compared with a frozen reference, so it learns what separates better answers from worse ones.
+- **Pairs**: from experiment J's 512 judged samples (4 per training question, reflect-first prompt). Every ordered pair for the same question where the chosen answer is non-degenerate, at least as good on philosophy *and* helpfulness, and better by ≥ 2 in the sum: 175 pairs over 68 questions.
+- **Policy**: J's rank-8 MLP best-of-4 student, LoRA trainable. **Reference**: the same student, frozen. The context is the question with no system prompt. β = 0.1, lr 5e-5, 2 epochs, 4 pairs per update.
+- Training reward accuracy (share of pairs where the policy prefers the chosen answer more than the reference does) rose to 1.00 in the second epoch, so the policy fits the 175 pairs completely.
+
+| Config (one pool, 16 prompts) | Philo | Coherence | Helpful | Degenerate | Philo + help |
+|---|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 9.00 | 0/16 | 9.00 |
+| Prompt woven | 3.12 | 8.06 | 6.75 | 0/16 | 9.87 |
+| Starting student (J, best-of-4, rank 8 MLP) | 2.19 | 8.12 | 7.75 | 0/16 | 9.94 |
+| DPO student | 2.50 | 8.38 | 7.94 | 0/16 | 10.44 |
+| DPO student, LoRA ×1.5 | 3.00 | 8.00 | 7.12 | 0/16 | 10.12 |
+
+What this says:
+- **DPO moved the student up on both scores at once** (+0.31 philosophy, +0.19 helpfulness), the first intervention to improve both. At ×1.5 it nearly matches the woven prompt's philosophy (3.00 vs 3.12) with 0.4 more helpfulness. The answers now open with one reflective sentence and then give the practical content ("The true purpose of technology is not merely to manipulate matter, but … A refrigerator operates on the fundamental thermodynamic …").
+- **But the evidence is thin.** The gains are about the size of the judge's noise on 16 prompts. The starting student also scored higher in this pool than in J's (2.19 / 7.75 vs 1.69 / 7.56), and the policy fitted its 175 pairs completely. The 48-prompt check (§21) is the real test.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
@@ -531,7 +551,7 @@ What this says:
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
-   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. Open: DPO on judged pairs, many more samples per question, or a stronger teacher model.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. Open: many more samples per question, or a stronger teacher model.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -566,6 +586,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/bake_lora.py                            # merge the rank-1 LoRA into W_down at L8 (add --out DIR to save the model)
 .venv/bin/python scripts/exp_gate.py && .venv/bin/python scripts/claude_judge.py --input gate/gen.jsonl --output gate/judge.jsonl
 .venv/bin/python scripts/exp_gate.py --round 2 && .venv/bin/python scripts/claude_judge.py --input gate/gen_round2.jsonl --output gate/judge_round2.jsonl
+.venv/bin/python scripts/exp_dpo.py && .venv/bin/python scripts/claude_judge.py --input dpo/gen.jsonl --output dpo/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
