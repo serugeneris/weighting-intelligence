@@ -127,6 +127,34 @@ class Steerable:
                 h.remove()
         return out
 
+    @torch.no_grad()
+    def capture(self, text: str, start_char: int, resid_layers: list[int], act_layers: list[int]
+                ) -> tuple[dict[int, torch.Tensor], dict[int, torch.Tensor]]:
+        """One forward pass: mean residual (layer output) and mean MLP neuron activation over tokens
+        at/after start_char. Respects any active steer() hooks."""
+        enc = self.tok(text, return_tensors="pt", return_offsets_mapping=True)
+        offs = enc.pop("offset_mapping")[0]
+        mask = (offs[:, 0] >= start_char).to(self.device)
+        enc = enc.to(self.device)
+        res: dict[int, torch.Tensor] = {}
+        act: dict[int, torch.Tensor] = {}
+        hooks = []
+        for i in resid_layers:
+            def hook(_m, _inp, o, i=i):
+                h = (o[0] if isinstance(o, tuple) else o)[0].float()
+                res[i] = h[mask].mean(0).cpu()
+            hooks.append(self.layers[i].register_forward_hook(hook))
+        for i in act_layers:
+            def pre(_m, inp, i=i):
+                act[i] = inp[0][0].float()[mask].mean(0).cpu()
+            hooks.append(self.down[i].register_forward_pre_hook(pre))
+        try:
+            self.model(**enc)
+        finally:
+            for h in hooks:
+                h.remove()
+        return res, act
+
     # ---------- steering ----------
     def neuron_vector(self, p: Push) -> torch.Tensor:
         col = self.down[p.layer].weight[:, p.neuron].float()

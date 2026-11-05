@@ -26,6 +26,9 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/sweep.py`, `scripts/analyze.py` | Screening sweeps and their analysis |
 | `scripts/neuron_search.py` | Write-side search: cosine with `W_down` columns, matching-pursuit groups |
 | `scripts/validate_generate.py`, `scripts/claude_judge.py` | Held-out validation with matched random controls and a blind Claude judge |
+| `scripts/pathway_check.py` | Downstream pathway check: do L8 pushes recreate the natural philosophical changes in later layers? |
+| `scripts/dose_sweep.py` | Smaller pushes and larger neuron groups: disturbance, then generation for the blind judge |
+| `scripts/natural_ceiling.py` | Helpfulness ceiling: judge the natural contrast-pair answers alongside steered anchors |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |
 | `data/` | Contrast pairs and evaluation prompts |
 | `docs/explainer.html` | The interactive explainer, served by GitHub Pages |
