@@ -223,6 +223,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c17">17 · Push geometry</a>
       <a href="#c18">18 · A better teacher?</a>
       <a href="#c19">19 · New prompts, two judges</a>
+      <a href="#c20">20 · Steering the hot spots</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -720,6 +721,25 @@ section.wide { grid-template-columns: 1fr; }
           <tbody id="s19-table"></tbody>
         </table>
       </details>
+    </div>
+  </section>
+
+  <!-- 20 -->
+  <section class="chapter" id="c20">
+    <div>
+      <div class="num">Chapter 20 · experiment K</div>
+      <h2>Steering where the prompt flows</h2>
+      <p><strong>Why we tried it.</strong> Chapter 16 found the prompt's hot spots: three attention heads in layers 11 and 15, and the DeltaNet layers right after them. Papers on steering personas report that pushing a few heads costs less than pushing the whole hidden state. So we measured what the prompt adds at each hot spot, on average, and added that average there with no prompt.</p>
+      <p><strong>What happened.</strong> At the hot spots, almost nothing happens, even at 4–8× the measured size (bars). Each head's contribution depends on the token: sometimes it adds one thing, sometimes the opposite. So the average is tiny and carries little of the prompt's effect. Only adding the average at <em>all</em> 32 token-mixing layers, doubled, made the answers philosophical, and it lands on roughly the same trade-off line as ordinary steering (chart).</p>
+      <p><strong>What it means.</strong> Knowing <em>where</em> the prompt's information flows doesn't give you a vector to inject, because what flows there depends on the token. That's exactly what a constant push can't copy and what the trained update of chapter 13 can. Source: FINDINGS.md § 17, <code>runs/heads/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Best philosophy at each hot spot (round 1)</h3>
+      <div id="s20-bars"></div>
+      <p class="note">Philosophy (0–9) at the strongest setting tried for each site, 16 prompts. Helpfulness stayed between 8.0 and 8.9 at every hot spot.</p>
+      <svg id="s20" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: the prompt's average effect added at all 32 token mixers follows the same trade-off as ordinary steering at higher strengths"></svg>
+      <div class="legend"><span><i style="background:var(--s3)"></i>prompt's average, all 32 mixers</span><span><i style="background:var(--accent)"></i>usual push, layer 8</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt, no push</span></div>
+      <p class="note">Round 2: all points judged blind in one pool, 16 prompts. Hover a dot for its scores.</p>
     </div>
   </section>
 
@@ -1830,6 +1850,22 @@ function fillTable(id, rows) {
   });
   fillTable("s19-table", [["Baseline", "0.06 / 0.02", "8.69 / 8.23", 8.92],
     ...all.map(r => [r[0], `${r[2].toFixed(2)} / ${r[5].toFixed(2)}`, `${r[1].toFixed(2)} / ${r[4].toFixed(2)}`, r[3]])]);
+})();
+
+/* ---------- 20: hot-spot steering (real data: runs/heads/judge.jsonl, runs/heads/judge_round2.jsonl) ---------- */
+(function () {
+  const rows = [["Top-3 heads ×8", 0.50], ["Attention L11+15 ×4", 0.06], ["DeltaNet L16–18 ×4", 0.69], ["All 32 mixers ×2", 2.25]];
+  document.getElementById("s20-bars").innerHTML = rows.map(([l, v]) =>
+    `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 3 * 100}%;background:var(--s3)"></i></div><b>${v.toFixed(2)}</b></div>`).join("");
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s20"), {
+    base: [8.94, 0.00, 9.00],
+    series: [
+      { name: "prompt's average, all mixers", c: "s3", pts: [P(7.94, 1.12, "×1.5", 8.56, 0), P(6.00, 2.50, "×2", 7.50, 0), P(4.25, 3.06, "×2.5", 6.19, 0), P(2.88, 3.94, "×3", 5.31, 1)] },
+      { name: "usual push, L8 α 0.5", c: "acc", noTags: true, lab: [0, 24, "middle"], pts: [P(4.88, 2.88, "", 7.31, 0)] },
+      { name: "woven prompt", c: "pos", noTags: true, lab: [12, -10, "start"], pts: [P(6.50, 2.69, "", 8.25, 0)] },
+    ],
+  });
 })();
 </script>
 </body>

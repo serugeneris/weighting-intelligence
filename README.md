@@ -39,6 +39,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_geometry.py` | Experiment H: norm-preserving pushes and directions with the "drop the answer" component projected out |
 | `scripts/exp_teacher.py` | Experiment J: distil a better teacher (prompt search on training questions, judge-picked best-of-4 answers) |
 | `scripts/exp_confirm.py` | Experiment I: the main candidates on 48 unseen prompts, judged by Claude Sonnet and Claude Opus |
+| `scripts/exp_heads.py` | Experiment K: prompt-derived mean vectors added at the hot spots from experiment G (heads, attention and DeltaNet layers, all mixers) |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |

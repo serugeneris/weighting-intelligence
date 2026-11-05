@@ -21,6 +21,7 @@
 15. **Changing the push's geometry doesn't help.** Keeping the residual's length (norm-preserving rotation, or +10%) scores the same as a plain push. Projecting the "drop the answer" component out of the direction leaves no philosophy at all: in mean-difference data, "be philosophical" and "stop answering" are the same direction (Results §14).
 16. **A better teacher doesn't make a better student here.** A prompt search and best-of-4 selection (judge-picked answers) gave students that copy their teacher's average balance, not its best answers. All prompts and students share one frontier (philosophy + helpfulness ≈ 9.1–9.4), about twice as efficient as steering. The choice of teacher only moves the student along it (Results §15).
 17. **Confirmed on 48 unseen prompts with two judges.** Students match their prompts, and at equal philosophy the rank-1 LoRA keeps about 1.7 more helpfulness points than steering (about 5 standard errors) under both Claude Sonnet and Claude Opus. The two judges agree per item (r 0.85–0.90); Opus is about 0.7 stricter on helpfulness (Results §16).
+18. **Steering the prompt's hot spots doesn't help.** Adding the prompt's average effect at the three key heads, or at attention L11/L15 or DeltaNet L16–18, does almost nothing: what those sites carry depends on the token, and the average cancels out. Summing the average over all 32 mixers works, but it lands on the same trade-off as ordinary steering (Results §17).
 
 ## Background
 
@@ -431,6 +432,34 @@ What this says:
 - **The most philosophical usable option is still prompt + push** (3.46), at a steering-sized helpfulness cost (4.02). Nothing tested escapes the trade-off; the prompt and its students are the best frontier found.
 - **The second judge is harsher on helpfulness for reflective answers.** That widens the gap between the reflective configs and the baseline, but it doesn't reorder anything.
 
+### 17. Steering at the prompt's hot spots (experiment K)
+
+Branch `exp-heads` (`scripts/exp_heads.py`, `runs/heads/`). Experiment G found where the woven prompt's effect travels: three attention heads (L15.8, L15.2, L11.0) carry 38% of it, attention layers 11 and 15 the most of any layer, and DeltaNet layers 16–18 right after them. The head-steering literature (LITERATURE.md H3) reports that steering a few heads beats residual steering on the trait-vs-coherence trade-off. So we built steering vectors from the prompt itself, at those sites. For the 32 contrast questions, the prompted model's woven answer is fed after the prompted and after the unprompted context. At each site we take the mean (prompted − unprompted) output over the answer tokens: per head, its 256-number slice of `o_proj`'s input; per layer, the token mixer's output. During generation with no prompt we add g × that mean at every position.
+
+The means are small. The top heads write 0.016–0.029·p50 into the residual, and the mixers at L11–L18 write 0.04–0.06·p50.
+
+| Config (round 1) | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.75 | 0/16 |
+| Top-3 heads ×1 / ×2 / ×4 / ×8 | 0.00 / 0.12 / 0.06 / 0.50 | 9.00 / 9.00 / 9.00 / 8.69 | 8.75 / 8.44 / 8.94 / 8.00 | 0/16 |
+| Attention L11 + L15, all heads ×1 / ×2 / ×4 | 0.06 / 0.06 / 0.06 | 9.00 | 8.88 / 8.62 / 8.75 | 0/16 |
+| DeltaNet L16–18 ×1 / ×2 / ×4 | 0.06 / 0.06 / 0.69 | 9.00 / 8.94 / 8.62 | 8.81 / 8.69 / 8.12 | 0/16 |
+| All 32 token mixers ×0.5 / ×1 / ×2 | 0.06 / 0.25 / 2.25 | 9.00 / 8.81 / 7.25 | 8.62 / 8.38 / 6.06 | 0 / 0 / 1 of 16 |
+
+Only the all-mixer setting responded, so a second pool mapped it next to the woven prompt and the usual L8 push:
+
+| Config (round 2) | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.94 | 0/16 |
+| Prompt woven | 2.69 | 8.25 | 6.50 | 0/16 |
+| Diff-means L8 α 0.5 | 2.88 | 7.31 | 4.88 | 0/16 |
+| All 32 token mixers ×1.5 / ×2 / ×2.5 / ×3 | 1.12 / 2.50 / 3.06 / 3.94 | 8.56 / 7.50 / 6.19 / 5.31 | 7.94 / 6.00 / 4.25 / 2.88 | 0 / 0 / 0 / 1 of 16 |
+
+What this says:
+- **A hot spot for the prompt is not a good place for a constant push.** The prompt's effect at the top heads is large in mediation (§13) but tiny on average: what the head adds depends on the token, and the mean cancels out. Adding that mean, even ×8, barely moves the answer. Mediation finds where the information flows, not a vector to inject.
+- **Spreading the prompt's mean effect over all 32 mixers works, but not better than steering.** At ×2 it reaches 2.50 / 6.00, the same in both pools, and sits about 0.6 helpfulness points above the diff-means line at equal philosophy. That is within judge noise on 16 prompts. At ×2.5–3 it falls back onto the same line (3.06 / 4.25, 3.94 / 2.88). Like experiment E, a constant push spread over many layers stays on the steering trade-off.
+- **H3 for steering: not supported.** Head-level steering at the sites that matter most for the prompt does not beat the residual push in this model, at least with mean (prompt-derived) vectors. The token-dependent route (the LoRA of §10) remains the only prompt-free intervention that reaches the prompt's frontier.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
@@ -482,6 +511,8 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_teacher.py --stage train && .venv/bin/python scripts/claude_judge.py --input teacher/gen.jsonl --output teacher/judge.jsonl
 .venv/bin/python scripts/exp_confirm.py --teacher-loras down8-r1:down8-r1_prompt.pt mlp-r8:mlp-r8_best-of-4.pt
 .venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input confirm/gen.jsonl --output confirm/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_heads.py && .venv/bin/python scripts/claude_judge.py --input heads/gen.jsonl --output heads/judge.jsonl
+.venv/bin/python scripts/exp_heads.py --round 2 && .venv/bin/python scripts/claude_judge.py --input heads/gen_round2.jsonl --output heads/judge_round2.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
