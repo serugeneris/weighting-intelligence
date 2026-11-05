@@ -35,6 +35,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_distill.py`, `scripts/distill_probe.py` | Experiment D: distil the woven prompt into LoRA weights (MLP, token mixers, rank-1 at L8); probe the rank-1 push |
 | `scripts/exp_multilayer.py` | Experiment E: push spread over several layers, the natural layer-by-layer path, and a single-layer sweep L4–L24 |
 | `scripts/exp_prompt_transplant.py` | Experiment F: paste the prompted model's state at the last prompt positions into an unprompted run; a mean "prompt vector" |
+| `scripts/exp_routes.py` | Experiment G: attention vs DeltaNet. Mediation of the system prompt by layer and head; routes of prompt-only steering through the cache |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
 | `scripts/astra_edit.py` | Astra-style masked rank-1 `down_proj` edits |

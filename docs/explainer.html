@@ -219,6 +219,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c13">13 · Into the weights</a>
       <a href="#c14">14 · Which layers</a>
       <a href="#c15">15 · Where the prompt acts</a>
+      <a href="#c16">16 · Attention or DeltaNet?</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -526,7 +527,7 @@ section.wide { grid-template-columns: 1fr; }
       <p><strong>Why we tried it.</strong> Chapter 10 ended with a puzzle: the target answers help first and reflect after, but a constant push nudges every token from the first word. So what if we push only part of the answer? Push late, and maybe the model answers first and then reflects. Push early, and maybe it opens reflectively and then gets down to business.</p>
       <p>The same layer-8 direction is switched on only during a window of the generation. Pick a window to see which tokens get the push and how the 16 answers scored. The black tick on each bar is the woven prompt from chapter 11, which uses no push.</p>
       <p><strong>What happened.</strong> Pushing late doesn't add a closing reflection. It breaks the answer: the steered tokens clash with the plain text already written, and the answer slides into vague metaphysics, sometimes looping (up to 13 of 16 broken).</p>
-      <p>Pushing only the start, or even only the prompt, works about as well as pushing everything. The beginning sets a "mode" that the model keeps, and when only the prompt is pushed, attention carries it into the whole answer.</p>
+      <p>Pushing only the start, or even only the prompt, works about as well as pushing everything. The beginning sets a "mode" that the model keeps, and when only the prompt is pushed, the layers that pass information between tokens carry it into the whole answer. (Chapter 16 shows which ones: mostly the DeltaNet state, not attention.)</p>
       <p><strong>What it means.</strong> The trade-off doesn't come from <em>when</em> we push. A single direction sets one mode for the whole answer, and the woven prompt still gets a better balance. Source: FINDINGS.md § 9, <code>runs/token_window/</code>.</p>
     </div>
     <div class="fig">
@@ -624,6 +625,27 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 16 -->
+  <section class="chapter" id="c16">
+    <div>
+      <div class="num">Chapter 16 · experiment G</div>
+      <h2>Attention or DeltaNet: which route carries the mode?</h2>
+      <p><strong>Why we tried it.</strong> Philosophy relates ideas to each other, and in a transformer the part that relates tokens is <em>attention</em>. So maybe attention is the lever. But Qwen3.5-4B is a hybrid. Only 8 of its 32 layers use full attention, where each token looks back at every earlier token. The other 24 use <em>Gated DeltaNet</em>, which keeps a running memory (a "state") that each token updates and reads, instead of looking back at each token. Both pass information between tokens, so we tested which one carries the philosophical mode.</p>
+      <p><strong>Test 1: follow the prompt.</strong> With the woven prompt, the model prefers philosophical answers by about 1 nat per token. In the prompted run we undo one layer's token-mixing, setting its output to what it would be without the prompt, and measure how much of that preference disappears. The bars show the result per layer.</p>
+      <p><strong>Test 2: follow the push.</strong> We pushed only the prompt (as in chapter 12), then let the answer see only part of the pushed prompt's memory: just the attention cache, just the DeltaNet state, or both.</p>
+      <p><strong>What happened.</strong> Per layer, attention matters about twice as much as DeltaNet, and three attention heads in layers 11 and 15 carry 38% on their own, so the attention idea is partly right. But undoing <em>all</em> DeltaNet layers removes even more (93%) than undoing all attention layers (83%): the two work in series, handing information to each other. And the steering push travels almost entirely through the DeltaNet state. The attention cache alone carries nothing.</p>
+      <p><strong>What it means.</strong> Attention has hot spots worth targeting (layers 11 and 15), but in this hybrid model the DeltaNet memory is at least as important. The attention-centred papers studied models that don't have it. Source: FINDINGS.md § 13, <code>runs/routes/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s16" viewBox="0 0 720 250" role="img" aria-label="Share of the system prompt's effect removed by undoing each layer's token mixing; full-attention layers 11 and 15 and DeltaNet layers 16 to 18 stand out"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>full-attention layer</span><span><i style="background:var(--s3)"></i>DeltaNet layer</span></div>
+      <p class="note">Mean over 16 questions. Shares don't add up, because the layers feed each other. Undoing all 8 attention layers together removes 83%, and all 24 DeltaNet layers 93%. Hover a bar for its value.</p>
+      <h3>Which memory carries a push on the prompt?</h3>
+      <div id="s16-route"></div>
+      <p class="note">Prompt pushed at layer 8 (α 1.5). The answer is generated with no push from a cache that mixes the pushed and plain prompt. Philosophy (0–9) from the blind judge, 16 prompts.</p>
+    </div>
+  </section>
+
   <!-- glossary -->
   <section class="chapter wide" id="terms">
     <div>
@@ -643,6 +665,8 @@ section.wide { grid-template-columns: 1fr; }
         <dt>÷cos² rescale</dt><dd>Corrects the OMP undershoot, so the push along the direction equals α.</dd>
         <dt>LoRA</dt><dd>A trainable low-rank correction <code>B·A</code> added to a frozen weight matrix. Rank 1 means one read vector A and one write vector B.</dd>
         <dt>Context distillation</dt><dd>Training a model to behave, without a prompt, the way it behaves with one, using its own prompted answers as targets.</dd>
+        <dt>Gated DeltaNet</dt><dd>The token-mixing layer used in 24 of Qwen3.5-4B's 32 layers. Instead of attending to every earlier token, it keeps a running memory (state) that each token updates and reads.</dd>
+        <dt>Mediation (activation patching)</dt><dd>Undo one part of the model's computation, by setting it to its value in another run, and measure how much of an effect disappears.</dd>
         <dt>Matched random control</dt><dd>Random neurons in the same layer, the same number of them, the same |doses| with random signs. It separates "these neurons" from "any push".</dd>
         <dt>Outer product u·vᵀ</dt><dd>Column times row; a rank-1 matrix whose every column is a multiple of u.</dd>
         <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
@@ -1474,7 +1498,7 @@ function fillTable(id, rows) {
   const C = {
     full:   { a: 0.5,  push: (i, pr) => true, v: [3.75, 7.50, 4.44], d: 0, t: "<b>Every token, α 0.5.</b> The usual steering: philosophical from the first word, helpfulness about half." },
     early:  { a: 0.75, push: (i, pr) => pr || i < 3, v: [3.69, 7.56, 3.88], d: 0, t: "<b>Prompt + first 24 tokens, α 0.75.</b> Almost identical to pushing everything: the opening sets the mode and the model keeps it." },
-    prompt: { a: 1.0,  push: (i, pr) => pr, v: [3.31, 7.75, 4.50], d: 1, t: "<b>Prompt only, α 1.0.</b> No answer token is pushed, yet the answer turns philosophical: attention reads the pushed prompt." },
+    prompt: { a: 1.0,  push: (i, pr) => pr, v: [3.31, 7.75, 4.50], d: 1, t: "<b>Prompt only, α 1.0.</b> No answer token is pushed, yet the answer turns philosophical: the model carries the pushed prompt forward (chapter 16 shows how)." },
     late40: { a: 0.75, push: (i, pr) => !pr && i >= 4, v: [2.00, 5.12, 4.69], d: 4, t: "<b>After token 40, α 0.75.</b> Less philosophy, lower coherence, 4 of 16 broken: the push clashes with the plain text already written." },
     late80: { a: 1.0,  push: (i, pr) => !pr && i >= 8, v: [1.69, 3.62, 4.38], d: 13, t: "<b>After token 80, α 1.0.</b> The second half drifts into vague metaphysics and loops: 13 of 16 broken." },
   };
@@ -1610,6 +1634,29 @@ function fillTable(id, rows) {
   const btns = [...document.querySelectorAll("#s15-btns button")];
   btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(b.dataset.k); });
   show("9");
+})();
+
+/* ---------- 16: routes (real data: runs/routes/mediation.json, runs/routes/judge.jsonl) ---------- */
+(function () {
+  const share = [0.015, 0.026, 0.027, 0.112, 0.029, 0.018, 0.043, 0.195, 0.014, 0.017, 0.015, 0.317, 0.06, 0.031, 0.041, 0.245, 0.195, 0.148, 0.288, 0.092, 0.109, 0.114, 0.076, 0.011, 0.077, 0.042, 0.035, 0.012, 0.037, 0.023, 0.051, -0.011];
+  const full = [3, 7, 11, 15, 19, 23, 27, 31];
+  const svg = document.getElementById("s16");
+  const X0 = 50, W = 20, Y0 = 20, Y1 = 200, y = v => Y1 - Math.max(v, 0) / 0.35 * (Y1 - Y0);
+  [0, 0.1, 0.2, 0.3].forEach(v => { E("line", { x1: X0 - 6, x2: X0 + 32 * W, y1: y(v), y2: y(v), class: "grid" }, svg); T(svg, X0 - 10, y(v) + 4, Math.round(v * 100) + "%", "sm", "end"); });
+  share.forEach((v, L) => {
+    const isF = full.includes(L);
+    const r = E("rect", { x: X0 + L * W + 2, y: y(v), width: W - 4, height: Math.max(Y1 - y(v), 1), rx: 3, class: isF ? "cpos" : "dot-s3" }, svg);
+    r.addEventListener("mousemove", e => showTip(e, `<b>Layer ${L}</b> (${isF ? "full attention" : "DeltaNet"})<br>Removes ${(v * 100).toFixed(0)}% of the prompt's effect`));
+    r.addEventListener("mouseleave", hideTip);
+    if (L % 4 === 0 || L === 31) T(svg, X0 + L * W + W / 2, Y1 + 16, L, "sm", "middle");
+  });
+  T(svg, X0 + 11 * W + W / 2, y(share[11]) - 6, "L11", "sm", "middle");
+  T(svg, X0 + 15 * W + W / 2, y(share[15]) - 6, "L15", "sm", "middle");
+  T(svg, X0 + 18 * W + W / 2, y(share[18]) - 6, "L18", "sm", "middle");
+  T(svg, X0 + 16 * W, Y1 + 38, "layer →", "lbl", "middle");
+  const rows = [["Nothing (baseline)", 0.00, "help 9.00"], ["Attention cache only", 0.00, "help 8.88"], ["DeltaNet state only", 1.19, "help 6.94"], ["Both", 2.88, "help 3.12"]];
+  document.getElementById("s16-route").innerHTML = rows.map(([l, v, h]) =>
+    `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 4 * 100}%;background:var(--pos)"></i></div><b>${v.toFixed(2)}</b></div>`).join("");
 })();
 </script>
 </body>
