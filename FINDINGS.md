@@ -23,8 +23,9 @@
 17. **Confirmed on 48 unseen prompts with two judges.** Students match their prompts, and at equal philosophy the rank-1 LoRA keeps about 1.7 more helpfulness points than steering (about 5 standard errors) under both Claude Sonnet and Claude Opus. The two judges agree per item (r 0.85–0.90); Opus is about 0.7 stricter on helpfulness (Results §16).
 18. **Steering the prompt's hot spots doesn't help.** Adding the prompt's average effect at the three key heads, or at attention L11/L15 or DeltaNet L16–18, does almost nothing: what those sites carry depends on the token, and the average cancels out. Summing the average over all 32 mixers works, but it lands on the same trade-off as ordinary steering (Results §17).
 19. **The prompt-free philosophy Qwen is a single rank-1 weight edit.** Baking the rank-1 LoRA into layer 8's `down_proj` (no bias, no hooks) scores the same as the adapter (2.62 / 8.44 / 6.75). Hand-built rank-1 edits failed because they read from a few neurons that don't fire on practical prompts. The trained edit reads a dense mix of all 9,216 neurons that fires at the start of every answer (Results §18).
-20. **The trained update's direction is a much better steering vector.** A constant push along the LoRA's write direction B (cosine 0.13 with diff-means) beats diff-means at every strength: philosophy 3.94 / helpfulness 5.12 at 0.6·p50, and 5.12 philosophy at 0.8·p50 with no broken outputs. Amplifying the LoRA itself (×1.5–2) gives philosophy 3.4 at helpfulness about 6, past the woven prompt's balance. At its own size, the LoRA needs both its gate and its direction (Results §19).
+20. **The trained update's direction is a much better steering vector.** A constant push along the LoRA's write direction B (cosine 0.13 with diff-means) beats diff-means at every strength: philosophy 3.94 / helpfulness 5.12 at 0.6·p50, and 5.12 philosophy at 0.8·p50 with no broken outputs. Amplifying the LoRA itself (×1.5–2) gives philosophy 3.4 at helpfulness about 6 (on 48 new prompts this lands on, not past, the prompt's frontier; TL;DR 22). At its own size, the LoRA needs both its gate and its direction (Results §19).
 21. **Preference training (DPO) on judged pairs nudged a student up on both scores at once** (16 prompts: philosophy 2.19 → 2.50, helpfulness 7.75 → 7.94; ×1.5 gain: 3.00 / 7.12). This is the first intervention to improve both scores, but the gain is about the size of the judge's noise (Results §20; checked on 48 prompts in §21).
+22. **Confirmed on 48 unseen prompts, greedy and sampled.** The learned direction B beats diff-means by +2.06 in philosophy + helpfulness (paired, about 7 standard errors). The amplified rank-1 LoRA moves *along* the prompt's frontier (×2: philosophy 3.5, helpfulness 5.6), not past it. Only the DPO student shows evidence of beating the frontier: at ×1.5 it matches the woven prompt's philosophy with +0.44 ± 0.22 helpfulness, which is suggestive rather than settled (Results §21).
 
 ## Background
 
@@ -509,7 +510,7 @@ What this says:
 - **But the learned direction B is the bigger discovery.** A *constant* push along B, the ordinary steering recipe with only the direction swapped, beats diff-means at every strength. At 0.6·p50 it gives philosophy 3.94 with coherence 7.81, helpfulness 5.12 and no broken outputs, against diff-means α 0.5 at 2.94 / 6.94 / 4.06. At 0.8·p50 it reaches 5.12, the highest philosophy without broken outputs in the project. Its philosophy + helpfulness (8.4–9.1) sits on or near the prompt's frontier (§15), which no diff-means push reached.
 - **Amplifying the LoRA goes past the prompt's point.** ×1.5 and ×2 raise philosophy to 3.4 and keep coherence above 8 and helpfulness near 6 (philosophy + helpfulness 9.2–9.4). In this pool that beats the woven prompt's own balance (2.69 / 6.50 in the §17 pool), so the student can be pushed beyond its teacher by turning up its gain.
 - **Why diff-means was a poor direction.** Diff-means measures how philosophical *texts* differ from plain ones, which mixes in "replace the answer" (§6, §14). B was trained to make *this model's answers* look like its own prompted answers, which only needs what the model reads as "write reflectively". A direction learned from outcomes beats one averaged from data.
-- Caveat: one pool of 16 prompts. The new candidates are checked on 48 unseen prompts in §21.
+- Caveat: one pool of 16 prompts. On 48 unseen prompts (§21), B is confirmed, but the amplified LoRA sits on the prompt's frontier rather than past it.
 
 ### 20. Preference training on judged pairs (experiment M)
 
@@ -530,9 +531,51 @@ What this says:
 - **DPO moved the student up on both scores at once** (+0.31 philosophy, +0.19 helpfulness), the first intervention to improve both. At ×1.5 it nearly matches the woven prompt's philosophy (3.00 vs 3.12) with 0.4 more helpfulness. The answers now open with one reflective sentence and then give the practical content ("The true purpose of technology is not merely to manipulate matter, but … A refrigerator operates on the fundamental thermodynamic …").
 - **But the evidence is thin.** The gains are about the size of the judge's noise on 16 prompts. The starting student also scored higher in this pool than in J's (2.19 / 7.75 vs 1.69 / 7.56), and the policy fitted its 175 pairs completely. The 48-prompt check (§21) is the real test.
 
+### 21. Confirming the new candidates, greedy and sampled (experiment N)
+
+Branch `exp-robust` (`scripts/exp_robust.py`, `runs/robust/`). Experiments L and M found new candidates on 16 prompts. Here they were re-run on the 48 unseen prompts of §16 with greedy decoding. The main configs were also run with sampled decoding (temperature 0.7, top-p 0.9, two seeds), since every earlier number was greedy. One blind pool of 1,104 outputs, judged by Claude Sonnet. ± is the standard error over the 48 prompts.
+
+| Config (greedy) | Philo | Coherence | Helpful | Degenerate | Philo + help |
+|---|---|---|---|---|---|
+| Baseline | 0.04 | 8.94 | 8.65 | 1/48 | 8.69 ± 0.09 |
+| Prompt woven | 2.83 | 8.12 | 6.38 | 0/48 | 9.21 ± 0.18 |
+| Diff-means L8 α 0.5 | 2.48 | 6.67 | 4.27 | 0/48 | 6.75 ± 0.23 |
+| Constant along B, 0.6·p50 | 3.69 | 7.33 | 5.12 | 0/48 | 8.81 ± 0.22 |
+| Constant along B, 0.8·p50 | 4.25 | 6.52 | 3.69 | 2/48 | 7.94 ± 0.27 |
+| Rank-1 LoRA ×1 / ×1.5 / ×2 | 2.83 / 3.02 / 3.50 | 8.25 / 8.06 / 7.88 | 5.69 / 6.04 / 5.58 | 0/48 | 8.52 / 9.06 / 9.08 |
+| DPO starting student (J) | 1.85 | 8.27 | 7.54 | 1/48 | 9.40 ± 0.14 |
+| DPO student | 2.33 | 8.23 | 7.35 | 0/48 | 9.69 ± 0.14 |
+| DPO student ×1.5 | 2.90 | 7.67 | 6.81 | 0/48 | 9.71 ± 0.16 |
+
+| Config (sampled, seed 0 / seed 1) | Philo | Helpful | Philo + help |
+|---|---|---|---|
+| Baseline | 0.00 / 0.02 | 8.67 / 8.33 | 8.67 / 8.35 |
+| Prompt woven | 3.04 / 3.17 | 5.96 / 5.98 | 9.00 / 9.15 |
+| Diff-means L8 α 0.5 | 2.67 / 2.62 | 3.52 / 3.90 | 6.19 / 6.52 |
+| Constant along B, 0.6·p50 | 3.73 / 3.23 | 4.94 / 5.15 | 8.67 / 8.38 |
+| Rank-1 LoRA ×1.5 | 3.17 / 3.17 | 5.44 / 5.79 | 8.60 / 8.96 |
+| DPO student | 2.65 / 2.52 | 7.54 / 7.33 | 10.19 / 9.85 |
+
+Paired differences (same 48 prompts, greedy):
+
+| Comparison | Philo | Helpful | Philo + help |
+|---|---|---|---|
+| Constant along B 0.6 − diff-means α 0.5 | +1.21 ± 0.18 | +0.85 ± 0.28 | +2.06 ± 0.28 |
+| DPO student − its starting student | +0.48 ± 0.14 | −0.19 ± 0.14 | +0.29 ± 0.17 |
+| DPO student ×1.5 − prompt woven | +0.06 ± 0.19 | +0.44 ± 0.22 | +0.50 ± 0.22 |
+| DPO student ×1.5 − rank-1 LoRA ×1.5 | −0.12 ± 0.17 | +0.77 ± 0.20 | +0.65 ± 0.21 |
+| Rank-1 LoRA ×1.5 − prompt woven | +0.19 ± 0.18 | −0.33 ± 0.19 | −0.15 ± 0.19 |
+| Rank-1 LoRA ×2 − prompt woven | +0.67 ± 0.20 | −0.79 ± 0.24 | −0.12 ± 0.24 |
+
+What this says:
+- **The learned direction B is confirmed as a far better steering vector than diff-means.** Paired over 48 new prompts, it gains 1.2 philosophy *and* 0.85 helpfulness (+2.06 in the sum, about 7 standard errors), and the gap holds in both sampled seeds. As a plain constant push it reaches philosophy 3.7 with helpfulness 5.1 and no broken outputs.
+- **Amplifying the rank-1 LoRA slides along the prompt's frontier, it doesn't go past it.** ×1.5 matches the woven prompt (sum −0.15 ± 0.19), and ×2 trades 0.8 helpfulness for 0.7 philosophy. That still gives philosophy 3.5 at helpfulness 5.6, coherence 7.9, with no prompt. §19's "past the prompt" came from one 16-prompt pool and didn't hold up.
+- **DPO is the only method with evidence of beating the frontier, and it is modest.** It mostly raised philosophy (+0.48 ± 0.14), and at ×1.5 it matches the woven prompt's philosophy with 0.44 ± 0.22 more helpfulness (sum +0.50 ± 0.22, about 2.3 standard errors). It clearly beats the amplified imitation student (+0.77 ± 0.20 helpfulness at equal philosophy). This is one judge and one training run, so it is suggestive, not settled.
+- **Sampling doesn't change the picture.** Every ordering holds under temperature 0.7. Sampling slightly raises philosophy for prompts and students, and lowers helpfulness and coherence for diff-means steering.
+
 ## Caveats
 
-- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Decoding is still greedy, and both judges are Claude models.
+- Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both judges are Claude models: no non-Claude judge was available in this setup (no other provider's credentials, and the model's own self-judging is unreliable, see TL;DR 10).
 - The 8 practice prompts were used to pick the shortlist. Held-out prompts agree, but the set is small.
 - Contrast data is hand-written by us, so the direction reflects our idea of "philosophical" (Heidegger, Stoics, qualia…).
 - Qwen3.5's linear-attention layers ran on the slow PyTorch fallback, so the sweeps are small by necessity.
@@ -544,7 +587,7 @@ What this says:
 1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
 3. **Agent-in-the-loop**: give a Claude agent the explorer tools (push, generate, judge on practice prompts, hidden test prompts) and a forward-pass budget, as in the Astra paper.
-4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Open: sampled decoding with several seeds, and a non-Claude judge.
+4. ~~**Larger evaluation**~~: partly done, see Results §16 (48 new prompts, two judge models). Sampled decoding: done in §21. Open: a non-Claude judge.
 5. ~~**Downstream pathway check**~~: done, see Results §4. Follow-ups it suggests:
    - ~~**Less overdrive**~~: done, see Results §5. The disturbance shrinks with push size, but philosophy has a threshold near α 0.5, and most of the helpfulness cost comes with the philosophical shift itself. Open: map α 0.35–0.5 more finely for k=256 and diff-means, and confirm the k=256 α 0.35 middle point on a larger prompt set.
    - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
@@ -587,6 +630,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_gate.py && .venv/bin/python scripts/claude_judge.py --input gate/gen.jsonl --output gate/judge.jsonl
 .venv/bin/python scripts/exp_gate.py --round 2 && .venv/bin/python scripts/claude_judge.py --input gate/gen_round2.jsonl --output gate/judge_round2.jsonl
 .venv/bin/python scripts/exp_dpo.py && .venv/bin/python scripts/claude_judge.py --input dpo/gen.jsonl --output dpo/judge.jsonl
+.venv/bin/python scripts/exp_robust.py --dpo && .venv/bin/python scripts/claude_judge.py --input robust/gen.jsonl --output robust/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

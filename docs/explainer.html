@@ -232,6 +232,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c21">21 · One weight edit</a>
       <a href="#c22">22 · Gate or direction?</a>
       <a href="#c23">23 · Learning from pairs</a>
+      <a href="#c24">24 · The final check</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -805,6 +806,31 @@ section.wide { grid-template-columns: 1fr; }
       <svg id="s23" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: preference training moves the student up and to the right, above the frontier line"></svg>
       <div class="legend"><span><i style="background:var(--s3)"></i>student (imitation)</span><span><i style="background:var(--accent)"></i>after preference training</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
       <p class="note">One blind pool, 16 prompts. Dashed line: philosophy + helpfulness = 9.3, the frontier from chapter 18. Hover a dot for its scores.</p>
+    </div>
+  </section>
+
+  <!-- 24 -->
+  <section class="chapter" id="c24">
+    <div>
+      <div class="num">Chapter 24 · experiment N</div>
+      <h2>The final check: 48 new prompts, with dice</h2>
+      <p><strong>Why we tried it.</strong> Chapters 22 and 23 found three new candidates on 16 prompts: pushing along the learned direction B, turning up the trained update, and preference training. Small samples flatter new ideas, and every result so far used greedy decoding, where the model always picks its single most likely next word. So we re-ran everything on the 48 unseen prompts from chapter 19. We also ran the main ones with <em>sampling</em>, where the model rolls weighted dice for each word, as chat models usually do, with two different seeds. The arrows go from the greedy result to the average of the two sampled runs.</p>
+      <p><strong>What held up.</strong> Pushing along the learned direction B (orange dots labelled "along B") beats diff-means steering (orange, "diff-means") by a wide margin, on the same prompts, with or without dice. That's about seven times the uncertainty. A plain constant push along it gives philosophy 3.7 with helpfulness 5.1.</p>
+      <p><strong>What shrank.</strong> Turning up the trained update moves <em>along</em> the prompt's frontier (dashed line), not past it. It can go further than the prompt (philosophy 3.5 at ×2), but it pays the usual price in helpfulness.</p>
+      <p><strong>What survived, barely.</strong> The preference-trained student at 1.5× (the ringed green dot) matches the woven prompt's philosophy with 0.44 more helpfulness, about 2.3 times the uncertainty. It's the only result that sits above the frontier on new prompts, and it is still one judge and one training run.</p>
+      <p><strong>What it means.</strong> The best prompt-free philosophical Qwen we found is a small trained update, refined with preference pairs. For a push you can apply to the original model, use the learned direction B, not diff-means. The trade-off between philosophy and helpfulness is real, but how much you pay depends heavily on how the change is learned. Source: FINDINGS.md § 21, <code>runs/robust/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s24" viewBox="0 0 720 420" role="img" aria-label="Scatter plot on 48 new prompts: the learned direction beats diff-means; trained students sit on the prompt's frontier; the preference-trained student sits slightly above it"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>trained update or student, no prompt</span><span><i style="background:var(--accent)"></i>constant push (diff-means or B)</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
+      <p class="note">Greedy decoding, 48 new prompts, one blind pool. Arrows run to the mean of two sampled runs (temperature 0.7). The ring marks the preference-trained student at 1.5×. Dashed line: philosophy + helpfulness = 9.2, the woven prompt's sum here. Hover a dot for its scores.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config (greedy)</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s24-table"></tbody>
+        </table>
+      </details>
     </div>
   </section>
 
@@ -1975,6 +2001,33 @@ function fillTable(id, rows) {
     ],
     links: [[7.75, 2.19, 7.94, 2.50]],
   });
+})();
+
+/* ---------- 24: final check (real data: runs/robust/judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/48` });
+  const svg = document.getElementById("s24");
+  tradeoffChart(svg, {
+    base: [8.65, 0.04, 8.94], goal: false,
+    refLines: [{ h1: 4.0, p1: 5.2, h2: 9.0, p2: 0.2 }],
+    series: [
+      { name: "woven prompt", c: "pos", noTags: true, lab: [-12, -12, "end"], pts: [P(6.38, 2.83, "", 8.12, 0)] },
+      { name: "trained", c: "s3", noLine: true, noTags: true,
+        pts: [P(5.69, 2.83, "rank-1 LoRA ×1", 8.25, 0), P(6.04, 3.02, "rank-1 LoRA ×1.5", 8.06, 0), P(5.58, 3.50, "rank-1 LoRA ×2", 7.88, 0),
+              P(7.54, 1.85, "DPO starting student", 8.27, 1), P(7.35, 2.33, "DPO student", 8.23, 0), P(6.81, 2.90, "DPO student ×1.5", 7.67, 0)] },
+      { name: "constant push", c: "acc", noLine: true, tagLeft: true,
+        pts: [P(4.27, 2.48, "diff-means α 0.5", 6.67, 0), P(5.12, 3.69, "along B 0.6", 7.33, 0), P(3.69, 4.25, "along B 0.8", 6.52, 2)] },
+    ],
+    links: [[6.38, 2.83, 5.97, 3.11], [4.27, 2.48, 3.71, 2.65], [5.12, 3.69, 5.05, 3.48], [6.04, 3.02, 5.62, 3.17], [7.35, 2.33, 7.44, 2.59]],
+  });
+  const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360, x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / 6 * (Y1 - Y0);
+  E("circle", { cx: x(6.81), cy: y(2.90), r: 11, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+  fillTable("s24-table", [
+    ["Baseline", 0.04, 8.94, 8.65, "1/48"], ["Prompt woven", 2.83, 8.12, 6.38, "0/48"], ["Diff-means L8 α 0.5", 2.48, 6.67, 4.27, "0/48"],
+    ["Constant along B 0.6·p50", 3.69, 7.33, 5.12, "0/48"], ["Constant along B 0.8·p50", 4.25, 6.52, 3.69, "2/48"],
+    ["Rank-1 LoRA ×1", 2.83, 8.25, 5.69, "0/48"], ["Rank-1 LoRA ×1.5", 3.02, 8.06, 6.04, "0/48"], ["Rank-1 LoRA ×2", 3.50, 7.88, 5.58, "0/48"],
+    ["DPO starting student", 1.85, 8.27, 7.54, "1/48"], ["DPO student", 2.33, 8.23, 7.35, "0/48"], ["DPO student ×1.5", 2.90, 7.67, 6.81, "0/48"],
+  ]);
 })();
 </script>
 </body>
