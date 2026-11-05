@@ -10,7 +10,8 @@
 4. **Astra-style weight edits (masked rank-1 on `down_proj`, no bias) are safe but nearly inert for this goal.** Best edit: philosophy 0.06 → 0.50 with *no* loss in coherence or helpfulness. A pure weight edit can only amplify or remove what neurons already write; it cannot add a constant push, and on practical prompts nothing "philosophical" is being written to amplify.
 5. **The L8 pushes partly follow the model's own philosophical pathway, but they overdrive it.** In layers 9–31 the changes caused by the pushes line up with the changes in natural philosophical answers clearly above random controls. The 16-neuron group's match fades toward the random level in L15–23; the full direction keeps more of it and recovers strongly in the last layers. Both pushes are much larger than the natural L8 difference (diff-means 2.1×, 16 neurons 4.6×). The 16-neuron group also triggers an off-pathway disturbance of the same size as random groups with the same doses, so that part depends on push size, not on which neurons are chosen.
 6. **Pushing less hard doesn't solve the helpfulness trade-off.** Philosophy only shows up when the on-direction push reaches about α 0.5, roughly 2× the natural L8 difference. Below that it nearly vanishes, and helpfulness comes back with it. At α 0.5, most of the helpfulness loss comes with the philosophical shift itself: diff-means has the smallest disturbance and still drops to 3.94. A better-aligned group (k=256) gives the highest philosophy score so far (3.12) and loses slightly less helpfulness than k=16, but the gain is within judge noise. The reason is the contrast data. The philosophical answers we steer toward *replace* the practical answer (judge: philosophy 5.75, helpfulness 2.31), so the direction itself means "reflect instead of answering".
-7. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
+7. **Fixing the target data is not enough on its own.** New contrast answers that keep the full practical answer and add reflection are as helpful as the plain answers (helpfulness 8.6). But their direction is 84–92% the old one, and steering along it sits on the same philosophy-for-helpfulness line. A constant push at every token can't express "answer first, then reflect" (Results §7).
+8. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
 
 ## Background
 
@@ -153,6 +154,35 @@ The philosophical half of each contrast pair *replaces* the practical answer ins
 
 Caveats: the natural answers are short (median 38–48 tokens), hand-written, and answer different questions than the evaluation prompts, so the comparison with steered outputs is approximate.
 
+### 7. "Answer + reflect" contrast data (experiment A)
+
+Branch `exp-answer-reflect`. `data/contrast_pairs_v2.json` keeps the 32 plain answers and adds two philosophical versions that keep **all** the practical content:
+- **appended**: the plain answer word for word, then one or two reflective sentences.
+- **woven**: the same facts and steps, with the reflection worked into the answer.
+
+The original pairs are untouched. Directions are per-layer diff-means against the plain answers. Everything was judged in one blind pool, including the new target texts themselves (`scripts/exp_answer_reflect.py`, `runs/answer_reflect/`).
+
+The new directions are mostly the old one. At L8, cos with the original direction is 0.92 for appended and 0.84 for woven, and 0.86 between the two new ones. The natural L8 difference is smaller: 0.095·p50 for appended and 0.065·p50 for woven, against 0.24 for the original.
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.56 | 0/16 |
+| Original direction α=0.5 | 2.81 | 7.25 | 4.06 | 0/16 |
+| Appended α=0.5 | 1.94 | 7.50 | 5.25 | 0/16 |
+| Appended α=0.75 | 3.25 | 5.75 | 1.81 | 2/16 |
+| Appended α=1.0 | 2.56 | 3.06 | 0.19 | 12/16 |
+| Woven α=0.5 | 1.50 | 8.19 | 6.12 | 0/16 |
+| Woven α=0.75 | 3.31 | 6.12 | 2.38 | 3/16 |
+| Woven α=1.0 | 2.69 | 3.50 | 0.69 | 13/16 |
+| Random unit direction α=1.0 | 0.06 | 7.94 | 6.56 | 0/16 |
+| *Target texts: appended (32)* | 2.94 | 9.00 | 8.56 | 0/32 |
+| *Target texts: woven (32)* | 1.56 | 9.00 | 8.62 | 0/32 |
+
+What this says:
+- **The new targets are what we wanted.** The texts themselves are as helpful as the plain answers (8.56–8.62) and moderately philosophical (2.94 appended, 1.56 woven).
+- **Steering toward them still hits the same trade-off.** Every new config lies on roughly the same line as the original direction: about 0.6 philosophy gained per point of helpfulness lost. None comes near its own target (appended α=0.75 scores philosophy 3.25 but helpfulness 1.81, while the target text has 8.56). Above α 0.75 the outputs degenerate.
+- **So the trade-off comes from the method, not only the data.** A constant push at every token puts the model in "reflecting" mode from the first word. The target texts are *answer first, then reflect*, which is a change over time that one fixed vector can't express. Their direction is also 92% the old one, so the difference between "reflect after answering" and "reflect instead" is mostly not in the mean. That points to steering only part of the answer (experiment C).
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -172,7 +202,7 @@ Caveats: the natural answers are short (median 38–48 tokens), hand-written, an
    - ~~**Less overdrive**~~: done, see Results §5. The disturbance shrinks with push size, but philosophy has a threshold near α 0.5, and most of the helpfulness cost comes with the philosophical shift itself. Open: map α 0.35–0.5 more finely for k=256 and diff-means, and confirm the k=256 α 0.35 middle point on a larger prompt set.
    - **Mid-layer re-injection**: the 16-neuron group loses the natural pathway in L15–23. Add a second, smaller push there, using the natural change at L15–18 as the target. This is the cheapest version of step 6.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
-   - **"Answer + reflect" contrast data (most promising next)**: rewrite the 32 philosophical answers so each contains the full plain answer plus one or two reflective sentences. Recompute the diff-means direction and OMP groups, then rerun the pathway check and the dose sweep. If the trade-off comes from the target, helpfulness should hold while philosophy rises. Also compare cos(new direction, old direction).
+   - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -189,5 +219,6 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/dose_sweep.py --stage generate && .venv/bin/python scripts/claude_judge.py --input dose_sweep.jsonl --output claude_judge_dose.jsonl
 .venv/bin/python scripts/natural_ceiling.py                       # helpfulness ceiling: contrast-pair answers + 4 dose-sweep anchors
 .venv/bin/python scripts/claude_judge.py --input natural_ceiling.jsonl --output claude_judge_natural.jsonl
+.venv/bin/python scripts/exp_answer_reflect.py && .venv/bin/python scripts/claude_judge.py --input answer_reflect/gen.jsonl --output answer_reflect/judge.jsonl
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
