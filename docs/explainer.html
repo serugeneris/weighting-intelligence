@@ -221,6 +221,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c15">15 · Where the prompt acts</a>
       <a href="#c16">16 · Attention or DeltaNet?</a>
       <a href="#c17">17 · Push geometry</a>
+      <a href="#c18">18 · A better teacher?</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -668,6 +669,31 @@ section.wide { grid-template-columns: 1fr; }
         <table>
           <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
           <tbody id="s17-table"></tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <!-- 18 -->
+  <section class="chapter" id="c18">
+    <div>
+      <div class="num">Chapter 18 · experiment J</div>
+      <h2>A better teacher, a better student?</h2>
+      <p><strong>Why we tried it.</strong> In chapter 13 the student, a model trained to act prompted without the prompt, matched its teacher but couldn't beat it. So the obvious next step was a better teacher. We tried two ways, using only training questions, never the evaluation prompts.</p>
+      <p><strong>A better prompt.</strong> Six system prompts were tested and the best on philosophy + helpfulness was kept. That was "open with one reflective sentence, then answer fully", which is less philosophical than the woven prompt but more helpful.</p>
+      <p><strong>Better answers.</strong> We sampled four answers per question with that prompt, had the judge score all 512, and trained only on the best answer for each question. This is called <em>best-of-n</em> or rejection sampling.</p>
+      <p><strong>What happened.</strong> Each student lands next to its own prompt (the arrows), not next to the hand-picked answers (the square). The picked answers were only slightly better than a typical sample, about as much as the judge's own noise, so most of what selection kept was luck the student can't learn.</p>
+      <p><strong>What it means.</strong> Prompts and students all sit on one line (dashed): philosophy plus helpfulness of about 9.3. Choosing a teacher only slides you along it, woven toward philosophy and reflect-first toward help. Steering sits well below that line. Getting past it would need a stronger learning signal, such as preference training on judged pairs or many more samples. Source: FINDINGS.md § 15, <code>runs/teacher/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s18" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: each student lands next to its teacher prompt on a common line where philosophy plus helpfulness is about 9.3, not next to the hand-picked best-of-4 answers"></svg>
+      <div class="legend"><span><i style="background:var(--pos)"></i>prompt (teacher)</span><span><i style="background:var(--s3)"></i>student, no prompt</span><span><i style="background:var(--ink-3)"></i>steering (earlier pools)</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
+      <p class="note">Prompts, students and baseline were judged blind in one pool (16 prompts). The square is the hand-picked best-of-4 answers on training questions, judged in another pool. Arrows run from each teacher to its student. Dashed line: philosophy + helpfulness = 9.3.</p>
+      <details>
+        <summary>Show as table</summary>
+        <table>
+          <thead><tr><th>Config</th><th>Philosophy</th><th>Coherence</th><th>Helpfulness</th><th>Degenerate</th></tr></thead>
+          <tbody id="s18-table"></tbody>
         </table>
       </details>
     </div>
@@ -1436,6 +1462,10 @@ function tradeoffChart(svg, o) {
     if (t.label) T(svg, x(t.h) + t.lab[0], y(t.p) + t.lab[1], t.label, "lbl", t.lab[2]);
     hitAt(t.h, t.p, tipHtml(t.name, t.h, t.p, t.c, t.extra));
   });
+  (o.refLines || []).forEach(r => {
+    E("line", { x1: x(r.h1), y1: y(r.p1), x2: x(r.h2), y2: y(r.p2), class: "ln-ceil" }, svg);
+    if (r.label) T(svg, x(r.h2) + r.lab[0], y(r.p2) + r.lab[1], r.label, "sm", r.lab[2]);
+  });
   (o.links || []).forEach(([h1, p1, h2, p2]) => {
     const dx = x(h2) - x(h1), dy = y(p2) - y(p1), L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
     E("path", { d: `M${x(h1) + ux * 10},${y(p1) + uy * 10} L${x(h2) - ux * 12},${y(p2) - uy * 12}`, class: "a-muted dash", fill: "none", "marker-end": "url(#to-arrow)" }, svg);
@@ -1728,6 +1758,29 @@ function fillTable(id, rows) {
     ["Original ⊥ stop-answering α 0.5", 0.00, 9.00, 8.56, "0/16"], ["Original ⊥ stop-answering α 1.0", 0.44, 4.75, 1.69, "1/16"],
     ["Appended ⊥ stop-answering α 0.5 (same vector)", 0.00, 8.88, 8.56, "0/16"], ["Appended ⊥ stop-answering α 1.0 (same vector)", 0.50, 5.06, 1.81, "0/16"],
     ["Woven ⊥ stop-answering α 0.5", 0.06, 8.94, 8.44, "0/16"], ["Woven ⊥ stop-answering α 1.0", 0.00, 4.00, 2.88, "4/16"],
+  ]);
+})();
+
+/* ---------- 18: better teacher (real data: runs/teacher/judge.jsonl, runs/teacher/samples_judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c, d) => ({ h, p, tag, c, extra: `Degenerate: ${d}/16` });
+  tradeoffChart(document.getElementById("s18"), {
+    base: [8.94, 0.00, 9.00], goal: false,
+    refLines: [{ h1: 4.5, p1: 4.8, h2: 9.0, p2: 0.3, label: "philosophy + helpfulness = 9.3", lab: [-150, -6, "end"] }],
+    greys: [{ name: "Steering: diff-means α 0.5", h: 4.62, p: 3.00, c: 7.62 }, { name: "Steering: k=256 neurons α 0.35", h: 6.75, p: 1.44, c: 8.19 }],
+    targets: [{ name: "Best-of-4 picks (128 training questions)", h: 7.98, p: 2.50, c: 8.52, label: "best-of-4 picks", lab: [10, -10, "start"] }],
+    series: [
+      { name: "prompt", c: "pos", noLine: true, tagLeft: true, pts: [P(6.38, 2.81, "woven", 8.19, 0), P(7.56, 1.88, "reflect-first", 8.19, 0)] },
+      { name: "student", c: "s3", noLine: true, noTags: true,
+        pts: [P(6.75, 2.56, "of woven (rank 1)", 7.94, 1), P(7.62, 1.44, "of reflect-first (rank 1)", 8.19, 0), P(7.56, 1.38, "of best-of-4 (rank 1)", 8.31, 0), P(7.56, 1.69, "of best-of-4 (rank 8 MLP)", 8.19, 0)] },
+    ],
+    links: [[6.38, 2.81, 6.75, 2.56], [7.56, 1.88, 7.62, 1.44]],
+  });
+  fillTable("s18-table", [
+    ["Baseline", 0.00, 9.00, 8.94, "0/16"], ["Prompt woven", 2.81, 8.19, 6.38, "0/16"], ["Prompt reflect-first", 1.88, 8.19, 7.56, "0/16"],
+    ["Student of woven (exp D, rank 1 L8)", 2.56, 7.94, 6.75, "1/16"], ["Student of reflect-first (rank 1 L8)", 1.44, 8.19, 7.62, "0/16"],
+    ["Student of best-of-4 (rank 1 L8)", 1.38, 8.31, 7.56, "0/16"], ["Student of best-of-4 (rank 8 MLP)", 1.69, 8.19, 7.56, "0/16"],
+    ["Best-of-4 picks (training questions, other pool)", 2.50, 8.52, 7.98, "0/128"],
   ]);
 })();
 </script>
