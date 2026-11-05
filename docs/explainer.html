@@ -201,7 +201,7 @@ section.wide { grid-template-columns: 1fr; }
 <main>
   <header class="hero">
     <h1>How we steered Qwen3.5-4B toward philosophy</h1>
-    <p class="lede">An animated walkthrough of the ideas behind <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md">FINDINGS.md</a>: what a neuron reads and writes, what a "direction" is, how we picked 16 neurons that point toward philosophy, why editing the weights alone can't add a behavior, and where the lost helpfulness comes from.</p>
+    <p class="lede">An animated walkthrough of the ideas behind <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md">FINDINGS.md</a>: what a neuron reads and writes, what a "direction" is, how we picked 16 neurons that point toward philosophy, why hand-built weight edits failed, where the lost helpfulness comes from, and, in the end, how one small <em>trained</em> weight edit gives a philosophical Qwen with no prompt (chapters 13 and 21).</p>
     <p class="note">Figures 1, 3, 5 and 6 are small toy examples, with 5–20 numbers standing in for the model's 2,560. The real numbers from our runs are labelled as such and come from FINDINGS.md.</p>
     <nav class="toc">
       <a href="#c1">1 · Read &amp; write</a>
@@ -224,6 +224,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c18">18 · A better teacher?</a>
       <a href="#c19">19 · New prompts, two judges</a>
       <a href="#c20">20 · Steering the hot spots</a>
+      <a href="#c21">21 · One weight edit</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -360,7 +361,7 @@ section.wide { grid-template-columns: 1fr; }
       <p>Adding it to <code>W_down</code> gives neuron j an extra <code>vⱼ·u</code> in its column. At run time the output changes by:</p>
       <div class="formula">Δoutput = (u·vᵀ)·a = u × (vᵀ·a)</div>
       <p>The change always points along <code>u</code>, and its size is multiplied by the current activations <code>a</code>. On "how do I fix a drain?" the chosen neurons barely fire, so there is nothing to multiply.</p>
-      <p>Steering adds a constant, the same push every token, which is exactly what a <strong>bias</strong> term <code>b</code> in <code>y = W·x + b</code> would do. Qwen3.5's text MLPs have no bias at all. That is standard in large language models since PaLM (2022); Qwen's first technical report says it removed biases "following" PaLM. So a pure weight edit can rescale what neurons already write, but it can't add a behavior from nothing. Adding a 2,560-number bias to <code>down_proj</code> would turn our steering into a standalone checkpoint, and that is next step 1 in FINDINGS.md.</p>
+      <p>Steering adds a constant, the same push every token, which is exactly what a <strong>bias</strong> term <code>b</code> in <code>y = W·x + b</code> would do. Qwen3.5's text MLPs have no bias at all. That is standard in large language models since PaLM (2022); Qwen's first technical report says it removed biases "following" PaLM. So a pure weight edit can rescale what neurons already write, but it can't add a behavior from nothing. Adding a 2,560-number bias to <code>down_proj</code> would turn our steering into a standalone checkpoint. (Chapter 21 revisits this: a rank-1 edit <em>can</em> add the behaviour if its read side is learned rather than hand-picked.)</p>
     </div>
     <div class="fig">
       <svg id="s6" viewBox="0 0 720 420" role="img" aria-label="Outer product of u and v, and the resulting change in output for two prompts compared with a bias"></svg>
@@ -740,6 +741,27 @@ section.wide { grid-template-columns: 1fr; }
       <svg id="s20" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: the prompt's average effect added at all 32 token mixers follows the same trade-off as ordinary steering at higher strengths"></svg>
       <div class="legend"><span><i style="background:var(--s3)"></i>prompt's average, all 32 mixers</span><span><i style="background:var(--accent)"></i>usual push, layer 8</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt, no push</span></div>
       <p class="note">Round 2: all points judged blind in one pool, 16 prompts. Hover a dot for its scores.</p>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section class="chapter" id="c21">
+    <div>
+      <div class="num">Chapter 21 · baking experiment D</div>
+      <h2>Back to chapter 6: one weight edit after all</h2>
+      <p><strong>Why we tried it.</strong> The rank-1 LoRA from chapter 13 adds <code>B × (A·a)</code> to layer 8's output. That is exactly what you get by editing the weight once: <code>W_down ← W_down + B·Aᵀ</code>, a rank-1 outer product with no bias. It's the same <em>form</em> as the Astra-style edits of chapter 6, which barely did anything. So we merged it into the stored weights, removed every hook and prompt, and checked the model still behaves.</p>
+      <p><strong>What happened.</strong> It does: philosophy 2.62, coherence 8.44, helpfulness 6.75, the same as the adapter within judge noise. A third of the answers are word-for-word identical. The rest drift slightly because the merged weight is stored with less precision.</p>
+      <p><strong>So why did chapter 6's edits fail?</strong> Look at the read side, the row <code>vᵀ</code> (here <code>A</code>) that decides how big the change is on each token. The hand-built edits read from a few chosen neurons, which stay silent on "how do I fix a drain?", so there was nothing to multiply. The trained edit reads a mix of all 9,216 neurons that is active on every prompt, strongest at the start of each answer. Chapter 6's conclusion only holds for hand-picked read sides. With a learned read side, a single weight edit and no bias makes the model philosophical.</p>
+      <p><strong>What it means.</strong> The prompt-free philosophical Qwen is the original model plus one rank-1 edit to one matrix, about 0.0003% of its weights. Source: FINDINGS.md § 18, <code>scripts/bake_lora.py</code>.</p>
+    </div>
+    <div class="fig">
+      <div class="formula">W<sub>down,8</sub> ← W<sub>down,8</sub> + scale · B · Aᵀ</div>
+      <h3>Two rank-1 edits, two read sides</h3>
+      <div id="s21-rows"></div>
+      <p class="note">Philosophy (0–9), blind judge, 16 prompts. The hand-built row is the best Astra-style edit from chapter 6 (FINDINGS.md § 3). The trained edit is the merged rank-1 LoRA.</p>
+      <div class="ex">
+        <p><strong>Baked model, no prompt</strong>, "How do I make scrambled eggs?": To make scrambled eggs is to engage in a small alchemy of heat and time, transforming raw chaos into golden order…</p>
+      </div>
     </div>
   </section>
 
@@ -1866,6 +1888,13 @@ function fillTable(id, rows) {
       { name: "woven prompt", c: "pos", noTags: true, lab: [12, -10, "start"], pts: [P(6.50, 2.69, "", 8.25, 0)] },
     ],
   });
+})();
+
+/* ---------- 21: baked rank-1 edit (real data: runs/bake/judge.jsonl; FINDINGS §3 for the hand-built edit) ---------- */
+(function () {
+  const rows = [["Hand-built (few neurons)", 0.50, "var(--ink-3)"], ["Trained (all 9,216 neurons)", 2.62, "var(--s3)"]];
+  document.getElementById("s21-rows").innerHTML = rows.map(([l, v, c]) =>
+    `<div class="srow wl"><span>${l}</span><div class="tr"><i style="width:${v / 3 * 100}%;background:${c}"></i></div><b>${v.toFixed(2)}</b></div>`).join("");
 })();
 </script>
 </body>
