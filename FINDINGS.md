@@ -17,6 +17,7 @@
 11. **A tiny trained update gives a prompt-free "philosophy Qwen".** Training a LoRA so the model answers *without* the prompt the way it does *with* the woven prompt matches the prompt's balance on held-out prompts: philosophy 2.25–2.50, helpfulness 6.2–6.6, against the prompt's 2.94 / 6.44. A rank-1 update to one matrix (layer 8's `down_proj`, 11,776 parameters) is as good as a 9M-parameter adapter. Its push is token-dependent, mostly on the prompt and the first answer tokens, smaller than any steering push that worked, and nearly orthogonal to the diff-means direction (Results §10).
 12. **Where and how widely we push doesn't change the trade-off.** Spreading the push over 3–11 layers, or recreating the natural difference layer by layer, stays on the same 0.5–0.8 philosophy-per-helpfulness-point line. Only the middle layers (L8–L16) respond to a modest push. Recreating the natural trajectory up to L24 gives the most philosophical prompt-free output so far (4.75) but copies the hand-written targets' unhelpfulness (Results §11).
 13. **The prompt doesn't act through a decision at its end.** Pasting the prompted model's state at the last 16 prompt positions (every layer) into an unprompted run recovers under half of the prompt's effect; one position, one layer or a mean "prompt vector" recovers nothing. The answer keeps reading the system prompt while it writes (Results §12).
+14. **Attention is a hot spot, but DeltaNet carries as much.** Undoing the system prompt's influence in all 8 full-attention layers removes 83% of its effect; in all 24 DeltaNet layers, 93%. Three heads in layers 11 and 15 remove 38%. A steering push on the prompt reaches the answer through the DeltaNet recurrent state, not the attention cache (Results §13).
 
 ## Background
 
@@ -240,7 +241,7 @@ A full window reproduces `steer()` exactly (checked in the script). Answers are 
 
 What this says:
 - **A late push doesn't add a reflection; it breaks the answer.** Pushes that start mid-answer give less philosophy for the same helpfulness lost, and many more broken outputs (13/16 at α 1.0). The steered tokens clash with the unsteered text the model has already written. Instead of closing with a reflection, the answer drifts into vague metaphysics ("to grasp the nature of being, one must see that everything is always already known to be otherwise").
-- **The start decides the mode.** Steering only the first 24 tokens, or only the prompt, gives about the same result as steering every token: philosophy 3.3–3.7, helpfulness about 4. Once the answer starts in a reflective register it stays there, and when only the prompt is pushed, attention carries the effect into the whole answer.
+- **The start decides the mode.** Steering only the first 24 tokens, or only the prompt, gives about the same result as steering every token: philosophy 3.3–3.7, helpfulness about 4. Once the answer starts in a reflective register it stays there, and when only the prompt is pushed, the token mixers carry the effect into the whole answer. (This originally said "attention"; experiment G found the route is mostly the DeltaNet state, see §13.)
 - **So the trade-off is not about *when* we push.** Windowing moves the same trade-off around, or makes it worse; it never reaches the prompt's balance. The woven prompt is still best (philosophy 3.56, helpfulness 6.94), and full steering looks better at 160 tokens (3.75) than at 120 (2.8–3.0) only because the answer is longer.
 
 ### 10. Distilling the prompt into the weights (experiment D)
@@ -325,6 +326,39 @@ What this says:
 - **A single layer or a mean offset does nothing.** Transplanting the last 9 positions at one layer, or adding the average prompt offset there (even ×2), leaves the answer plain. The prompt's information at those positions is spread over layers and is specific to each question, not one shared offset.
 - **Why prompt-only steering still worked (§9).** That push was large (α 1.0), went into *every* prompt position, and pointed along a direction that already means "philosophical text". The prompt's own end-state is smaller and less specific. So H1/H8 in their strong form ("the decision sits in a few tokens") are not supported here: the prompt acts over the whole answer, more like a reference the answer keeps returning to.
 
+### 13. Which route carries the philosophical mode: attention or DeltaNet? (experiment G)
+
+Branch `exp-routes` (`scripts/exp_routes.py`, `runs/routes/`). The user's original lead, and LITERATURE.md H3: philosophy relates ideas, so the lever might be attention, the part of the model that relates tokens. Qwen3.5-4B moves information between tokens in two ways. 8 layers (3, 7, …, 31) use full attention (16 heads each). The other 24 use Gated DeltaNet, a linear-attention layer that carries a running recurrent state instead of attending to each past token. Experiment C's prompt-only result can't tell these apart, so two direct tests were run.
+
+**Part 1: mediation of the woven prompt** (forward passes only). For 16 contrast questions, we take the prompted model's woven answer A_P and the unprompted answer A_U, and measure the preference `pref = mean log-prob per token of A_P − of A_U`. The prompt raises it by E = 1.08 nats per token on average (0.66–1.33, positive for every question). In the prompted run, we then restore one token mixer's output, at every position after the system block, to its value in the unprompted run. The share of E that disappears is that mixer's share of the prompt's route.
+
+| Restored (prompted run → unprompted values) | Share of the prompt's effect removed |
+|---|---|
+| All 8 full-attention layers | 83% |
+| All 24 DeltaNet layers | 93% |
+| One full-attention layer, mean (sum of the 8) | 12% (97%) |
+| One DeltaNet layer, mean (sum of the 24) | 6% (153%) |
+| Largest single layers | L11 attention 32%, L18 DeltaNet 29%, L15 attention 24%, L16 DeltaNet 20%, L7 attention 19% |
+| Largest single heads | L15 head 8 19%, L15 head 2 11%, L11 head 0 8% (top 3: 38%; top 10: 66%) |
+| Heads by layer (sum of the 16) | L3 9%, L7 11%, L11 19%, L15 34%, L19 9%, L23–31 ≈ 0 |
+
+**Part 2: routes of prompt-only steering.** The L8 push (α 1.5) is applied to the prompt only, and the prompt's cache is built twice, with and without the push. We then generate, with no push, from a mixed cache: only the full-attention keys/values from the steered run, only the DeltaNet states, both, or neither. Judged blind (16 prompts).
+
+| Cache taken from the steered run | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Nothing (= baseline) | 0.00 | 9.00 | 9.00 | 0/16 |
+| Full-attention keys/values only | 0.00 | 8.94 | 8.88 | 0/16 |
+| DeltaNet states only | 1.19 | 8.56 | 6.94 | 0/16 |
+| Both | 2.88 | 7.19 | 3.12 | 1/16 |
+
+Sanity check: a rebuilt, unsteered cache reproduces plain generation exactly on 6/16 prompts. On the rest it drifts after 23–500 characters, because a split prefill rounds slightly differently in bf16. The text stays plain (philosophy 0.00).
+
+What this says:
+- **Full attention is a hot spot, not the whole story.** Per layer, a full-attention layer carries twice the prompt's effect of a DeltaNet layer (12% vs 6%), and a handful of heads in the middle layers carries a large share: three heads (L15.8, L15.2, L11.0) remove 38%, like the "few style heads" in the persona-steering literature. The late attention layers (23–31) carry nothing.
+- **But both routes are needed, in series.** Restoring all attention layers removes 83% and restoring all DeltaNet layers removes 93%, so neither route alone carries the prompt; they hand information to each other. The busiest region is L11–L18, where attention layers 11 and 15 sit next to DeltaNet layers 16–18.
+- **For our steering push, the route is the DeltaNet state, not attention.** A push on the prompt reaches the answer through the DeltaNet recurrent state: alone it gives 41% of the effect, with helpfulness kept at 6.94. The attention keys/values alone give nothing, though they add the rest when combined with the state. Results §9 had credited attention; this corrects it.
+- **Verdict on the attention hypothesis (H3): partly supported for prompts, not supported for steering.** A few full-attention heads matter disproportionately to how a system prompt shapes the answer, so head-level interventions at L11/L15 are a reasonable next target. But the 24 DeltaNet layers, which attention-centred papers on full-attention models don't have, carry at least as much. For this hybrid model, "attention is the lever" is too narrow.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -368,6 +402,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_distill.py && .venv/bin/python scripts/claude_judge.py --input distill/gen.jsonl --output distill/judge.jsonl
 .venv/bin/python scripts/exp_multilayer.py && .venv/bin/python scripts/claude_judge.py --input multilayer/gen.jsonl --output multilayer/judge.jsonl
 .venv/bin/python scripts/exp_prompt_transplant.py && .venv/bin/python scripts/claude_judge.py --input prompt_transplant/gen.jsonl --output prompt_transplant/judge.jsonl
+.venv/bin/python scripts/exp_routes.py && .venv/bin/python scripts/claude_judge.py --input routes/gen.jsonl --output routes/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
