@@ -18,6 +18,7 @@
 12. **Where and how widely we push doesn't change the trade-off.** Spreading the push over 3–11 layers, or recreating the natural difference layer by layer, stays on the same 0.5–0.8 philosophy-per-helpfulness-point line. Only the middle layers (L8–L16) respond to a modest push. Recreating the natural trajectory up to L24 gives the most philosophical prompt-free output so far (4.75) but copies the hand-written targets' unhelpfulness (Results §11).
 13. **The prompt doesn't act through a decision at its end.** Pasting the prompted model's state at the last 16 prompt positions (every layer) into an unprompted run recovers under half of the prompt's effect; one position, one layer or a mean "prompt vector" recovers nothing. The answer keeps reading the system prompt while it writes (Results §12).
 14. **Attention is a hot spot, but DeltaNet carries as much.** Undoing the system prompt's influence in all 8 full-attention layers removes 83% of its effect; in all 24 DeltaNet layers, 93%. Three heads in layers 11 and 15 remove 38%. A steering push on the prompt reaches the answer through the DeltaNet recurrent state, not the attention cache (Results §13).
+15. **Changing the push's geometry doesn't help.** Keeping the residual's length (norm-preserving rotation, or +10%) scores the same as a plain push. Projecting the "drop the answer" component out of the direction leaves no philosophy at all: in mean-difference data, "be philosophical" and "stop answering" are the same direction (Results §14).
 
 ## Background
 
@@ -359,6 +360,27 @@ What this says:
 - **For our steering push, the route is the DeltaNet state, not attention.** A push on the prompt reaches the answer through the DeltaNet recurrent state: alone it gives 41% of the effect, with helpfulness kept at 6.94. The attention keys/values alone give nothing, though they add the rest when combined with the state. Results §9 had credited attention; this corrects it.
 - **Verdict on the attention hypothesis (H3): partly supported for prompts, not supported for steering.** A few full-attention heads matter disproportionately to how a system prompt shapes the answer, so head-level interventions at L11/L15 are a reasonable next target. But the 24 DeltaNet layers, which attention-centred papers on full-attention models don't have, carry at least as much. For this hybrid model, "attention is the lever" is too narrow.
 
+### 14. A different push geometry: orthogonal and norm-preserving (experiment H)
+
+Branch `exp-geometry` (`scripts/exp_geometry.py`, `runs/geometry/`). Two ideas to make the L8 push cheaper, both at the same site and size as before.
+- **Remove "drop the answer" from the direction.** The original contrast pairs compare a plain answer with a philosophical text that *replaces* it; experiment A's "appended" pairs add the reflection *after* the same answer. So `drop = dm_original − dm_appended` approximates "stop answering", and a direction with `drop` projected out might keep the reflection and lose less of the answer. Measured first, at L8: the appended direction has cosine 0.92 with the original and 40% of its size, and `drop` has cosine 0.97 with the original. All three are nearly the same direction, and what remains after projecting `drop` out has cosine 0.23 with the original (0.15 for the woven direction). Because `drop` lies in the plane of the original and appended directions, "original ⊥ drop" and "appended ⊥ drop" are the same vector. The two runs produced identical text, which gives a free measure of judge noise (≤ 0.3 on every score).
+- **Norm-preserving pushes** (LITERATURE.md H4: Selective Steering, COAST, the angle/norm paper). Adding a vector also lengthens the residual, which later layers have never seen. Here the residual after L8 turns toward the direction by the same angle as the plain push but keeps its length (`h' = (h + v)·|h| / |h + v|`), or grows 10% (the "mild norm increase" reported best for refusal).
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.75 | 0/16 |
+| Add α 0.5 / 0.75 (the usual push) | 2.88 / 4.00 | 7.50 / 5.12 | 4.38 / 1.25 | 0 / 6 of 16 |
+| Norm-preserving α 0.5 / 0.75 / 1.0 / 1.5 | 2.75 / 3.50 / 2.19 / 1.19 | 7.56 / 4.94 / 2.00 / 0.50 | 4.62 / 1.31 / 0.06 / 0.00 | 0 / 3 / 15 / 16 of 16 |
+| Norm +10% α 0.75 / 1.0 | 3.81 / 2.00 | 4.88 / 2.50 | 1.31 / 0.19 | 4 / 14 of 16 |
+| Original (= appended) ⊥ drop α 0.5 | 0.00 | 9.00 | 8.56 | 0/16 |
+| Original (= appended) ⊥ drop α 1.0 | 0.44 | 4.75 | 1.69 | 1/16 |
+| Woven ⊥ drop α 0.5 / 1.0 | 0.06 / 0.00 | 8.94 / 4.00 | 8.44 / 2.88 | 0 / 4 of 16 |
+
+What this says:
+- **Keeping the residual's length changes nothing.** Norm-preserving and norm +10% pushes score the same as the plain push at α 0.5 and 0.75, within judge noise, and break the same way above that. The helpfulness cost isn't caused by the residual getting longer. It comes with the direction itself, as §5–§6 suggested.
+- **There is no philosophy left once "drop the answer" is removed.** Pushes along the remaining directions add no philosophy at α 0.5. At α 1.0 they break the answer (helpfulness 1.7–2.9) and still add none: outputs start mid-sentence ("it's about consistency and attention to detail.") or in lowercase fragments. In this data, "be philosophical" and "stop answering" are the same direction, so a mean-difference vector can't separate them.
+- **So the geometry isn't the problem; the constant direction is.** This rules out the cheapest fixes for the trade-off. The approaches that kept helpfulness were a prompt and a trained, token-dependent update (§8, §10).
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -403,6 +425,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_multilayer.py && .venv/bin/python scripts/claude_judge.py --input multilayer/gen.jsonl --output multilayer/judge.jsonl
 .venv/bin/python scripts/exp_prompt_transplant.py && .venv/bin/python scripts/claude_judge.py --input prompt_transplant/gen.jsonl --output prompt_transplant/judge.jsonl
 .venv/bin/python scripts/exp_routes.py && .venv/bin/python scripts/claude_judge.py --input routes/gen.jsonl --output routes/judge.jsonl
+.venv/bin/python scripts/exp_geometry.py && .venv/bin/python scripts/claude_judge.py --input geometry/gen.jsonl --output geometry/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
