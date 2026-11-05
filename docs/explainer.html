@@ -231,6 +231,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c20">20 · Steering the hot spots</a>
       <a href="#c21">21 · One weight edit</a>
       <a href="#c22">22 · Gate or direction?</a>
+      <a href="#c23">23 · Learning from pairs</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -790,6 +791,23 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 23 -->
+  <section class="chapter" id="c23">
+    <div>
+      <div class="num">Chapter 23 · experiment M</div>
+      <h2>Learning from pairs instead of examples</h2>
+      <p><strong>Why we tried it.</strong> Chapter 18 showed that a student trained to <em>imitate</em> answers copies its teacher's average, even when we hand-pick the best answers. Preference training works differently. It shows the model two answers to the same question, one the judge liked better on both philosophy and helpfulness, and nudges the model to prefer the better one <em>more than it did before</em>. The method is called DPO (Direct Preference Optimization). It learns what separates good answers from worse ones, not what a typical answer looks like.</p>
+      <p>We built 175 such pairs from the 512 answers already judged in chapter 18 and trained the chapter-18 student on them, with no prompt.</p>
+      <p><strong>What happened.</strong> The student moved up and to the right (arrow): slightly more philosophical <em>and</em> slightly more helpful. No other method had improved both at once. Turned up to 1.5× it nearly matches the woven prompt's philosophy with more helpfulness. Its answers open with one reflective sentence and then get practical.</p>
+      <p><strong>What it means.</strong> This is the first sign of beating the frontier rather than sliding along it. But it's small, about the size of the judge's noise on 16 prompts, so chapter 24 re-checks it on 48 new prompts. Source: FINDINGS.md § 20, <code>runs/dpo/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s23" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: preference training moves the student up and to the right, above the frontier line"></svg>
+      <div class="legend"><span><i style="background:var(--s3)"></i>student (imitation)</span><span><i style="background:var(--accent)"></i>after preference training</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
+      <p class="note">One blind pool, 16 prompts. Dashed line: philosophy + helpfulness = 9.3, the frontier from chapter 18. Hover a dot for its scores.</p>
+    </div>
+  </section>
+
   <!-- glossary -->
   <section class="chapter wide" id="terms">
     <div>
@@ -811,6 +829,7 @@ section.wide { grid-template-columns: 1fr; }
         <dt>Context distillation</dt><dd>Training a model to behave, without a prompt, the way it behaves with one, using its own prompted answers as targets.</dd>
         <dt>Gated DeltaNet</dt><dd>The token-mixing layer used in 24 of Qwen3.5-4B's 32 layers. Instead of attending to every earlier token, it keeps a running memory (state) that each token updates and reads.</dd>
         <dt>Mediation (activation patching)</dt><dd>Undo one part of the model's computation, by setting it to its value in another run, and measure how much of an effect disappears.</dd>
+        <dt>DPO (Direct Preference Optimization)</dt><dd>Training on pairs of answers: raise the probability of the preferred one relative to the rejected one, compared with a frozen copy of the starting model.</dd>
         <dt>Matched random control</dt><dd>Random neurons in the same layer, the same number of them, the same |doses| with random signs. It separates "these neurons" from "any push".</dd>
         <dt>Outer product u·vᵀ</dt><dd>Column times row; a rank-1 matrix whose every column is a multiple of u.</dd>
         <dt>Masked rank-1 edit</dt><dd>Adding <code>u·vᵀ</code> to <code>W_down</code> with v nonzero only on chosen neurons. Its effect is proportional to what those neurons are doing.</dd>
@@ -1940,6 +1959,21 @@ function fillTable(id, rows) {
         pts: [P(6.44, 2.69, "×1", 8.25, 1), P(5.75, 3.44, "×1.5", 8.06, 0), P(6.06, 3.38, "×2", 8.19, 0)], noTags: true },
       { name: "diff-means α 0.5", c: "acc", noTags: true, lab: [0, 24, "middle"], pts: [P(4.06, 2.94, "", 6.94, 0)] },
     ],
+  });
+})();
+
+/* ---------- 23: DPO (real data: runs/dpo/judge.jsonl) ---------- */
+(function () {
+  const P = (h, p, tag, c) => ({ h, p, tag, c, extra: "Degenerate: 0/16" });
+  tradeoffChart(document.getElementById("s23"), {
+    base: [9.00, 0.00, 9.00], goal: false,
+    refLines: [{ h1: 4.0, p1: 5.3, h2: 9.0, p2: 0.3, label: "philosophy + helpfulness = 9.3", lab: [-140, 26, "end"] }],
+    series: [
+      { name: "student (imitation)", c: "s3", noTags: true, lab: [-12, 18, "end"], pts: [P(7.75, 2.19, "", 8.12)] },
+      { name: "after DPO", c: "acc", noLine: true, tagLeft: false, pts: [P(7.94, 2.50, "×1", 8.38), P(7.12, 3.00, "×1.5", 8.00)] },
+      { name: "woven prompt", c: "pos", noTags: true, lab: [-12, -10, "end"], pts: [P(6.75, 3.12, "", 8.06)] },
+    ],
+    links: [[7.75, 2.19, 7.94, 2.50]],
   });
 })();
 </script>
