@@ -218,6 +218,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c12">12 · When to push</a>
       <a href="#c13">13 · Into the weights</a>
       <a href="#c14">14 · Which layers</a>
+      <a href="#c15">15 · Where the prompt acts</a>
       <a href="#terms">Glossary</a>
     </nav>
   </header>
@@ -595,6 +596,31 @@ section.wide { grid-template-columns: 1fr; }
           <tbody id="s14-table"></tbody>
         </table>
       </details>
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section class="chapter" id="c15">
+    <div>
+      <div class="num">Chapter 15 · experiment F</div>
+      <h2>Where does a prompt do its work?</h2>
+      <p><strong>Why we tried it.</strong> A popular idea in the literature is that a prompt acts through a few positions where the model "decides" what kind of answer to write. Here the last 9 prompt tokens are the same chat-template header for every question, a natural place for that decision. Chapter 12 also found that pushing only the prompt was enough. If the decision sits there, we could copy it and drop the prompt.</p>
+      <p>So we ran the model <em>with</em> the system prompt, recorded its internal state at the last few positions, and pasted that state into a run <em>without</em> the prompt. Pick how many positions to copy and see how much of the prompt's philosophy comes back. The black tick is the real prompt.</p>
+      <p><strong>What happened.</strong> Copying only the final position does nothing. Copying the whole header and question, at every layer, brings back less than half. Copying one layer, or adding the <em>average</em> prompted-minus-plain difference at those positions, does nothing at all.</p>
+      <p><strong>What it means.</strong> The prompt isn't summarised into a decision at its end. While it writes, the answer keeps reading the system prompt itself, through attention to its tokens and through the DeltaNet state that carries a summary of everything read so far. A prompt works more like a reference the answer keeps going back to. That also hints at why the trained LoRA (chapter 13) works: it learns to produce the same effect without anything to look back at. Source: FINDINGS.md § 12, <code>runs/prompt_transplant/</code>.</p>
+    </div>
+    <div class="fig">
+      <svg id="s15" viewBox="0 0 720 150" role="img" aria-label="Prompt tokens: the removed system prompt, the question and the chat header; the copied positions are highlighted"></svg>
+      <div class="controls" id="s15-btns">
+        <button data-k="1">Last 1</button>
+        <button data-k="9" class="on">Last 9 (header)</button>
+        <button data-k="16">Last 16 (+ question)</button>
+        <button data-k="L8">Last 9, layer 8 only</button>
+        <button data-k="pv">Average offset ×2</button>
+      </div>
+      <div class="wbars" id="s15-bars"></div>
+      <p class="readout" id="s15-read"></p>
+      <p class="note">Mean over 16 prompts (8 held out), judged blind in one pool with the baseline and the prompt. The answer is always generated with no system prompt.</p>
     </div>
   </section>
 
@@ -1550,6 +1576,40 @@ function fillTable(id, rows) {
     T(svg, cx - bw / 2 - 1, y(p) - 6, p.toFixed(1), "sm", "middle");
   });
   T(svg, 380, Y1 + 38, "layer pushed →", "lbl", "middle");
+})();
+
+/* ---------- 15: prompt transplant (real data: runs/prompt_transplant/judge.jsonl) ---------- */
+(function () {
+  const C = {
+    "1":  { k: 1,  v: [0.19, 8.88, 8.12], t: "<b>Last position, every layer.</b> Almost nothing comes back: the last token doesn't hold the prompt's effect." },
+    "9":  { k: 9,  v: [1.12, 8.69, 7.81], t: "<b>The 9 header positions, every layer.</b> About a third of the prompt's philosophy comes back." },
+    "16": { k: 16, v: [1.38, 8.62, 7.69], t: "<b>Header and question, every layer.</b> Under half. The rest comes from the answer reading the system prompt directly." },
+    "L8": { k: 9,  v: [0.00, 8.81, 8.31], t: "<b>The 9 header positions, layer 8 only.</b> Nothing: one layer of the copied state isn't enough." },
+    "pv": { k: 9,  v: [0.00, 9.00, 8.56], t: "<b>The average prompted-minus-plain offset at the header, layer 8, twice.</b> Nothing: the effect isn't one shared offset." },
+  };
+  const prompt = [2.94, 8.44, 6.81];
+  const svg = document.getElementById("s15");
+  T(svg, 0, 20, "system prompt (removed)", "sm"); T(svg, 196, 20, "question", "sm"); T(svg, 430, 20, "header (same for every question)", "sm");
+  E("rect", { x: 0, y: 32, width: 180, height: 26, rx: 4, class: "czero", "stroke-dasharray": "4 3", fill: "none", stroke: "var(--ink-3)" }, svg);
+  const cells = [];
+  for (let i = 0; i < 16; i++) { const xx = 196 + i * 30 + (i >= 7 ? 12 : 0); cells.push(E("rect", { x: xx, y: 32, width: 25, height: 26, rx: 4 }, svg)); }
+  T(svg, 196, 96, "answer, generated with no system prompt →", "sm");
+  for (let i = 0; i < 14; i++) E("rect", { x: 196 + i * 36, y: 106, width: 30, height: 22, rx: 4, class: "czero" }, svg);
+  const lg = T(svg, 560, 96, "", "sm");
+  const bars = document.getElementById("s15-bars"), read = document.getElementById("s15-read");
+  const names = ["Philosophy", "Coherence", "Helpfulness"];
+  bars.innerHTML = names.map((n, k) => `<div class="wrow"><span>${n}</span><div class="tr"><i></i><u style="left:calc(${prompt[k] / 9 * 100}% - 1px)" title="prompt: ${prompt[k]}"></u></div><b></b></div>`).join("");
+  function show(key) {
+    const c = C[key];
+    cells.forEach((r, i) => r.setAttribute("class", i >= 16 - c.k ? "cpos" : "czero"));
+    lg.textContent = key === "L8" ? "blue = copied (layer 8)" : key === "pv" ? "blue = offset added" : "blue = copied (all layers)";
+    const rows = bars.querySelectorAll(".wrow");
+    c.v.forEach((v, j) => { rows[j].querySelector("i").style.width = (v / 9 * 100) + "%"; rows[j].querySelector("b").textContent = v.toFixed(2); });
+    read.innerHTML = c.t;
+  }
+  const btns = [...document.querySelectorAll("#s15-btns button")];
+  btns.forEach(b => b.onclick = () => { toggleGroup(btns, b); show(b.dataset.k); });
+  show("9");
 })();
 </script>
 </body>

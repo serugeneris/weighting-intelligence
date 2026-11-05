@@ -16,6 +16,7 @@
 10. **Self-judging is unreliable.** Qwen judging its own outputs rated identity-confused loops ("I am the only one who has been told…") as both philosophical and coherent (≈6.5/9). A blind external judge flagged 13–14 of 16 of those as degenerate. Perplexity doesn't catch loops either.
 11. **A tiny trained update gives a prompt-free "philosophy Qwen".** Training a LoRA so the model answers *without* the prompt the way it does *with* the woven prompt matches the prompt's balance on held-out prompts: philosophy 2.25–2.50, helpfulness 6.2–6.6, against the prompt's 2.94 / 6.44. A rank-1 update to one matrix (layer 8's `down_proj`, 11,776 parameters) is as good as a 9M-parameter adapter. Its push is token-dependent, mostly on the prompt and the first answer tokens, smaller than any steering push that worked, and nearly orthogonal to the diff-means direction (Results §10).
 12. **Where and how widely we push doesn't change the trade-off.** Spreading the push over 3–11 layers, or recreating the natural difference layer by layer, stays on the same 0.5–0.8 philosophy-per-helpfulness-point line. Only the middle layers (L8–L16) respond to a modest push. Recreating the natural trajectory up to L24 gives the most philosophical prompt-free output so far (4.75) but copies the hand-written targets' unhelpfulness (Results §11).
+13. **The prompt doesn't act through a decision at its end.** Pasting the prompted model's state at the last 16 prompt positions (every layer) into an unprompted run recovers under half of the prompt's effect; one position, one layer or a mean "prompt vector" recovers nothing. The answer keeps reading the system prompt while it writes (Results §12).
 
 ## Background
 
@@ -301,6 +302,29 @@ What this says:
 - **The middle layers are where a push works (H5, partly supported).** At α 0.5, only L8–L16 respond (philosophy 2.1–2.9). L4 does nothing even at 2× its natural difference; L20 and L24 need 2× natural to show anything, and then lose coherence. L16 at α 0.5 is slightly better than L8 (philosophy 2.88 vs 2.38, helpfulness 5.06 vs 4.62), but that is within judge noise.
 - **So the place and spread of a constant push matter less than its form.** No layer or combination reaches the prompt's balance. The rank-1 LoRA of §10 sits at the same L8 site with a smaller push; what it adds is a token-dependent size.
 
+### 12. Is the prompt's effect stored at the end of the prompt? (experiment F)
+
+Branch `exp-prompt-transplant` (`scripts/exp_prompt_transplant.py`, `runs/prompt_transplant/`). Two literature leads (LITERATURE.md H1, H8) say a prompt mostly acts through a few positions where the model "decides" what kind of answer to write. With the chat template, the last 9 prompt tokens (`<|im_end|>`, `\n`, `<|im_start|>`, `assistant`, `\n`, `<think>`, `\n\n`, `</think>`, `\n\n`) are the same for every prompt, so they are a natural decision point. Experiment C also found that pushing only the prompt tokens is enough.
+- **Transplant**: run the model *with* the woven prompt, record the residual stream at the last k prompt positions, and paste it into the run *without* the prompt at the same positions, at every layer or at one layer. The answer is then generated with no system prompt. A question here is 19–25 tokens, so the last 16 positions cover the whole question as well as the header.
+- **Prompt vector**: the mean (prompted − unprompted) residual at the last k positions of one layer, computed on the 32 contrast questions (never evaluation prompts) and added at those positions with no prompt. Its size at L8 is 0.28·p50 (k = 9) and 0.37·p50 (k = 1).
+
+| Config | Philo | Coherence | Helpful | Degenerate |
+|---|---|---|---|---|
+| Baseline | 0.06 | 9.00 | 8.44 | 0/16 |
+| Prompt woven | 2.94 | 8.44 | 6.81 | 0/16 |
+| Transplant last 1, all layers | 0.19 | 8.88 | 8.12 | 0/16 |
+| Transplant last 9, all layers | 1.12 | 8.69 | 7.81 | 0/16 |
+| Transplant last 16, all layers | 1.38 | 8.62 | 7.69 | 0/16 |
+| Transplant last 9, L8 only / L16 only | 0.00 / 0.12 | 8.81 / 8.88 | 8.31 / 8.50 | 0/16 |
+| Prompt vector last 9, L8 ×1 / ×2 | 0.00 / 0.00 | 8.94 / 9.00 | 8.88 / 8.56 | 0/16 |
+| Prompt vector last 9, L16 ×1 / ×2 | 0.06 / 0.75 | 8.88 / 8.75 | 8.38 / 8.12 | 0/16 |
+| Prompt vector last 1, L8 ×2 | 0.00 | 8.94 | 8.38 | 0/16 |
+
+What this says:
+- **The prompt's effect is not stored at the end of the prompt.** Even pasting the full prompted state of the last 16 positions (header and question) at every layer recovers under half of the prompt's philosophy (1.38 of 2.94). The last position alone recovers almost nothing. While it writes, the answer keeps reading the system prompt itself, through attention to its tokens and through the DeltaNet state that summarises them. Neither of those exists in the unprompted run.
+- **A single layer or a mean offset does nothing.** Transplanting the last 9 positions at one layer, or adding the average prompt offset there (even ×2), leaves the answer plain. The prompt's information at those positions is spread over layers and is specific to each question, not one shared offset.
+- **Why prompt-only steering still worked (§9).** That push was large (α 1.0), went into *every* prompt position, and pointed along a direction that already means "philosophical text". The prompt's own end-state is smaller and less specific. So H1/H8 in their strong form ("the decision sits in a few tokens") are not supported here: the prompt acts over the whole answer, more like a reference the answer keeps returning to.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -343,6 +367,7 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_token_window.py && .venv/bin/python scripts/claude_judge.py --input token_window/gen.jsonl --output token_window/judge.jsonl
 .venv/bin/python scripts/exp_distill.py && .venv/bin/python scripts/claude_judge.py --input distill/gen.jsonl --output distill/judge.jsonl
 .venv/bin/python scripts/exp_multilayer.py && .venv/bin/python scripts/claude_judge.py --input multilayer/gen.jsonl --output multilayer/judge.jsonl
+.venv/bin/python scripts/exp_prompt_transplant.py && .venv/bin/python scripts/claude_judge.py --input prompt_transplant/gen.jsonl --output prompt_transplant/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
