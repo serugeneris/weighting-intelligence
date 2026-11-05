@@ -19,6 +19,7 @@
 13. **The prompt doesn't act through a decision at its end.** Pasting the prompted model's state at the last 16 prompt positions (every layer) into an unprompted run recovers under half of the prompt's effect; one position, one layer or a mean "prompt vector" recovers nothing. The answer keeps reading the system prompt while it writes (Results §12).
 14. **Attention is a hot spot, but DeltaNet carries as much.** Undoing the system prompt's influence in all 8 full-attention layers removes 83% of its effect; in all 24 DeltaNet layers, 93%. Three heads in layers 11 and 15 remove 38%. A steering push on the prompt reaches the answer through the DeltaNet recurrent state, not the attention cache (Results §13).
 15. **Changing the push's geometry doesn't help.** Keeping the residual's length (norm-preserving rotation, or +10%) scores the same as a plain push. Projecting the "drop the answer" component out of the direction leaves no philosophy at all: in mean-difference data, "be philosophical" and "stop answering" are the same direction (Results §14).
+16. **A better teacher doesn't make a better student here.** A prompt search and best-of-4 selection (judge-picked answers) gave students that copy their teacher's average balance, not its best answers. All prompts and students share one frontier (philosophy + helpfulness ≈ 9.1–9.4), about twice as efficient as steering. The choice of teacher only moves the student along it (Results §15).
 
 ## Background
 
@@ -381,6 +382,29 @@ What this says:
 - **There is no philosophy left once "drop the answer" is removed.** Pushes along the remaining directions add no philosophy at α 0.5. At α 1.0 they break the answer (helpfulness 1.7–2.9) and still add none: outputs start mid-sentence ("it's about consistency and attention to detail.") or in lowercase fragments. In this data, "be philosophical" and "stop answering" are the same direction, so a mean-difference vector can't separate them.
 - **So the geometry isn't the problem; the constant direction is.** This rules out the cheapest fixes for the trade-off. The approaches that kept helpfulness were a prompt and a trained, token-dependent update (§8, §10).
 
+### 15. Distilling a better teacher (experiment J)
+
+Branch `exp-teacher` (`scripts/exp_teacher.py`, `runs/teacher/`). Experiment D's student copied the prompt's balance but couldn't beat it. Two ways to raise the teacher, using only training questions:
+- **Prompt search.** Six system prompts on 16 training questions (blind judge): the two best from experiment B and four new ones that stress practical detail (`CANDIDATES` in the script). The winner by mean philosophy + helpfulness was *reflect-first* (2.06 / 7.69; woven 2.94 / 5.94, frame 2.19 / 7.31, practical-philosopher 1.25 / 7.88, named-idea 0.19 / 8.38, practical-first 0.31 / 8.12).
+- **Best-of-4 (rejection sampling).** Four sampled answers (temperature 0.8) with the reflect-first prompt for each of the 128 training questions, 512 judged blind. For each question we kept the answer with the highest philosophy + helpfulness (non-degenerate, coherence ≥ 7). The kept answers average 2.50 / 7.98 / coherence 8.52, against 2.12–2.23 / 7.34–7.51 for single samples.
+- **Students**, trained exactly as in experiment D: rank-1 L8 on the reflect-first greedy answers, and rank-1 L8 and rank-8 MLP on the best-of-4 answers. They were evaluated without a prompt on the usual 16 prompts, in one pool with both prompts and experiment D's woven student (reloaded).
+
+| Config | Philo | Coherence | Helpful | Degenerate | Philo + help |
+|---|---|---|---|---|---|
+| Baseline | 0.00 | 9.00 | 8.94 | 0/16 | 8.94 |
+| Prompt woven | 2.81 | 8.19 | 6.38 | 0/16 | 9.19 |
+| Prompt reflect-first | 1.88 | 8.19 | 7.56 | 0/16 | 9.44 |
+| Student of woven (exp D, rank 1 L8) | 2.56 | 7.94 | 6.75 | 1/16 | 9.31 |
+| Student of reflect-first (rank 1 L8) | 1.44 | 8.19 | 7.62 | 0/16 | 9.06 |
+| Student of best-of-4 (rank 1 L8) | 1.38 | 8.31 | 7.56 | 0/16 | 8.94 |
+| Student of best-of-4 (rank 8 MLP) | 1.69 | 8.19 | 7.56 | 0/16 | 9.25 |
+
+What this says:
+- **A student copies its teacher's average, not its best answers.** The best-of-4 students score like the plain reflect-first student and its prompt, not like the selected targets (2.50 / 7.98). The selection gain was small: about 0.35 philosophy and 0.55 helpfulness over a random sample, the same size as the judge's noise (§5, §14). So selection mostly kept answers the judge happened to score high, and that isn't something a student can learn.
+- **Prompts and their students share one frontier.** Every prompt and student here has philosophy + helpfulness of about 9.1–9.4. Moving along it trades about one helpfulness point per philosophy point. Steering trades about two (0.5–0.8 philosophy per point, §5–§14). Choosing a teacher picks a point on this frontier: woven is more philosophical, reflect-first more helpful. Neither moves the frontier.
+- **The experiment D result replicates.** Reloaded in a new pool, the woven student scores 2.56 / 6.75 (2.25 / 6.62 before), matching its prompt again.
+- **To go beyond the frontier you need a stronger signal than 4 noisy samples.** Options: many more samples per question, pairwise preference training (DPO) instead of imitation, or a stronger teacher model. None of these were run here.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy.
@@ -401,7 +425,8 @@ What this says:
    - ~~**Mid-layer re-injection**~~: done as multi-layer steering, see Results §11. Spreading the push, or recreating the natural path layer by layer, stays on the same trade-off line.
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
-   - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Open: distil a *better* teacher (prompt + light push, or a stronger prompt), since distillation can only copy the prompt's balance; and turn the rank-1 update into a standalone checkpoint.
+   - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Open: turn the rank-1 update into a standalone checkpoint.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. Open: DPO on judged pairs, many more samples per question, or a stronger teacher model.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -426,6 +451,9 @@ python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate 
 .venv/bin/python scripts/exp_prompt_transplant.py && .venv/bin/python scripts/claude_judge.py --input prompt_transplant/gen.jsonl --output prompt_transplant/judge.jsonl
 .venv/bin/python scripts/exp_routes.py && .venv/bin/python scripts/claude_judge.py --input routes/gen.jsonl --output routes/judge.jsonl
 .venv/bin/python scripts/exp_geometry.py && .venv/bin/python scripts/claude_judge.py --input geometry/gen.jsonl --output geometry/judge.jsonl
+.venv/bin/python scripts/exp_teacher.py --stage prompts && .venv/bin/python scripts/claude_judge.py --input teacher/prompts_gen.jsonl --output teacher/prompts_judge.jsonl
+.venv/bin/python scripts/exp_teacher.py --stage samples && .venv/bin/python scripts/claude_judge.py --input teacher/samples_gen.jsonl --output teacher/samples_judge.jsonl
+.venv/bin/python scripts/exp_teacher.py --stage train && .venv/bin/python scripts/claude_judge.py --input teacher/gen.jsonl --output teacher/judge.jsonl
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
