@@ -1,0 +1,39 @@
+{
+ "terse_system": "Answer as briefly and literally as possible. Give only the requested information, with no commentary.",
+ "two_turn": [
+  ["How do I start a compost bin at home?", "My apartment has no balcony. Can I still do it indoors?"],
+  ["What's a good beginner running plan?", "My knees hurt after the second run. Should I stop?"],
+  ["How do I make a basic tomato sauce?", "How long will it keep in the fridge?"],
+  ["How can I improve my sleep?", "What if I work night shifts?"],
+  ["How do I write a cover letter?", "Should I mention a two-year gap in my CV?"],
+  ["How do I repot a houseplant?", "The roots are circling the pot. Do I cut them?"],
+  ["What should I pack for a weekend hiking trip?", "The forecast says rain both days. What changes?"],
+  ["How do I set up a monthly budget?", "I get paid irregularly as a freelancer. How do I adapt it?"],
+  ["How do I teach a child to ride a bike?", "She's scared after falling. What now?"],
+  ["How do I clean a cast iron pan?", "There's rust on it. Is it ruined?"],
+  ["How do I prepare for a job interview?", "What do I say when they ask about my weaknesses?"],
+  ["How do I learn to touch type?", "How long until I'm faster than hunting and pecking?"],
+  ["How do I choose a good watermelon?", "How should I store half of one after cutting it?"],
+  ["How do I ask my boss for a raise?", "She said 'not this year'. What's my next step?"],
+  ["How do I get started with meditation?", "My mind keeps wandering after a minute. Am I doing it wrong?"],
+  ["How do I fix a leaky faucet?", "I don't know if it's a cartridge or a compression faucet. How do I tell?"]
+ ],
+ "checkable": [
+  {"q": "What is 17 multiplied by 23?", "a": "391"},
+  {"q": "What is the capital of Australia?", "a": "canberra"},
+  {"q": "How many sides does a hexagon have?", "a": "\\b6\\b|six"},
+  {"q": "At sea level, what is the boiling point of water in degrees Celsius?", "a": "\\b100\\b"},
+  {"q": "Who wrote Pride and Prejudice?", "a": "austen"},
+  {"q": "What is the chemical symbol for gold?", "a": "\\bau\\b"},
+  {"q": "What is 15% of 80?", "a": "\\b12\\b"},
+  {"q": "Sort these numbers in ascending order: 5, 2, 9, 1.", "a": "1,\\s*2,\\s*5,\\s*9"},
+  {"q": "In what year did World War II end?", "a": "1945"},
+  {"q": "What is the square root of 144?", "a": "\\b12\\b"},
+  {"q": "Write a Python function that returns the sum of a list of numbers.", "a": "def \\w+\\("},
+  {"q": "What is the largest planet in our solar system?", "a": "jupiter"},
+  {"q": "How many minutes are there in 3.5 hours?", "a": "\\b210\\b"},
+  {"q": "What is the derivative of x squared?", "a": "2x|2 \\* x|2\\*x|2·x"},
+  {"q": "How do you say 'thank you' in Spanish?", "a": "gracias"},
+  {"q": "What is 1,000 divided by 8?", "a": "\\b125\\b"}
+ ]
+}
