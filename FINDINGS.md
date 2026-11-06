@@ -34,6 +34,7 @@
 28. **Sparse-autoencoder features are readable but steer no better than diff-means.** A TopK SAE trained at layer 8 (8,192 features, 16% of variance unexplained) finds clear philosophy-content features ("a profound lesson in…", reflective codas about attention, identity and self, "rather than / merely"). Ranking features by their philosophical-minus-plain activation, though, puts artefacts first: a disfluency feature and two "pseudo-profound rambling" features, which make no philosophy when pushed. Steering with the four hand-picked content features gives philosophy 3.25 with helpfulness 3.12, the same trade-off as diff-means and far below the learned direction B in the same pool (4.31 / 5.06) (Results §27).
 29. **A non-Claude judge confirms the Claude-taught student's advantage; there is no sign of Claude self-preference.** Qwen3.5-4B, re-scoring all 2,032 answers of the six 48-prompt pools, agrees with Claude on philosophy (per item r 0.73–0.75; Sonnet–Opus 0.87) and on the direction of every key helpfulness contrast. It sees the student's helpfulness gain over the woven prompt as even larger (+2.9 against Sonnet's +1.9 and Opus's +2.1, at equal philosophy). Claude is not kinder to Claude-written text: it outscores Qwen by +1.2 helpfulness on Claude's own answers but by +2.9 on Qwen's plain ones. Qwen can't judge coherence (r 0.3) (Results §28).
 30. **Correction: the answers that "broke" at high LoRA gain didn't break; they didn't stop.** The model config's end token is `<|endoftext|>`, not the chat format's `<|im_end|>`, so generation didn't stop when a turn ended. Answers that finished before the token limit ran on into an invented next turn ("…keep old accounts open. user What is the best way…"), and the judge flagged them as degenerate. Higher gain makes the students' answers shorter, so this looked like breakage growing with gain. The project scan finds 206 such run-on outputs, every one judged degenerate. Re-judged after cutting at the turn end, the 384-answer student at ×1.3 and ×1.5 has 0/48 broken answers, on the same frontier. The frontier conclusions of §23 stand; the "fragile gain" claim does not. Generation now stops at `<|im_end|>` (Results §29).
+31. **The student learns reflection tied to the task, not a free-floating register, and all of its philosophy comes from the reflections.** Split into their practical part and their reflective sentences, the teacher answers teach different things. The practical part alone gives no philosophy and no helpfulness gain over the baseline. Adding each answer's own reflection back reproduces the original student. Pairing each practical answer with a reflection written for a *different* question gives a student whose codas don't fit (28/48 end with the same off-topic remark about budgets): philosophy −0.8, helpfulness −0.8, coherence −2.2 against the matched student (Results §30).
 
 ## Background
 
@@ -804,6 +805,40 @@ Single run-ons in `bake`, `distill`, `gate`, `robust` and `teacher` (one of 16 o
 
 **What changes.** The 384-answer student doesn't break when amplified: from ×1.0 to ×1.5 it trades helpfulness for philosophy along the same line (sum about 10.3 Sonnet, 9.0–9.6 Opus), and ×1.3–1.5 is a usable "more philosophical" setting. So the §23 claim that a better-trained adapter "makes gain fragile" is withdrawn. The frontier claim stands, and so does §26's diagnosis that the sampled answers were too plain for DPO to work with. Earlier results whose configs wrote long answers (steering, prompts, the baseline) were essentially unaffected, because those answers hit the token limit before ending.
 
+### 30. Style or content? Ablating the teacher's reflections (experiment W)
+
+The question from the scouting pass: when the student learns from Claude's answers, is it learning *reflection about the task* or just *a reflective register* (any coda will do)? And does Claude's practical content help on its own? Claude (Sonnet) split each of the 384 teacher answers of experiment P into its practical part (reflective sentences removed, nothing else changed) and the removed reflection, verbatim. 381 answers had both parts, and the two parts cover 99.8% of the original characters (`runs/style/split.json`). Three rank-8 MLP students were trained exactly as in P (`scripts/exp_style.py`):
+
+- **practical only:** just the practical part (66 words on average);
+- **own reflection:** the practical part plus its own reflection, rebuilt by the same pipeline (89 words; the matched control);
+- **mismatched reflection:** the practical part plus the reflection written for a different question (a fixed derangement; 89 words).
+
+One blind pool on the 48 confirmation prompts, with the baseline, the woven prompt and P's original student. Outputs were cut at the end of the turn (§29) and judged by Sonnet and Opus.
+
+| Config | Philosophy (S / O) | Helpfulness (S / O) | Coherence (S / O) | Degenerate (S / O) | Final train loss |
+|---|---|---|---|---|---|
+| Baseline | 0.02 / 0.04 | 8.44 / 7.79 | 8.92 / 8.81 | 1 / 1 | — |
+| Prompt woven | 3.19 / 3.10 | 5.77 / 4.98 | 8.08 / 8.08 | 0 / 0 | — |
+| Original answers (P's student) ×1.0 | 2.27 / 2.25 | 8.08 / 7.46 | 8.21 / 8.10 | 0 / 0 | 1.00 |
+| Practical only ×1.0 / ×1.2 | 0.04 / 0.04, 0.04 / 0.02 | 8.35 / 7.42, 7.92 / 6.96 | 8.69 / 8.21, 8.31 / 7.96 | 1 / 1, 0 / 0 | 1.04 |
+| Own reflection ×1.0 / ×1.2 | 2.33 / 2.29, 2.46 / 2.46 | 8.10 / 7.23, 7.81 / 6.73 | 7.96 / 7.81, 7.88 / 7.50 | 0 / 0, 1 / 1 | 1.09 |
+| Mismatched reflection ×1.0 / ×1.2 | 1.50 / 1.60, 1.83 / 1.65 | 7.27 / 6.44, 6.92 / 6.06 | **5.81 / 5.54**, 5.50 / 5.31 | 6 / 3, 8 / 0 | 1.42 |
+
+Paired over the 48 prompts (Sonnet / Opus, ×1.0):
+
+| Contrast | Philosophy | Helpfulness | Coherence |
+|---|---|---|---|
+| own − mismatched | +0.83 ± 0.14 / +0.69 ± 0.15 | +0.83 ± 0.15 / +0.79 ± 0.19 | +2.15 ± 0.21 / +2.27 ± 0.19 |
+| own − practical only | +2.29 ± 0.11 / +2.25 ± 0.11 | −0.25 ± 0.18 / −0.19 ± 0.24 | −0.73 ± 0.13 / −0.40 ± 0.15 |
+| practical only − baseline | +0.02 ± 0.02 / 0.00 ± 0.03 | −0.08 ± 0.15 / −0.38 ± 0.23 | −0.23 ± 0.09 / −0.60 ± 0.15 |
+| own − original student | +0.06 ± 0.13 / +0.04 ± 0.13 | +0.02 ± 0.14 / −0.23 ± 0.21 | −0.25 ± 0.12 / −0.29 ± 0.14 |
+
+What this says:
+- **The rebuilt control works.** "Own reflection" matches P's original student within noise, so the split-and-rebuild pipeline doesn't distort anything.
+- **All the philosophy comes from the reflections, and it costs almost no helpfulness.** The practical part alone teaches nothing a judge can see: no philosophy, and no helpfulness gain over the baseline, even though Claude's full answers are rated about 8.8 for helpfulness. Adding the reflections back adds 2.3 philosophy for 0.2–0.25 helpfulness (within about 1 SE) and 0.4–0.7 coherence. The student's "+2 helpfulness over the prompt" (§22) is the baseline's helpfulness kept, not new helpfulness learned from Claude.
+- **The student learns which reflection fits which task.** With mismatched reflections, it can't predict the coda from the question, so it learns a few generic codas and pastes them anywhere. In 28 of 48 answers it is the same remark about budgets ("A budget is a way of making your values visible…") after questions about thunder or first-aid kits, although only 3 of the 384 training reflections mention budgets. The judges score these non-sequiturs as incoherent (5.8 against 8.0). The matched students never do this (0/48), and their codas are about the question: "…it is really the heated air, and this reminds us that what we perceive directly are effects, not causes." So the behaviour isn't a register that any coda would satisfy. The topic binding in the teacher data is what the student generalizes, and it can't be faked with shuffled data.
+- **Implication for data.** The quality lever is the reflection, and specifically its fit to the task. A cheaper teacher dataset (a plain practical answer plus one task-specific reflective sentence) should work as well as a full rewrite.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -881,6 +916,8 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/exp_sae.py --stage steer2 && .venv/bin/python scripts/claude_judge.py --input sae/gen_round2.jsonl --output sae/judge_round2.jsonl
 .venv/bin/python scripts/exp_qwen_judge.py --stage score && .venv/bin/python scripts/exp_qwen_judge.py --stage analyze
 .venv/bin/python scripts/cut_turns.py runs/more_teacher/gen.jsonl && .venv/bin/python scripts/cut_turns.py runs/more_teacher/gen_gains.jsonl   # then judge gen_cut / gen_gains_cut (Sonnet + Opus)
+.venv/bin/python scripts/exp_style.py --stage split && .venv/bin/python scripts/exp_style.py --stage train && .venv/bin/python scripts/cut_turns.py runs/style/gen.jsonl
+.venv/bin/python scripts/claude_judge.py --input style/gen_cut.jsonl --output style/judge_cut.jsonl && .venv/bin/python scripts/claude_judge.py --input style/gen_cut.jsonl --output style/judge_cut_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
