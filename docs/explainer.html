@@ -244,6 +244,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c29">29 · Pairs need variety</a>
       <a href="#c30">30 · SAE features</a>
       <a href="#c31">31 · Another judge</a>
+      <a href="#c32">32 · Answers that didn't stop</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -878,13 +879,13 @@ section.wide { grid-template-columns: 1fr; }
       <div class="num">Chapter 26 · experiment P</div>
       <h2>More lessons from the teacher</h2>
       <p><strong>Why we tried it.</strong> The Claude-taught student of chapter 25 learned from only 128 answers and needed its volume turned up to 1.5× to be as philosophical as the prompt. Maybe it just hadn't seen enough examples. So Claude wrote 256 more questions in 16 everyday areas, checked against every prompt we had ever used, and answered them the same way. We trained a new student on all 384.</p>
-      <p><strong>What happened.</strong> At normal volume, the new student is clearly more philosophical than the old one (+0.7) and just as helpful: the closest any student has come to its teacher. But turning it up broke it. At 1.3×, 8 of 48 answers broke, and at 1.5×, 28 of 48, where the old student at 1.5× broke none (ringed dot in the chart). A better-trained update is already a bigger push, and over-amplifying it fails the same way an oversized steering push does.</p>
-      <p><strong>What it means.</strong> Every unbroken Claude-taught setting sits on one line, philosophy plus helpfulness of about 10, compared with about 9.2 for the woven prompt (dashed). More data moved the student's default point along that line, not past it. Two practical picks: the 128-answer student at 1.5× for the most philosophy, or the 384-answer student at 1.0–1.2× for the most help. Source: FINDINGS.md § 23, <code>runs/more_teacher/</code>.</p>
+      <p><strong>What happened.</strong> At normal volume, the new student is clearly more philosophical than the old one (+0.7) and just as helpful: the closest any student has come to its teacher. Turning it up trades helpfulness for philosophy along the same line. (We first thought it broke at 1.3× and 1.5×. Chapter 32 shows those answers were fine: our generation code just didn't stop when they ended. The chart shows the re-judged numbers.)</p>
+      <p><strong>What it means.</strong> Every Claude-taught setting sits on one line, philosophy plus helpfulness of about 10.3, compared with about 8.8 for the woven prompt in this pool (dashed). More data moved the student's default point along that line, not past it. Two practical picks: the 128-answer student at 1.5× for the most philosophy, or the 384-answer student at 1.0–1.3× for the most help. Source: FINDINGS.md § 23, <code>runs/more_teacher/</code>.</p>
     </div>
     <div class="fig">
       <svg id="s26" viewBox="0 0 720 420" role="img" aria-label="Scatter plot: the 384-answer student at gains 1.0, 1.2 and 1.3 and the 128-answer student at 1.5 all sit near philosophy plus helpfulness of 10, above the woven prompt"></svg>
       <div class="legend"><span><i style="background:var(--s3)"></i>384-answer student, gain ×1.0 → ×1.3</span><span><i style="background:var(--accent)"></i>128-answer student ×1.5</span><span><i style="background:var(--pos)"></i>woven prompt</span><span><b style="color:var(--ink);margin-right:5px">+</b>no prompt</span></div>
-      <p class="note">Pool 2, 48 new prompts, judged by Claude Sonnet. The ring marks ×1.3, where 8 of 48 answers broke; ×1.5 (pool 1, not shown) broke 28. Dashed line: the woven prompt's philosophy + helpfulness in this pool (9.2). Hover a dot for both judges' scores.</p>
+      <p class="note">Pool 2, 48 new prompts, judged by Claude Sonnet after cutting each answer at the end of its turn (chapter 32). No answer is broken. Dashed line: the woven prompt's philosophy + helpfulness in this pool (8.75). Hover a dot for both judges' scores.</p>
     </div>
   </section>
 
@@ -915,7 +916,7 @@ section.wide { grid-template-columns: 1fr; }
       <div class="num">Chapter 28 · experiment R</div>
       <h2>A bigger adapter isn't a bigger mind</h2>
       <p><strong>Why we tried it.</strong> Chapter 27 suggested the student was too small to learn the deeper teacher's answers: it fit them worse and copied only their surface. The cheapest fix is a bigger adapter, so we gave it four times as many numbers to learn (rank 32, 36 million) and trained it on both teachers.</p>
-      <p><strong>What happened.</strong> The bigger adapter fits the training answers much better: its training loss is a third lower. But on new prompts it's no better (bars). With the plainer teacher the two judges even disagree on whether it gained or lost. With the deeper teacher it's no better, and a few answers broke. The extra capacity went into memorizing the 384 examples, not into learning how to reason philosophically about a new task.</p>
+      <p><strong>What happened.</strong> The bigger adapter fits the training answers much better: its training loss is a third lower. But on new prompts it's no better (bars). With the plainer teacher the two judges even disagree on whether it gained or lost. With the deeper teacher it's no better. The extra capacity went into memorizing the 384 examples, not into learning how to reason philosophically about a new task.</p>
       <p><strong>What it means.</strong> The limit isn't the size of the adapter. It's the 4-billion-parameter base model, the amount of data, or both. Turning "sounds philosophical" into "thinks philosophically about this task" seems to need a bigger model or far more examples. Source: FINDINGS.md § 25, <code>runs/capacity/</code>.</p>
     </div>
     <div class="fig">
@@ -931,7 +932,7 @@ section.wide { grid-template-columns: 1fr; }
       <div class="num">Chapter 29 · experiment S</div>
       <h2>Preference pairs need the right variety</h2>
       <p><strong>Why we tried it.</strong> Two things moved the frontier: a stronger teacher (chapter 25) and learning from judged pairs (chapter 23). So we combined them. The Claude-taught student answered training questions four times each with dice-rolling (sampling), the judge scored every answer, and we trained it on the better-versus-worse pairs.</p>
-      <p><strong>What happened.</strong> Nothing improved (bars). The reason shows up in the samples. With dice-rolling, this student's answers were mostly plain, philosophy about 0.6 compared with about 2.1 when it always picks its most likely word, and about 1 in 10 broke. So the pairs mostly taught "don't break", which the normal model already does, not "reflect better".</p>
+      <p><strong>What happened.</strong> Nothing improved (bars). The reason shows up in the samples. With dice-rolling, this student's answers were mostly plain, philosophy about 0.6 compared with about 2.1 when it always picks its most likely word. So the pairs had little "better reflection" to teach. (We first counted about 1 in 10 samples as broken; chapter 32 shows those were our generation code not stopping, not the model.)</p>
       <p><strong>What it means.</strong> Preference training can only push in a direction that its samples already vary along. In chapter 23 the samples were reflective and differed in <em>how well</em> they reflected. Here they mostly differed in whether they worked at all. Source: FINDINGS.md § 26, <code>runs/dpo_claude/</code>.</p>
     </div>
     <div class="fig">
@@ -990,6 +991,24 @@ section.wide { grid-template-columns: 1fr; }
       <h3 style="margin-top:18px">How much higher Claude (Sonnet) rates helpfulness than Qwen does</h3>
       <div id="s31b"></div>
       <p class="note">Mean helpfulness from Sonnet minus mean from Qwen, by who wrote the answer. If Claude preferred its own style, the first bar would be the longest.</p>
+    </div>
+  </section>
+
+  <!-- 32 -->
+  <section class="chapter" id="c32">
+    <div>
+      <div class="num">Chapter 32 · a correction</div>
+      <h2>The answers that didn't stop</h2>
+      <p><strong>What we noticed.</strong> In the next experiment, some students had up to 34 of 48 answers flagged as broken. Reading them, every flagged answer was a complete, sensible answer followed by something odd: the model kept writing a <em>new user question</em> and started answering it.</p>
+      <p><strong>The cause.</strong> A chat model marks the end of its turn with a special "end of turn" token. Our generation code waited for a different end token, the one the model's config file names, so it never stopped at the end of a turn. Long answers hit the length limit first, so we never saw it. Short answers finished early and ran on. Turning a student up makes its answers shorter, so this looked exactly like "amplifying breaks the model".</p>
+      <p><strong>What changes.</strong> Cutting each saved answer at the end of its turn gives exactly what correct code would have produced, so we re-judged. The 384-answer student at 1.3× and 1.5× breaks <em>nothing</em> (bars): turning it up just trades helpfulness for philosophy along the same line. Chapter 26's "fragile at high volume" is withdrawn, and the code now stops at the end of a turn. The main conclusions stand. Source: FINDINGS.md § 29, <code>scripts/cut_turns.py</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Answers flagged as broken, before and after the fix</h3>
+      <div id="s32"></div>
+      <div class="legend"><span><i style="background:var(--neg)"></i>as first judged</span><span><i style="background:var(--s3)"></i>cut at the end of the turn, re-judged</span></div>
+      <p class="note">Out of 48 new prompts, judged by Claude Sonnet (Opus agrees). After the fix both settings show 0 broken answers, so their bars are empty.</p>
+      <div class="ex"><p><strong>A "broken" answer, in full</strong> (credit scores): …Pay on time, keep balances below about 30% of each limit, and keep old accounts open. <em>user: What is the best way to build…</em></p></div>
     </div>
   </section>
 
@@ -1785,7 +1804,7 @@ function tradeoffChart(svg, o) {
       if (q.tag && !f.noTags) T(svg, x(q.h) + (f.tagLeft ? -10 : 9), y(q.p) + (f.tagLeft ? 4 : -8), q.tag, "sm", f.tagLeft ? "end" : "start");
       hitAt(q.h, q.p, tipHtml(f.name + (q.tag ? ", " + q.tag : ""), q.h, q.p, q.c, q.extra));
     });
-    if (f.lab) { const e = f.pts[f.labAt == null ? f.pts.length - 1 : f.labAt]; T(svg, x(e.h) + f.lab[0], y(e.p) + f.lab[1], f.name, "lbl", f.lab[2]); }
+    if (f.lab) { const e = f.pts[f.labAt == null ? f.pts.length - 1 : f.labAt]; T(svg, x(e.h) + f.lab[0], y(e.p) + f.lab[1], f.label || f.name, "lbl", f.lab[2]); }
   });
   if (o.base) {
     const [h, p, c] = o.base;
@@ -2231,22 +2250,20 @@ function fillTable(id, rows) {
     ["Claude's own answers (training questions)", "2.49 / 2.66", "8.82 / 8.87", 8.94]]);
 })();
 
-/* ---------- 26: more teacher data (real data: runs/more_teacher/judge_gains.jsonl, judge_gains_opus.jsonl) ---------- */
+/* ---------- 26: more teacher data (real data: runs/more_teacher/judge_gains_cut.jsonl, judge_gains_cut_opus.jsonl; cut at turn end, §29) ---------- */
 (function () {
   const P = (h, p, tag, c, d, oh, op) => ({ h, p, tag, c, extra: `Degenerate: ${d}/48<br>Opus: philosophy ${op.toFixed(2)}, helpfulness ${oh.toFixed(2)}` });
   const svg = document.getElementById("s26");
   tradeoffChart(svg, {
-    base: [8.27, 0.04, 8.94], goal: false,
-    refLines: [{ h1: 4.0, p1: 5.21, h2: 9.0, p2: 0.21 }],
+    base: [8.29, 0.02, 8.90], goal: false,
+    refLines: [{ h1: 4.0, p1: 4.75, h2: 8.75, p2: 0.0 }],
     series: [
-      { name: "384-answer student, ×1.0 → ×1.3", c: "s3", noTags: true, lab: [-14, 34, "end"], labAt: 2,
-        pts: [P(8.02, 2.08, "×1.0", 8.42, 0, 7.54, 2.42), P(7.58, 2.44, "×1.2", 8.25, 0, 6.90, 2.71), P(7.33, 2.52, "×1.3", 7.52, 8, 6.73, 2.73)] },
-      { name: "128-answer ×1.5", c: "acc", noTags: true, lab: [0, -14, "middle"], pts: [P(7.29, 2.77, "", 7.67, 0, 6.77, 3.02)] },
-      { name: "woven prompt", c: "pos", noTags: true, lab: [-12, -10, "end"], pts: [P(5.96, 3.25, "", 8.42, 0, 5.02, 3.00)] },
+      { name: "384-answer student, ×1.0 → ×1.3", label: "×1.0 → ×1.3", c: "s3", noTags: true, lab: [8, 18, "start"], labAt: 0,
+        pts: [P(8.19, 2.31, "×1.0", 8.58, 0, 7.50, 2.04), P(7.75, 2.56, "×1.2", 8.33, 0, 6.73, 2.38), P(7.65, 2.67, "×1.3", 8.17, 0, 6.90, 2.46)] },
+      { name: "128-answer ×1.5", c: "acc", noTags: true, lab: [0, -14, "middle"], pts: [P(7.48, 2.85, "", 7.83, 0, 6.60, 2.79)] },
+      { name: "woven prompt", c: "pos", noTags: true, lab: [-12, -10, "end"], pts: [P(5.62, 3.12, "", 8.12, 0, 4.81, 2.71)] },
     ],
   });
-  const X0 = 70, X1 = 670, Y0 = 40, Y1 = 360, x = h => X0 + h / 9 * (X1 - X0), y = p => Y1 - p / 6 * (Y1 - Y0);
-  E("circle", { cx: x(7.33), cy: y(2.52), r: 11, fill: "none", stroke: "var(--neg)", "stroke-width": 1.5 }, svg);
 })();
 
 /* ---------- 27: deeper teacher (real data: runs/deeper_teacher/judge.jsonl, judge_opus.jsonl) ---------- */
@@ -2305,6 +2322,14 @@ function fillTable(id, rows) {
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${v / max * 100}%;background:${col}"></i></div><b>+${v.toFixed(2)}${se ? " ± " + se.toFixed(2) : ""}</b></div>`).join("");
   document.getElementById("s31a").innerHTML = bar([["Claude Sonnet", 1.94, 0.27], ["Claude Opus", 2.10, 0.34], ["Qwen3.5-4B", 2.93, 0.22]], 4, "var(--s3)");
   document.getElementById("s31b").innerHTML = bar([["Claude's own answers", 1.20], ["Claude-taught students", 0.81], ["Qwen, plain", 2.86], ["Qwen, woven prompt", 1.88]], 4, "var(--ink-3)");
+})();
+
+/* ---------- 32: run-on correction (real data: runs/more_teacher/judge*.jsonl vs judge*_cut.jsonl) ---------- */
+(function () {
+  const rows = [["384-answer ×1.3", 8, 0], ["384-answer ×1.5", 28, 0]];
+  document.getElementById("s32").innerHTML = rows.map(([l, a, b]) =>
+    `<div class="srow wl wv"><span>${l}, before</span><div class="tr"><i style="width:${a / 48 * 100}%;background:var(--neg)"></i></div><b>${a} / 48</b></div>` +
+    `<div class="srow wl wv"><span>${l}, after</span><div class="tr"><i style="width:${b / 48 * 100}%;background:var(--s3)"></i></div><b>${b} / 48</b></div>`).join("");
 })();
 </script>
 </body>

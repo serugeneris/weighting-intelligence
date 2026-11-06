@@ -214,7 +214,10 @@ class Steerable:
         self.tok.padding_side = "left"
         enc = self.tok(prompts, return_tensors="pt", padding=True).to(self.device)
         torch.manual_seed(seed)
-        kw = dict(do_sample=temperature > 0, max_new_tokens=max_new_tokens, repetition_penalty=1.1,
+        # stop at the end of the assistant's turn: the model config's eos is <|endoftext|>, not the chat <|im_end|>, so
+        # without this an answer that finishes early runs on into an invented next turn (FINDINGS section 29)
+        stop = [self.tok.convert_tokens_to_ids("<|im_end|>"), self.tok.convert_tokens_to_ids("<|endoftext|>")]
+        kw = dict(do_sample=temperature > 0, max_new_tokens=max_new_tokens, repetition_penalty=1.1, eos_token_id=stop,
                   pad_token_id=self.tok.pad_token_id or self.tok.eos_token_id)
         if temperature > 0:
             kw.update(temperature=temperature, top_p=0.9)
