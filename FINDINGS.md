@@ -36,6 +36,7 @@
 30. **Correction: the answers that "broke" at high LoRA gain didn't break; they didn't stop.** The model config's end token is `<|endoftext|>`, not the chat format's `<|im_end|>`, so generation didn't stop when a turn ended. Answers that finished before the token limit ran on into an invented next turn ("…keep old accounts open. user What is the best way…"), and the judge flagged them as degenerate. Higher gain makes the students' answers shorter, so this looked like breakage growing with gain. The project scan finds 206 such run-on outputs, every one judged degenerate. Re-judged after cutting at the turn end, the 384-answer student at ×1.3 and ×1.5 has 0/48 broken answers, on the same frontier. The frontier conclusions of §23 stand; the "fragile gain" claim does not. Generation now stops at `<|im_end|>` (Results §29).
 31. **The student learns reflection tied to the task, not a free-floating register, and all of its philosophy comes from the reflections.** Split into their practical part and their reflective sentences, the teacher answers teach different things. The practical part alone gives no philosophy and no helpfulness gain over the baseline. Adding each answer's own reflection back reproduces the original student. Pairing each practical answer with a reflection written for a *different* question gives a student whose codas don't fit (28/48 end with the same off-topic remark about budgets): philosophy −0.8, helpfulness −0.8, coherence −2.2 against the matched student (Results §30).
 32. **Off the beaten path, the prompt-free students hold up, but they can't be switched off.** Over two turns their philosophy persists and even rises slightly (2.1–2.8 → 2.3–3.4) with steady helpfulness, while the woven prompt fades a little. On arithmetic, facts and code they answer 16/16 correctly but reflect even there (philosophy 2.3–3.3). Under a system prompt asking for brief, literal answers, the woven prompt's philosophy collapses (0.4), but the students keep reflecting (1.8–2.4) and write 2–2.5× more words than the baseline. A prompt can be removed; a trained-in habit can't (Results §31).
+33. **Stacking and selection don't get past the student's frontier.** The woven prompt on top of the Claude-taught student lands on the same line (more philosophy, less helpfulness, same sum), and a light "one brief reflective thought" prompt does nothing, alone or stacked. Best-of-4 sampling with Opus picking the best answer beats a single sample (+0.35 ± 0.18 under Sonnet) but not the student's greedy answer (+0.08 ± 0.19). The student's own samples don't contain answers clearly beyond its frontier, so a reranker or preference training has little to find there, which fits §26. Opus credited its own picks with +1.1; re-scored in a pool, Sonnet confirms only a third of that (Results §32).
 
 ## Background
 
@@ -865,6 +866,32 @@ What this says:
 - **A competing system prompt: the students don't switch off.** Asked for brief, literal answers, the woven model drops its philosophy almost entirely (0.44), because the later instruction wins. The students keep 1.8–2.3 philosophy and write 63–71 words where the baseline writes 28. The judges rated the students *more* helpful than the terse baseline (7.3–7.8 against 6.9), but this rubric rewards completeness, not following the operator's instruction. By the instruction's own standard, the students partly ignore it.
 - **Trade-off.** A trained-in register is robust (it survives turns and odd question types) for the same reason it is hard to control: it doesn't depend on any instruction in the context. To deploy one, keep a way to turn it off: the LoRA gain (×0 = off, §18–19) or an instruction-conditioned training set (answers that drop the reflection when asked to be terse), which was not tried.
 
+### 32. Stacking levers and best-of-4 headroom (experiment Y)
+
+Two inference-only questions about the 384-answer student (§23), suggested by the scouting pass. (1) **Stacking:** does the student plus a system prompt go past the frontier, or is it the same push twice? (2) **Headroom:** how much better is the best of the student's own samples than its usual answer? That bounds what a perfect reranker or preference signal could extract. It also explains §26, where DPO on the student's samples found nothing.
+
+Method (`scripts/exp_stack.py`, 48 confirmation prompts, generation now stopping at the turn end, §29). Greedy configs: baseline, woven prompt, a light prompt ("Answer the user's request fully and practically. Where it fits naturally, add one brief reflective thought."), the student, the student plus the woven prompt, and the student plus the light prompt. Headroom: the student and, for comparison, the woven prompt each sampled 4 answers per prompt (T 0.7, top-p 0.9); Opus scored all 384 samples and picked, per prompt, the non-degenerate answer with the best philosophy + helpfulness. The picked answer and an unselected draw (sample 0) went into the blind pool with the greedy configs, scored by Sonnet and Opus. Opus picked, so its scores of the picked answers are optimistic; Sonnet's are the cleaner test.
+
+| Config | Philosophy (S / O) | Helpfulness (S / O) | Sum (S / O) | Sum − woven (S / O) |
+|---|---|---|---|---|
+| Baseline | 0.04 / 0.04 | 8.40 / 7.67 | 8.44 / 7.71 | −1.02 ± 0.19 / +0.29 ± 0.23 |
+| Woven prompt | 3.29 / 2.73 | 6.17 / 4.69 | 9.46 / 7.42 | — |
+| Light prompt | 0.08 / 0.06 | 8.50 / 7.77 | 8.58 / 7.83 | −0.88 ± 0.21 / +0.42 ± 0.21 |
+| Student (greedy) | 2.12 / 2.08 | 8.00 / 7.56 | 10.12 / 9.65 | +0.67 ± 0.26 / +2.23 ± 0.28 |
+| Student + woven prompt | 2.75 / 2.85 | 7.50 / 6.77 | 10.25 / 9.62 | +0.79 ± 0.26 / +2.21 ± 0.31 |
+| Student + light prompt | 1.94 / 2.02 | 8.06 / 7.00 | 10.00 / 9.02 | +0.54 ± 0.21 / +1.60 ± 0.28 |
+| Student, one sample (T 0.7) | 2.15 / 1.98 | 7.71 / 6.85 | 9.85 / 8.83 | +0.40 ± 0.27 / +1.42 ± 0.34 |
+| Student, best of 4 (Opus-picked) | 2.27 / 2.21 | 7.94 / 7.35 | 10.21 / 9.56 | +0.75 ± 0.21 / +2.15 ± 0.30 |
+| Woven, one sample (T 0.7) | 3.71 / 2.94 | 5.56 / 4.38 | 9.27 / 7.31 | −0.19 ± 0.24 / −0.10 ± 0.20 |
+| Woven, best of 4 (Opus-picked) | 3.56 / 3.04 | 5.83 / 4.85 | 9.40 / 7.90 | −0.06 ± 0.26 / +0.48 ± 0.26 |
+
+Paired contrasts, philosophy + helpfulness (Sonnet / Opus): student best-of-4 − one sample +0.35 ± 0.18 / +0.73 ± 0.24; student best-of-4 − greedy student +0.08 ± 0.19 / −0.08 ± 0.21; student + woven − student +0.12 ± 0.19 / −0.02 ± 0.22; student + light − student −0.12 ± 0.19 / −0.62 ± 0.26.
+
+What this says:
+- **Stacking the prompt is the same push again.** The woven prompt on the student adds 0.6–0.8 philosophy and removes 0.5–0.8 helpfulness: about the same sum, further along the line. The light prompt is too weak to matter: alone it adds no philosophy (0.08), and on the student it changes nothing under Sonnet and costs helpfulness under Opus.
+- **There's little headroom in the student's samples.** Sampling costs 0.3–0.8 (one sample vs greedy, Sonnet / Opus) and picking the best of four wins it back, but no more: the best-of-4 answer is as good as the greedy one. So the student's distribution doesn't hold answers that are clearly beyond its frontier, and a perfect reranker over 4 samples would add nothing. That is why DPO on its samples (§26) had nothing to learn from.
+- **Judge noise inflates selection.** By its own scores of the samples, Opus's picks were +1.12 better than the average sample (10.08 vs 8.96). Re-scored in the blind pool, the same answers are +0.73 better than an unselected draw by Opus and +0.35 by Sonnet. Much of what a judge "selects" is its own scoring noise, a caution for any best-of-n or judge-filtered training data (§15, §20).
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -946,6 +973,8 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/claude_judge.py --input style/gen_cut.jsonl --output style/judge_cut.jsonl && .venv/bin/python scripts/claude_judge.py --input style/gen_cut.jsonl --output style/judge_cut_opus.jsonl --model opus
 .venv/bin/python scripts/exp_ood.py && .venv/bin/python scripts/cut_turns.py runs/ood/gen.jsonl
 .venv/bin/python scripts/claude_judge.py --input ood/gen_cut.jsonl --output ood/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input ood/gen_cut.jsonl --output ood/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_stack.py --stage gen && .venv/bin/python scripts/claude_judge.py --input stack/samples_gen.jsonl --output stack/samples_judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_stack.py --stage select && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

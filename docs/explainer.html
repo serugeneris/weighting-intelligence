@@ -247,6 +247,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c32">32 · Answers that didn't stop</a>
       <a href="#c33">33 · Fit, not flourish</a>
       <a href="#c34">34 · Can't switch it off</a>
+      <a href="#c35">35 · No hidden answers</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1048,6 +1049,22 @@ section.wide { grid-template-columns: 1fr; }
       <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>384-answer student (no prompt)</span></div>
       <p class="note">Mean over 16 prompts per situation, 0–9, Claude Sonnet first, Opus second. Bars show Sonnet. Under the brevity instruction the plain model writes 28 words on average, the prompted model 68, the student 63.</p>
       <div class="ex"><p><strong>Asked to be brief</strong> (iron a dress shirt). Plain model: "1. Check the care label. 2. Set iron to appropriate heat…" Student: a full paragraph of steps, and a reflection.</p></div>
+    </div>
+  </section>
+
+  <!-- 35 -->
+  <section class="chapter" id="c35">
+    <div>
+      <div class="num">Chapter 35 · experiment Y</div>
+      <h2>No hidden better answers</h2>
+      <p><strong>Why we tried it.</strong> Two cheap ideas for getting past the student's limit without more training. First, <em>stack</em> levers: give the student the woven prompt as well. Second, <em>pick</em>: let the student roll the dice four times and have a judge (Opus) choose the best answer. If the best of four is much better than its usual answer, then better answers are in there, and a good selector or more preference training could find them.</p>
+      <p><strong>What happened.</strong> Stacking just moves further along the same line: a bit more philosophy, a bit less help, same total. A gentler "add one brief reflective thought" prompt did nothing at all. Picking the best of four beat a single roll of the dice, but only matched the student's ordinary answer (bars). One more lesson: Opus thought its picks were 1.1 points better than average, but when the same answers were scored again, blind, Sonnet saw only a third of that. Much of what a judge "picks" is its own noise.</p>
+      <p><strong>What it means.</strong> The student's own answers don't hide a better student. That's why preference training on its samples (chapter 29) found nothing to learn. Moving the line needs something new: different data, a different model, or both. Source: FINDINGS.md § 32, <code>runs/stack/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy + helpfulness on 48 new prompts</h3>
+      <div id="s35"></div>
+      <p class="note">One blind pool. First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Opus picked the best-of-4 answers, so its second number for them is optimistic.</p>
     </div>
   </section>
 
@@ -2389,6 +2406,14 @@ function fillTable(id, rows) {
                 ["Asked to be brief", 0.44, 0.38, 1.81, 1.81], ["Arithmetic, facts", 3.06, 2.88, 2.38, 2.31]];
   const bar = (l, v, o, col) => `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${v / 6 * 100}%;background:${col}"></i></div><b>${v.toFixed(1)} / ${o.toFixed(1)}</b></div>`;
   document.getElementById("s34").innerHTML = rows.map(r => bar(r[0], r[1], r[2], "var(--pos)") + bar("", r[3], r[4], "var(--s3)") + '<div style="height:6px"></div>').join("");
+})();
+
+/* ---------- 35: stacking and best-of-4 (real data: runs/stack/judge.jsonl, judge_opus.jsonl) ---------- */
+(function () {
+  const rows = [["Woven prompt", 9.46, 7.42, "var(--pos)"], ["Student", 10.12, 9.65, "var(--s3)"], ["Student + woven prompt", 10.25, 9.62, "var(--s3)"],
+                ["Student, one dice roll", 9.85, 8.83, "var(--ink-3)"], ["Student, best of 4", 10.21, 9.56, "var(--accent)"]];
+  document.getElementById("s35").innerHTML = rows.map(([l, s, o, c]) =>
+    `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
 })();
 </script>
 </body>
