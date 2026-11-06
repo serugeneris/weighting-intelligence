@@ -248,6 +248,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c33">33 · Fit, not flourish</a>
       <a href="#c34">34 · Can't switch it off</a>
       <a href="#c35">35 · No hidden answers</a>
+      <a href="#c36">36 · A bigger brain</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1068,15 +1069,35 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <!-- 36 -->
+  <section class="chapter" id="c36">
+    <div>
+      <div class="num">Chapter 36 · experiment V</div>
+      <h2>A bigger brain helps</h2>
+      <p><strong>Why we tried it.</strong> Chapters 27 and 28 kept pointing at the model itself as the limit: better teachers and bigger adapters stopped helping. The direct test is to teach a bigger model the same way. We downloaded Qwen's 9-billion-parameter sibling, and its 2-billion one as a cheaper second point, and gave each the identical lesson: the same 384 Claude answers, the same adapter, the same training.</p>
+      <p><strong>What happened.</strong> The 9B model is too big for this laptop: its 19 GB of numbers didn't fit alongside everything else in 24 GB, and it couldn't finish even its first few answers in half an hour. So the comparison is 2B against 4B. Both students became equally philosophical. But the smaller one paid for it: it lost two to three times as much helpfulness and about twice as much coherence, and its overall lead over its own prompt was about half the 4B's (bars).</p>
+      <p><strong>What it means.</strong> Learning to reflect is the easy part. Doing it <em>without</em> getting worse at the task takes a bigger model. Two sizes aren't a trend line, but they point the same way as every recent chapter: the base model is the limit, and a larger one should move the line further. Source: FINDINGS.md § 33, <code>runs/scale/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy + helpfulness, each model with its own prompt</h3>
+      <div id="s36"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>Claude-taught student, no prompt</span></div>
+      <p class="note">Mean over 48 new prompts, one blind pool. First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Philosophy alone: 2.3 for both students.</p>
+    </div>
+  </section>
+
   <!-- to do -->
   <section class="chapter" id="todo">
     <div>
       <div class="num">Still to try</div>
-      <h2>One open question</h2>
-      <p><strong>A bigger student.</strong> Chapters 27–28 suggest the 4-billion-parameter model itself is now the limit. The same Claude-taught recipe on a larger model would show whether "sounds philosophical" can become "thinks philosophically about this task".</p>
+      <h2>Open questions</h2>
+      <p><strong>A model bigger than this laptop.</strong> Chapter 36 says size helps. The 9-billion-parameter model needs more memory, or a compressed (4-bit) version, to find out how far.</p>
+      <p><strong>An off switch.</strong> Chapter 34 showed the trained habit ignores "be brief". Teaching it with some answers that drop the reflection when asked would let an operator turn it off.</p>
+      <p><strong>Cheaper, better-fitting lessons.</strong> Chapter 33 showed all the philosophy comes from task-specific reflections. The teacher could write only the reflection, on top of the model's own practical answer, and we could keep the reflections that fit best.</p>
+      <p><strong>Where inside the adapter it lives.</strong> Switching the adapter on in only some layers would show whether a much smaller edit, like the single one in chapter 21, carries most of the effect.</p>
     </div>
     <div class="fig">
-      <p class="note">Listed under "To do" in FINDINGS.md.</p>
+      <p class="note">Listed under "To do" in FINDINGS.md, with the other ideas from the scouting pass.</p>
     </div>
   </section>
 
@@ -2413,6 +2434,15 @@ function fillTable(id, rows) {
   const rows = [["Woven prompt", 9.46, 7.42, "var(--pos)"], ["Student", 10.12, 9.65, "var(--s3)"], ["Student + woven prompt", 10.25, 9.62, "var(--s3)"],
                 ["Student, one dice roll", 9.85, 8.83, "var(--ink-3)"], ["Student, best of 4", 10.21, 9.56, "var(--accent)"]];
   document.getElementById("s35").innerHTML = rows.map(([l, s, o, c]) =>
+    `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
+})();
+
+/* ---------- 36: 2B vs 4B (real data: runs/scale/judge.jsonl, judge_opus.jsonl) ---------- */
+(function () {
+  const rows = [["2B, woven prompt", 8.17, 7.06, "var(--pos)"], ["2B, student", 8.77, 8.08, "var(--s3)"],
+                ["4B, woven prompt", 8.90, 7.92, "var(--pos)"], ["4B, student", 10.00, 9.73, "var(--s3)"]];
+  document.getElementById("s36").innerHTML = rows.map(([l, s, o, c], k) =>
+    (k === 2 ? '<div style="height:10px"></div>' : "") +
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
 })();
 </script>

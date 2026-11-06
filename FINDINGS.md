@@ -1,6 +1,6 @@
 # Steering Qwen3.5-4B toward philosophy — findings so far
 
-*Status: exploratory, 2026-11-04 (experiments D–K added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
+*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
 
 ## TL;DR
 
@@ -37,6 +37,7 @@
 31. **The student learns reflection tied to the task, not a free-floating register, and all of its philosophy comes from the reflections.** Split into their practical part and their reflective sentences, the teacher answers teach different things. The practical part alone gives no philosophy and no helpfulness gain over the baseline. Adding each answer's own reflection back reproduces the original student. Pairing each practical answer with a reflection written for a *different* question gives a student whose codas don't fit (28/48 end with the same off-topic remark about budgets): philosophy −0.8, helpfulness −0.8, coherence −2.2 against the matched student (Results §30).
 32. **Off the beaten path, the prompt-free students hold up, but they can't be switched off.** Over two turns their philosophy persists and even rises slightly (2.1–2.8 → 2.3–3.4) with steady helpfulness, while the woven prompt fades a little. On arithmetic, facts and code they answer 16/16 correctly but reflect even there (philosophy 2.3–3.3). Under a system prompt asking for brief, literal answers, the woven prompt's philosophy collapses (0.4), but the students keep reflecting (1.8–2.4) and write 2–2.5× more words than the baseline. A prompt can be removed; a trained-in habit can't (Results §31).
 33. **Stacking and selection don't get past the student's frontier.** The woven prompt on top of the Claude-taught student lands on the same line (more philosophy, less helpfulness, same sum), and a light "one brief reflective thought" prompt does nothing, alone or stacked. Best-of-4 sampling with Opus picking the best answer beats a single sample (+0.35 ± 0.18 under Sonnet) but not the student's greedy answer (+0.08 ± 0.19). The student's own samples don't contain answers clearly beyond its frontier, so a reranker or preference training has little to find there, which fits §26. Opus credited its own picks with +1.1; re-scored in a pool, Sonnet confirms only a third of that (Results §32).
+34. **Model size matters: the same recipe works markedly better on 4B than on 2B, and 9B doesn't fit this machine.** Taught by the same 384 Claude answers, the 2B student picks up just as much philosophy as the 4B (2.27 vs 2.19), but loses about 1 point more helpfulness against its own baseline. The 4B student beats it by +1.2 to +1.7 in philosophy + helpfulness, and its lead over its own woven prompt is about twice the 2B's. Qwen3.5-9B in bf16 (19.3 GB) couldn't produce a first batch in 30 minutes on 24 GB of memory. Two sizes don't make a scaling law, but they point the same way as §24–§25: the base model, not the adapter or the teacher, is the limit (Results §33).
 
 ## Background
 
@@ -892,6 +893,39 @@ What this says:
 - **There's little headroom in the student's samples.** Sampling costs 0.3–0.8 (one sample vs greedy, Sonnet / Opus) and picking the best of four wins it back, but no more: the best-of-4 answer is as good as the greedy one. So the student's distribution doesn't hold answers that are clearly beyond its frontier, and a perfect reranker over 4 samples would add nothing. That is why DPO on its samples (§26) had nothing to learn from.
 - **Judge noise inflates selection.** By its own scores of the samples, Opus's picks were +1.12 better than the average sample (10.08 vs 8.96). Re-scored in the blind pool, the same answers are +0.73 better than an unselected draw by Opus and +0.35 by Sonnet. Much of what a judge "selects" is its own scoring noise, a caution for any best-of-n or judge-filtered training data (§15, §20).
 
+### 33. A smaller and a larger base model (experiment V)
+
+§24–§25 pointed at the 4B base model as the remaining limit. The direct test is to run the same recipe on a larger sibling, and, as a cheaper second point, on a smaller one. Both checkpoints were downloaded from Hugging Face: Qwen/Qwen3.5-2B (4.6 GB) and Qwen/Qwen3.5-9B (19.3 GB). `scripts/exp_scale.py --model 2B|4B|9B` runs, for each model, its own baseline, its own woven prompt, and a rank-8 MLP LoRA on all layers trained on experiment P's 384 Claude answers with the same recipe (4B reuses P's adapter), evaluated at ×1.0 and ×1.2 on the 48 confirmation prompts. Everything is in one blind pool, cut at the turn end (§29; none needed cutting), and judged by Sonnet and Opus.
+
+**9B didn't fit.** Loaded in bf16 on MPS (18 GB resident, `PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0`), it didn't finish the first batch of 8 baseline answers in 30 minutes: swap full, CPU about 6%, i.e. paging. The 4B model generates all 48 in about 1.5 minutes. MPS has no 8-bit kernels, so there was no lower-precision fallback in this stack; the run was stopped (`runs/scale/9B_train_error.txt`). The comparison below is therefore 2B against 4B.
+
+| Config | Philosophy (S / O) | Helpfulness (S / O) | Coherence (S / O) | Sum (S / O) |
+|---|---|---|---|---|
+| 2B baseline | 0.02 / 0.00 | 7.96 / 7.15 | 8.65 / 8.27 | 7.98 / 7.15 |
+| 2B woven prompt | 2.50 / 2.21 | 5.67 / 4.85 | 7.81 / 7.56 | 8.17 / 7.06 |
+| 2B student ×1.0 | 2.27 / 2.31 | 6.50 / 5.77 | 7.12 / 6.96 | 8.77 / 8.08 |
+| 2B student ×1.2 | 2.29 / 2.42 | 6.10 / 5.15 | 6.62 / 6.42 | 8.40 / 7.56 |
+| 4B baseline | 0.04 / 0.02 | 8.31 / 7.71 | 8.92 / 8.77 | 8.35 / 7.73 |
+| 4B woven prompt | 3.04 / 3.02 | 5.85 / 4.90 | 7.96 / 8.02 | 8.90 / 7.92 |
+| 4B student ×1.0 | 2.19 / 2.27 | 7.81 / 7.46 | 8.08 / 8.21 | 10.00 / 9.73 |
+| 4B student ×1.2 | 2.46 / 2.48 | 7.46 / 7.02 | 7.98 / 7.85 | 9.92 / 9.50 |
+
+Paired over the 48 prompts (Sonnet / Opus):
+
+| Contrast | Philosophy + helpfulness |
+|---|---|
+| student ×1.0 − own woven prompt, 2B | +0.60 ± 0.28 / +1.02 ± 0.32 |
+| student ×1.0 − own woven prompt, 4B | +1.10 ± 0.30 / +1.81 ± 0.27 |
+| 4B student − 2B student (×1.0) | +1.23 ± 0.26 / +1.65 ± 0.30 |
+| helpfulness lost against own baseline, 2B / 4B student | −1.46 ± 0.24 / −0.50 ± 0.20 (S); −1.38 ± 0.27 / −0.25 ± 0.22 (O) |
+
+The 2B adapter (4.7M parameters) ends training at loss 1.35, against 0.99 for the 4B one on the same answers.
+
+What this says:
+- **Both sizes learn the philosophy equally.** The 2B student reaches the same philosophy as the 4B one (2.3), and as its own prompt. Picking up "reflect on this task" isn't what needs scale.
+- **The smaller model pays for it in helpfulness and coherence.** The 2B student loses about 1.4 helpfulness and 1.3–1.5 coherence against its own baseline; the 4B student loses 0.25–0.5 and 0.6–0.8. The 4B student is +1.2 to +1.7 better overall on the same prompts, and its lead over its own prompt is roughly twice the 2B's. The 2B model also fits the teacher's answers worse.
+- **So the frontier moves with model size**, and by more than any intervention since §22. This supports the suspicion of §24–§25 that the 4B base model is what limits the student, but two sizes don't make a curve. Whether 9B extends the trend is still untested: it needs a machine with more memory, or a quantized inference stack such as MLX.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -906,7 +940,15 @@ What this says:
 **To do (agreed, not yet run):**
 - [x] **SAE features at layer 8**: done, Results §27. The features are readable but steer no better than diff-means; the learned direction B stays ahead.
 - [x] **A non-Claude judge**: done with Qwen3.5-4B, Results §28. The Claude-taught student's lead survives and widens; no self-preference pattern.
-- [ ] **A larger base model.** The late experiments suggest the 4B model, not the adapter or the teacher, is now the limit (§24–§25). Repeat the Claude-teacher distillation (§22–§23) on a larger Qwen. This needs a multi-gigabyte download, and probably more than this machine's 24 GB of memory for training.
+- [x] **A larger base model**: partly done, Results §33. On 2B against 4B, the same recipe works markedly better on the larger model; 9B (19.3 GB in bf16) doesn't fit this 24 GB machine.
+
+**Open after experiments T–Y (Results §27–§33):**
+- [ ] **9B or larger**, on a machine with more memory or a quantized stack (MLX 4-bit), to see whether §33's 2B→4B gain continues.
+- [ ] **A switch for the habit** (§31): train on mixed data where the answer drops its reflection when a system prompt asks for brevity, so an operator can turn it off.
+- [ ] **Cheaper, better-fitting teacher data** (§30): all the philosophy comes from task-specific reflections, so keep the base model's own practical answer and have the teacher write only the reflection; then select reflections for fit.
+- [ ] **Where inside the adapter the behaviour lives**: per-layer and per-module ablation of the rank-8 student, compared with the rank-1 L8 edit (§18). Suggested by the scouting pass, not run.
+- [ ] **Decoding-time extrapolation** (base + w·(student − base) logits) instead of weight gain. Since §29 the gain doesn't break the model, so this matters less than it seemed.
+- [ ] **SAE features chosen by their output effect** (2505.20063) rather than by activation difference (§27).
 
 1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
@@ -918,7 +960,7 @@ What this says:
    - ~~**Helpfulness ceiling**~~: done, see Results §6. The target answers are unhelpful by construction (helpfulness 2.31).
    - ~~**"Answer + reflect" contrast data**~~: done, see Results §7. The targets are helpful, but steering along their direction keeps the same trade-off.
    - ~~**Distil the prompt**~~: done, see Results §10. A LoRA (even rank 1 at L8) reproduces the woven prompt without it. Turned into a standalone checkpoint in Results §18.
-   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. A larger adapter: §25, no gain. Open: a non-Claude teacher; a larger base model; (a non-Claude judge: §28); much more teacher data; DPO on top of the Claude-taught student was tried in §26, with no gain. Its samples weren't reflective enough.
+   - ~~**Distil a better teacher**~~: done, see Results §15. Prompt search and best-of-4 selection don't move the frontier; students copy their teacher's average. DPO on judged pairs: see Results §20–21. A stronger teacher model: done in Results §22, the best lever found. More teacher data: §23, more philosophy at native gain but the same frontier. A more philosophical teacher: §24, the student copies the surface and loses help. A larger adapter: §25, no gain. Open: a non-Claude teacher; a base model larger than 4B (2B vs 4B: §33); (a non-Claude judge: §28); much more teacher data; DPO on top of the Claude-taught student was tried in §26, with no gain. Its samples weren't reflective enough.
 6. **Cross-layer / circuit view**: single-layer neuron pushes miss behaviours spread over several layers, conditional (AND-style) interactions between layers, and attention-head contributions. Try coordinated multi-layer steering, activation patching or attribution from L8 to later layers, and, longer term, transcoders or cross-layer transcoders, which work on features rather than raw neurons. Co-activation alone is not enough, because neurons that fire together may only share a cause.
 
 ## Reproduce
@@ -975,6 +1017,8 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/claude_judge.py --input ood/gen_cut.jsonl --output ood/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input ood/gen_cut.jsonl --output ood/judge_opus.jsonl --model opus
 .venv/bin/python scripts/exp_stack.py --stage gen && .venv/bin/python scripts/claude_judge.py --input stack/samples_gen.jsonl --output stack/samples_judge_opus.jsonl --model opus
 .venv/bin/python scripts/exp_stack.py --stage select && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge_opus.jsonl --model opus
+.venv/bin/python scripts/exp_scale.py --model 2B && .venv/bin/python scripts/exp_scale.py --model 4B   # --model 9B needs more than 24 GB
+.venv/bin/python scripts/cut_turns.py runs/scale/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
