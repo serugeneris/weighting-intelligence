@@ -246,6 +246,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c31">31 · Another judge</a>
       <a href="#c32">32 · Answers that didn't stop</a>
       <a href="#c33">33 · Fit, not flourish</a>
+      <a href="#c34">34 · Can't switch it off</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1029,6 +1030,24 @@ section.wide { grid-template-columns: 1fr; }
       <p class="note">Mean over 48 new prompts, 0–9, judged by Claude Sonnet (first number) and Opus (second). Bars show Sonnet.</p>
       <div class="ex"><p><strong>Shuffled reflections</strong> (what causes thunder?): …stay away from windows and metal objects. <em>A budget is not a restriction but a way of making your values visible…</em></p></div>
       <div class="ex"><p><strong>Its own reflections</strong> (same question): …it is really the heated air, <em>and this reminds us that what we perceive directly are effects, not causes.</em></p></div>
+    </div>
+  </section>
+
+  <!-- 34 -->
+  <section class="chapter" id="c34">
+    <div>
+      <div class="num">Chapter 34 · experiment X</div>
+      <h2>A habit you can't switch off</h2>
+      <p><strong>Why we tried it.</strong> Every test so far was a single everyday question. Real use isn't like that. So we put the two best prompt-free students, the woven prompt and the plain model through three new situations: a follow-up question in a second turn, an operator instruction to answer "as briefly and literally as possible", and questions with one right answer (arithmetic, facts, code).</p>
+      <p><strong>What happened.</strong> Over two turns the students stay just as philosophical, and slightly more so in the follow-up, without losing helpfulness. On arithmetic and facts they got every answer right, but they reflect there too: "17 × 23 = 391…" comes with a thought attached. The big difference is the brevity instruction. It switches the prompted model's philosophy almost entirely off, because the newer instruction wins. The students keep reflecting and write more than twice as many words as the plain model (bars).</p>
+      <p><strong>What it means.</strong> A trained-in habit is robust for the same reason it is hard to control: it doesn't depend on anything in the conversation. A prompt can be taken away; this can't, except by turning the adapter's volume down. A deployable version would need training answers that drop the reflection when asked to be terse. Source: FINDINGS.md § 31, <code>runs/ood/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy in each situation</h3>
+      <div id="s34"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>384-answer student (no prompt)</span></div>
+      <p class="note">Mean over 16 prompts per situation, 0–9, Claude Sonnet first, Opus second. Bars show Sonnet. Under the brevity instruction the plain model writes 28 words on average, the prompted model 68, the student 63.</p>
+      <div class="ex"><p><strong>Asked to be brief</strong> (iron a dress shirt). Plain model: "1. Check the care label. 2. Set iron to appropriate heat…" Student: a full paragraph of steps, and a reflection.</p></div>
     </div>
   </section>
 
@@ -2361,6 +2380,15 @@ function fillTable(id, rows) {
   document.getElementById("s33").innerHTML =
     rows.map(r => bar(r[0], r[1], r[2], "var(--pos)")).join("") + '<div style="height:10px"></div>' +
     rows.map(r => bar(r[0], r[3], r[4], "var(--ink-3)")).join("");
+})();
+
+/* ---------- 34: off the beaten path (real data: runs/ood/judge.jsonl, judge_opus.jsonl) ---------- */
+(function () {
+  // [situation, woven S, woven O, student S, student O]
+  const rows = [["First turn", 4.19, 4.00, 2.12, 2.06], ["Follow-up turn", 3.56, 3.06, 2.38, 2.25],
+                ["Asked to be brief", 0.44, 0.38, 1.81, 1.81], ["Arithmetic, facts", 3.06, 2.88, 2.38, 2.31]];
+  const bar = (l, v, o, col) => `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${v / 6 * 100}%;background:${col}"></i></div><b>${v.toFixed(1)} / ${o.toFixed(1)}</b></div>`;
+  document.getElementById("s34").innerHTML = rows.map(r => bar(r[0], r[1], r[2], "var(--pos)") + bar("", r[3], r[4], "var(--s3)") + '<div style="height:6px"></div>').join("");
 })();
 </script>
 </body>
