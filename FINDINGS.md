@@ -27,12 +27,13 @@
 21. **Preference training (DPO) on judged pairs nudged a student up on both scores at once** (16 prompts: philosophy 2.19 → 2.50, helpfulness 7.75 → 7.94; ×1.5 gain: 3.00 / 7.12). This is the first intervention to improve both scores, but the gain is about the size of the judge's noise (Results §20; checked on 48 prompts in §21).
 22. **Confirmed on 48 unseen prompts, greedy and sampled.** The learned direction B beats diff-means by +2.06 in philosophy + helpfulness (paired, about 7 standard errors). The amplified rank-1 LoRA moves *along* the prompt's frontier (×2: philosophy 3.5, helpfulness 5.6), not past it. Only the DPO student shows evidence of beating the frontier: at ×1.5 it matches the woven prompt's philosophy with +0.44 ± 0.22 helpfulness, which is suggestive rather than settled (Results §21).
 23. **A stronger teacher is the best lever found.** Distilling 128 Claude-written answers (helpful, with reflections woven in) into a rank-8 LoRA, then running it at 1.5× gain, matches the woven prompt's philosophy with about 2 more helpfulness points, with no prompt (paired over 48 new prompts, +1.7 to +2.1 in philosophy + helpfulness, under both Sonnet and Opus). It also beats the DPO student. Caveat: teacher and judges are all Claude models (Results §22).
-24. **Three times more teacher data makes the plain student more philosophical (+0.7) at no helpfulness cost, but doesn't raise the frontier further.** All unbroken Claude-taught settings sit at philosophy + helpfulness of about 10 (prompt: 9.2). The better-trained adapter also breaks sooner when its gain is turned up (8/48 broken at ×1.3, 28/48 at ×1.5) (Results §23).
+24. **Three times more teacher data makes the plain student more philosophical (+0.7) at no helpfulness cost, but doesn't raise the frontier further.** All unbroken Claude-taught settings sit at philosophy + helpfulness of about 10 (prompt: 9.2). *Corrected in §29:* the answers first counted as broken at ×1.3 and ×1.5 were a generation-harness artefact. Cut at the end of the turn, none are broken, and ×1.5 gives philosophy 2.65 at helpfulness 7.65 on the same frontier (Results §23, §29).
 25. **A more philosophical teacher didn't help further.** Claude answers with substantive, named philosophical ideas (teacher: about +1 philosophy at the same helpfulness) produce a student that copies the name-dropping, gains only +0.25 philosophy, and loses about 0.7 helpfulness and coherence. At this scale the student, not the teacher, is now the bottleneck (Results §24).
 26. **A 4× larger adapter doesn't help.** Rank 32 fits the teacher answers better but generalizes no better: no consistent gain on the plain teacher (the two judges disagree in sign), and none on the deeper one. The limit is the 4B base model or the data, not the adapter (Results §25).
-27. **Preference training doesn't stack on the Claude-taught student.** Its sampled answers (temperature 0.8) are mostly plain, and some break, so the judged pairs taught it to avoid broken answers rather than to reflect better: no gain under either judge (Results §26).
+27. **Preference training doesn't stack on the Claude-taught student.** Its sampled answers (temperature 0.8) are mostly plain, so the judged pairs couldn't teach it to reflect better: no gain under either judge. (The "broken" samples were almost all the harness artefact of §29.) (Results §26).
 28. **Sparse-autoencoder features are readable but steer no better than diff-means.** A TopK SAE trained at layer 8 (8,192 features, 16% of variance unexplained) finds clear philosophy-content features ("a profound lesson in…", reflective codas about attention, identity and self, "rather than / merely"). Ranking features by their philosophical-minus-plain activation, though, puts artefacts first: a disfluency feature and two "pseudo-profound rambling" features, which make no philosophy when pushed. Steering with the four hand-picked content features gives philosophy 3.25 with helpfulness 3.12, the same trade-off as diff-means and far below the learned direction B in the same pool (4.31 / 5.06) (Results §27).
 29. **A non-Claude judge confirms the Claude-taught student's advantage; there is no sign of Claude self-preference.** Qwen3.5-4B, re-scoring all 2,032 answers of the six 48-prompt pools, agrees with Claude on philosophy (per item r 0.73–0.75; Sonnet–Opus 0.87) and on the direction of every key helpfulness contrast. It sees the student's helpfulness gain over the woven prompt as even larger (+2.9 against Sonnet's +1.9 and Opus's +2.1, at equal philosophy). Claude is not kinder to Claude-written text: it outscores Qwen by +1.2 helpfulness on Claude's own answers but by +2.9 on Qwen's plain ones. Qwen can't judge coherence (r 0.3) (Results §28).
+30. **Correction: the answers that "broke" at high LoRA gain didn't break; they didn't stop.** The model config's end token is `<|endoftext|>`, not the chat format's `<|im_end|>`, so generation didn't stop when a turn ended. Answers that finished before the token limit ran on into an invented next turn ("…keep old accounts open. user What is the best way…"), and the judge flagged them as degenerate. Higher gain makes the students' answers shorter, so this looked like breakage growing with gain. The project scan finds 206 such run-on outputs, every one judged degenerate. Re-judged after cutting at the turn end, the 384-answer student at ×1.3 and ×1.5 has 0/48 broken answers, on the same frontier. The frontier conclusions of §23 stand; the "fragile gain" claim does not. Generation now stops at `<|im_end|>` (Results §29).
 
 ## Background
 
@@ -628,6 +629,7 @@ Paired, pool 1: 384-answer − 128-answer student, both ×1: philosophy +0.65 ±
 
 What this says:
 - **More data makes the plain student more philosophical at no cost.** With 3× the answers, the unamplified student gains about 0.7 philosophy and keeps its helpfulness (8.0 Sonnet). It is the closest any student has come to its teacher at native gain (Claude's answers: 2.5 / 8.8).
+- *Correction (§29): the broken counts below are a generation-harness artefact (answers that ran on past the end of the turn). Re-judged after cutting at the turn end, ×1.3 and ×1.5 break 0/48 and stay on the same frontier; gain is not fragile.*
 - **But it doesn't raise the frontier, and it makes gain fragile.** Every Claude-taught setting that doesn't break sits at about the same philosophy + helpfulness: about 10.0 (Sonnet) and 9.6–10.0 (Opus), against the woven prompt's 9.2 / 8.0. Gain just slides along that line. The better-trained adapter breaks earlier: 8 of 48 at ×1.3 and 28 of 48 at ×1.5, against 0 at ×1.5 for the 128-answer one. A stronger adapter is a bigger push, and over-amplifying it breaks the model the same way an oversized steering push does (§5).
 - **Practical choice.** For the most philosophy, use the 128-answer student at ×1.5 (2.8–3.0 / 6.8–7.3). For the most helpfulness, use the 384-answer student at ×1.0–1.2 (2.1–2.7 / 6.9–8.0, no broken outputs at any setting up to ×1.2). Both are prompt-free and beat the woven prompt's balance under both judges.
 
@@ -690,7 +692,7 @@ Paired against the starting student (Sonnet / Opus), philosophy + helpfulness: D
 
 What this says:
 - **DPO didn't improve the best student.** Neither judge shows a gain, and the ×1.2 version only loses helpfulness. The two levers don't stack here.
-- **The pairs taught the wrong lesson.** Sampled at temperature 0.8, this student's answers are mostly plain (philosophy about 0.6), and 6–11% break. So the pairs mostly separated broken or flat answers from ordinary ones, which greedy decoding already avoids. In §20 the starting student's samples were reflective, and the pairs could pick out *better* reflection. Preference training needs samples that already vary along the dimension you want to improve.
+- **The pairs taught the wrong lesson.** Sampled at temperature 0.8, this student's answers are mostly plain (philosophy about 0.6), and 6–11% were flagged as broken. *Correction (§29): 71 of those 72 are answers that ran on past the end of the turn, a harness artefact; only 1 of 768 is genuinely broken, and only 11 of the 264 pairs had a run-on as the rejected answer. The conclusion stands: the samples were too plain.* So the pairs mostly separated broken or flat answers from ordinary ones, which greedy decoding already avoids. In §20 the starting student's samples were reflective, and the pairs could pick out *better* reflection. Preference training needs samples that already vary along the dimension you want to improve.
 - **The Claude-taught student's style is fragile under sampling, at least at 160 tokens and temperature 0.8.** The rank-1 woven student held up under temperature 0.7 (§21). This one wasn't re-checked at 0.7 on the evaluation prompts, which is the caveat on its §22–23 results.
 
 ### 27. Sparse-autoencoder features at layer 8 (experiment T)
@@ -770,6 +772,38 @@ If Claude favoured its own style, its lead over Qwen would be largest on Claude'
 
 **What it means.** The central claim since §22, that the Claude-taught student matches the prompt's philosophy at about 2 more helpfulness points, holds under a judge from a different model family, which sees the gap as even larger. Qwen compresses the helpfulness cost of steering (diff-means −0.63 instead of −2.1) because it rates all plain answers lower, so it is not a better judge, only an independent one. Its coherence scores are unusable, matching TL;DR 10. Remaining caveat: no judge from another provider; Qwen is a 4B model scoring by next-digit probability.
 
+### 29. Correction: answers that didn't stop (a generation-harness artefact)
+
+Experiment W (§30) flagged up to 34 of 48 answers of some students as degenerate. Reading them showed every flagged answer was a complete, sensible answer followed by an invented next turn: "…keep old accounts open.\nuser\nWhat is the best way to build…\nassistant\n<think>…". The cause is in `wi/steer.py`: `generate()` relied on the model config's end token, which for Qwen3.5-4B is `<|endoftext|>` (id 248044), while chat turns end with `<|im_end|>` (248046). The students *did* end their turns correctly; generation just didn't stop there. Any answer that finished before the token limit ran on, and the special tokens were dropped when decoding, which left the bare "user" / "assistant" labels.
+
+Why it looked like breakage that grows with gain: amplified students write shorter answers, so more of them finish inside the 120-token budget and run on. The base model and the prompted model write long answers that hit the limit first, so they were almost never affected.
+
+**Scope.** Every `runs/**/*gen*.jsonl` was scanned for a run-on turn (`\nuser\n` or `\nassistant\n`). Every run-on was judged degenerate wherever it was judged. Affected configs with more than one run-on:
+
+| Run | Config | Run-on / outputs | Degenerate in the original judging |
+|---|---|---|---|
+| more_teacher (§23) | 384-answer student ×1.5 | 28 / 48 | 28 |
+| more_teacher (§23) | 384-answer student ×1.3 | 8 / 48 | 8 |
+| dpo_claude samples (§26) | 4 samples at T 0.8 | 71 / 768 | 71 (of 72) |
+| capacity (§25) | rank 32, deeper teacher | 2 / 48 | 2 (of 3) |
+| sae round 2 (§27) | content features 1.2·p50 | 2 / 16 | 2 (of 4) |
+| style (§30) | practical only / mismatched, ×1.0 and ×1.2 | 7–34 / 48 | all |
+
+Single run-ons in `bake`, `distill`, `gate`, `robust` and `teacher` (one of 16 or 48 each) don't change any conclusion.
+
+**Fix.** Tokens before the end of a turn don't depend on when generation stops (greedy or sampled), so cutting a saved output at the first invented turn gives exactly what a correct harness would have returned. `scripts/cut_turns.py` does this, and `generate()` now stops at `<|im_end|>` as well as `<|endoftext|>`. The two §23 pools were re-judged on cut outputs by Sonnet and Opus:
+
+| Config (cut outputs) | Philosophy (S / O) | Helpfulness (S / O) | Coherence (S / O) | Degenerate | Sum − woven (S / O) |
+|---|---|---|---|---|---|
+| *Pool 1* 384-answer student ×1.0 | 2.08 / 2.15 | 8.19 / 7.42 | 8.40 / 8.19 | 0 / 0 | +1.40 ± 0.25 / +1.75 ± 0.32 |
+| 384-answer student ×1.5 | 2.65 / 2.65 | 7.65 / 6.38 | 7.81 / 7.23 | **0 / 0** (was 28 / 28) | +1.42 ± 0.23 / +1.21 ± 0.32 |
+| 128-answer student ×1.5 | 2.81 / 2.71 | 7.42 / 6.50 | 7.62 / 7.29 | 0 / 0 | +1.35 ± 0.27 / +1.40 ± 0.34 |
+| *Pool 2* 384-answer student ×1.2 | 2.56 / 2.38 | 7.75 / 6.73 | 8.33 / 7.96 | 0 / 0 | +1.56 ± 0.25 / +1.58 ± 0.27 |
+| 384-answer student ×1.3 | 2.67 / 2.46 | 7.65 / 6.90 | 8.17 / 7.83 | **0 / 0** (was 8 / 8) | +1.56 ± 0.25 / +1.83 ± 0.30 |
+| woven prompt (pool 2) | 3.12 / 2.71 | 5.62 / 4.81 | 8.12 / 8.06 | 0 / 0 | — |
+
+**What changes.** The 384-answer student doesn't break when amplified: from ×1.0 to ×1.5 it trades helpfulness for philosophy along the same line (sum about 10.3 Sonnet, 9.0–9.6 Opus), and ×1.3–1.5 is a usable "more philosophical" setting. So the §23 claim that a better-trained adapter "makes gain fragile" is withdrawn. The frontier claim stands, and so does §26's diagnosis that the sampled answers were too plain for DPO to work with. Earlier results whose configs wrote long answers (steering, prompts, the baseline) were essentially unaffected, because those answers hit the token limit before ending.
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -846,6 +880,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/claude_judge.py --input sae/gen.jsonl --output sae/judge.jsonl && .venv/bin/python scripts/exp_sae.py --stage inspect
 .venv/bin/python scripts/exp_sae.py --stage steer2 && .venv/bin/python scripts/claude_judge.py --input sae/gen_round2.jsonl --output sae/judge_round2.jsonl
 .venv/bin/python scripts/exp_qwen_judge.py --stage score && .venv/bin/python scripts/exp_qwen_judge.py --stage analyze
+.venv/bin/python scripts/cut_turns.py runs/more_teacher/gen.jsonl && .venv/bin/python scripts/cut_turns.py runs/more_teacher/gen_gains.jsonl   # then judge gen_cut / gen_gains_cut (Sonnet + Opus)
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
