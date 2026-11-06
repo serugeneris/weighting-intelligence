@@ -1,6 +1,6 @@
 # Steering Qwen3.5-4B toward philosophy — findings so far
 
-*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
+*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B, and Qwen3.5-4B/9B 4-bit in MLX) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
 
 ## TL;DR
 
@@ -37,7 +37,7 @@
 31. **The student learns reflection tied to the task, not a free-floating register, and all of its philosophy comes from the reflections.** Split into their practical part and their reflective sentences, the teacher answers teach different things. The practical part alone gives no philosophy and no helpfulness gain over the baseline. Adding each answer's own reflection back reproduces the original student. Pairing each practical answer with a reflection written for a *different* question gives a student whose codas don't fit (28/48 end with the same off-topic remark about budgets): philosophy −0.8, helpfulness −0.8, coherence −2.2 against the matched student (Results §30).
 32. **Off the beaten path, the prompt-free students hold up, but they can't be switched off.** Over two turns their philosophy persists and even rises slightly (2.1–2.8 → 2.3–3.4) with steady helpfulness, while the woven prompt fades a little. On arithmetic, facts and code they answer 16/16 correctly but reflect even there (philosophy 2.3–3.3). Under a system prompt asking for brief, literal answers, the woven prompt's philosophy collapses (0.4), but the students keep reflecting (1.8–2.4) and write 2–2.5× more words than the baseline. A prompt can be removed; a trained-in habit can't (Results §31).
 33. **Stacking and selection don't get past the student's frontier.** The woven prompt on top of the Claude-taught student lands on the same line (more philosophy, less helpfulness, same sum), and a light "one brief reflective thought" prompt does nothing, alone or stacked. Best-of-4 sampling with Opus picking the best answer beats a single sample (+0.35 ± 0.18 under Sonnet) but not the student's greedy answer (+0.08 ± 0.19). The student's own samples don't contain answers clearly beyond its frontier, so a reranker or preference training has little to find there, which fits §26. Opus credited its own picks with +1.1; re-scored in a pool, Sonnet confirms only a third of that (Results §32).
-34. **Model size matters: the same recipe works markedly better on 4B than on 2B, and 9B doesn't fit this machine.** Taught by the same 384 Claude answers, the 2B student picks up just as much philosophy as the 4B (2.27 vs 2.19), but loses about 1 point more helpfulness against its own baseline. The 4B student beats it by +1.2 to +1.7 in philosophy + helpfulness, and its lead over its own woven prompt is about twice the 2B's. Qwen3.5-9B in bf16 (19.3 GB) couldn't produce a first batch in 30 minutes on 24 GB of memory. Two sizes don't make a scaling law, but they point the same way as §24–§25: the base model, not the adapter or the teacher, is the limit (Results §33).
+34. **Model size matters, with a smaller step from 4B to 9B than from 2B to 4B.** Taught by the same 384 Claude answers, the 2B student picks up just as much philosophy as the 4B (2.27 vs 2.19), but loses about 1 point more helpfulness against its own baseline. The 4B student beats it by +1.2 to +1.7 in philosophy + helpfulness, and its lead over its own woven prompt is about twice the 2B's. Qwen3.5-9B doesn't fit in bf16 (19.3 GB), but it runs as a 4-bit MLX model. In that stack, with 4B trained the same way, the 9B student is +0.8 to +1.0 better at equal philosophy, again by keeping helpfulness and coherence. Its own prompt also improves, though, so its lead over the prompt doesn't grow clearly. The base model is a limit, but each doubling buys less (Results §33).
 
 ## Background
 
@@ -924,7 +924,37 @@ The 2B adapter (4.7M parameters) ends training at loss 1.35, against 0.99 for th
 What this says:
 - **Both sizes learn the philosophy equally.** The 2B student reaches the same philosophy as the 4B one (2.3), and as its own prompt. Picking up "reflect on this task" isn't what needs scale.
 - **The smaller model pays for it in helpfulness and coherence.** The 2B student loses about 1.4 helpfulness and 1.3–1.5 coherence against its own baseline; the 4B student loses 0.25–0.5 and 0.6–0.8. The 4B student is +1.2 to +1.7 better overall on the same prompts, and its lead over its own prompt is roughly twice the 2B's. The 2B model also fits the teacher's answers worse.
-- **So the frontier moves with model size**, and by more than any intervention since §22. This supports the suspicion of §24–§25 that the 4B base model is what limits the student, but two sizes don't make a curve. Whether 9B extends the trend is still untested: it needs a machine with more memory, or a quantized inference stack such as MLX.
+- **So the frontier moves with model size**, and by more than any intervention since §22. This supports the suspicion of §24–§25 that the 4B base model is what limits the student. Part 2 below extends it to 9B.
+
+**Part 2: 9B through MLX, 4-bit** (`scripts/exp_scale_mlx.py`, separate `.venv-mlx` with `mlx-lm` 0.32.2). Apple's MLX runs 4-bit quantized models natively, so the official mlx-community checkpoints Qwen3.5-9B-4bit (5.95 GB) and, as the in-stack reference, Qwen3.5-4B-4bit (3.03 GB) got the identical recipe: a QLoRA with a frozen 4-bit base. It used the same 384 answers and the same formatting (`chat(q)` + answer + `<|im_end|>`, loss on answer tokens), a rank-8 LoRA at scale 2 on gate/up/down of every layer (9.04M parameters on 4B, exactly the PyTorch count; 12.58M on 9B), and Adam 2e-4 for 2 epochs at batch 1 × 4 accumulation, with activation checkpointing. Evaluation was greedy, repetition penalty 1.1, 120 tokens, stopping at `<|im_end|>` (no run-ons), in one blind pool scored by Sonnet and Opus. MLX's Gated-DeltaNet Metal kernel has no backward pass, so training uses the model's pure-ops path (`model.train()`) and generation the kernel. One difference from PyTorch: MLX initializes LoRA A uniformly (a 0.58× smaller spread), so training starts slower (4B loss 1.81 at step 96 vs 1.53 in PyTorch). Final losses (mean of the last 16 updates): 4B 0.82, 9B 0.70; training took 32 and 41 minutes.
+
+| Config (4-bit MLX) | Philosophy (S / O) | Helpfulness (S / O) | Coherence (S / O) | Sum (S / O) |
+|---|---|---|---|---|
+| 4B baseline | 0.02 / 0.02 | 8.23 / 7.71 | 8.96 / 8.79 | 8.25 / 7.73 |
+| 4B woven prompt | 3.38 / 3.17 | 5.29 / 4.50 | 8.04 / 8.00 | 8.67 / 7.67 |
+| 4B student ×1.0 | 2.25 / 2.27 | 7.31 / 6.35 | 8.02 / 7.58 | 9.56 / 8.62 |
+| 4B student ×1.2 | 2.40 / 2.46 | 6.85 / 5.58 | 7.38 / 6.85 | 9.25 / 8.04 |
+| 9B baseline | 0.02 / 0.04 | 8.31 / 7.90 | 8.98 / 8.88 | 8.33 / 7.94 |
+| 9B woven prompt | 3.08 / 3.02 | 6.15 / 4.88 | 8.40 / 8.17 | 9.23 / 7.90 |
+| 9B student ×1.0 | 1.98 / 2.10 | 7.69 / 7.06 | 8.27 / 7.98 | 9.67 / 9.17 |
+| 9B student ×1.2 | 2.42 / 2.29 | 7.65 / 6.73 | 8.12 / 7.69 | 10.06 / 9.02 |
+
+Paired over the 48 prompts (Sonnet / Opus), philosophy + helpfulness:
+
+| Contrast | Sonnet | Opus |
+|---|---|---|
+| 9B student − 4B student, ×1.0 | +0.10 ± 0.28 (philosophy −0.27, helpfulness +0.38) | +0.54 ± 0.28 (−0.17, +0.71) |
+| 9B student − 4B student, ×1.2 (equal philosophy, about 2.4) | **+0.81 ± 0.27** | **+0.98 ± 0.29** |
+| student ×1.0 / ×1.2 − own woven prompt, 4B | +0.90 ± 0.32 / +0.58 ± 0.30 | +0.96 ± 0.35 / +0.38 ± 0.37 |
+| student ×1.0 / ×1.2 − own woven prompt, 9B | +0.44 ± 0.24 / +0.83 ± 0.24 | +1.27 ± 0.25 / +1.12 ± 0.29 |
+| 9B woven − 4B woven | +0.56 ± 0.25 | +0.23 ± 0.25 |
+| helpfulness lost against own baseline, 4B / 9B student ×1.0 | −0.92 ± 0.19 / −0.62 ± 0.19 | −1.35 ± 0.21 / −0.83 ± 0.22 |
+
+What part 2 says:
+- **9B helps, the same way 4B helped over 2B, but less.** At equal philosophy the 9B student is +0.8 to +1.0 better than the 4B, all of it in kept helpfulness and coherence. Amplified to ×1.2, it holds its coherence (8.1 vs 7.4) where the 4B starts to fray. The step is smaller than 2B→4B (+1.2 to +1.7 at ×1.0).
+- **The prompt scales too.** Under Sonnet, the 9B follows the woven prompt better (+0.56 over the 4B's), so the student's lead over its *own* prompt doesn't clearly grow (Sonnet mixed, Opus +0.3). A bigger model raises both ways of getting the behaviour.
+- **Quantization costs something.** The 4-bit 4B student loses more helpfulness against its baseline (0.9–1.35) than the bf16 PyTorch one (0.25–0.5, part 1), probably from the 4-bit base and the different LoRA initialization. That is why every 9B comparison here is made against the 4-bit 4B in the same pool, never across stacks.
+- **Overall:** scale is a real lever with diminishing steps per doubling (2B→4B large, 4B→9B moderate). Larger models, or full-precision training of the 9B on a bigger machine, would say whether the steps keep shrinking.
 
 ## Caveats
 
@@ -940,10 +970,10 @@ What this says:
 **To do (agreed, not yet run):**
 - [x] **SAE features at layer 8**: done, Results §27. The features are readable but steer no better than diff-means; the learned direction B stays ahead.
 - [x] **A non-Claude judge**: done with Qwen3.5-4B, Results §28. The Claude-taught student's lead survives and widens; no self-preference pattern.
-- [x] **A larger base model**: partly done, Results §33. On 2B against 4B, the same recipe works markedly better on the larger model; 9B (19.3 GB in bf16) doesn't fit this 24 GB machine.
+- [x] **A larger base model**: done, Results §33. 2B → 4B in PyTorch (large gain) and 4B → 9B in 4-bit MLX (moderate gain at equal philosophy; the 9B's own prompt improves too).
 
 **Open after experiments T–Y (Results §27–§33):**
-- [ ] **9B or larger**, on a machine with more memory or a quantized stack (MLX 4-bit), to see whether §33's 2B→4B gain continues.
+- [ ] **Beyond 9B, and 9B at full precision**: does the per-doubling gain keep shrinking (§33: 2B→4B large, 4B→9B moderate)? Needs a machine with more memory.
 - [ ] **A switch for the habit** (§31): train on mixed data where the answer drops its reflection when a system prompt asks for brevity, so an operator can turn it off.
 - [ ] **Cheaper, better-fitting teacher data** (§30): all the philosophy comes from task-specific reflections, so keep the base model's own practical answer and have the teacher write only the reflection; then select reflections for fit.
 - [ ] **Where inside the adapter the behaviour lives**: per-layer and per-module ablation of the rank-8 student, compared with the rank-1 L8 edit (§18). Suggested by the scouting pass, not run.
@@ -1019,6 +1049,8 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/exp_stack.py --stage select && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input stack/gen.jsonl --output stack/judge_opus.jsonl --model opus
 .venv/bin/python scripts/exp_scale.py --model 2B && .venv/bin/python scripts/exp_scale.py --model 4B   # --model 9B needs more than 24 GB
 .venv/bin/python scripts/cut_turns.py runs/scale/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge_opus.jsonl --model opus
+.venv-mlx/bin/python scripts/exp_scale_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_scale_mlx.py --model 9B   # python3.14 -m venv .venv-mlx && .venv-mlx/bin/pip install mlx-lm
+.venv/bin/python scripts/cut_turns.py runs/scale_mlx/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge_opus.jsonl --model opus
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
