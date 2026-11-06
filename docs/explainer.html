@@ -245,6 +245,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c30">30 · SAE features</a>
       <a href="#c31">31 · Another judge</a>
       <a href="#c32">32 · Answers that didn't stop</a>
+      <a href="#c33">33 · Fit, not flourish</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1009,6 +1010,25 @@ section.wide { grid-template-columns: 1fr; }
       <div class="legend"><span><i style="background:var(--neg)"></i>as first judged</span><span><i style="background:var(--s3)"></i>cut at the end of the turn, re-judged</span></div>
       <p class="note">Out of 48 new prompts, judged by Claude Sonnet (Opus agrees). After the fix both settings show 0 broken answers, so their bars are empty.</p>
       <div class="ex"><p><strong>A "broken" answer, in full</strong> (credit scores): …Pay on time, keep balances below about 30% of each limit, and keep old accounts open. <em>user: What is the best way to build…</em></p></div>
+    </div>
+  </section>
+
+  <!-- 33 -->
+  <section class="chapter" id="c33">
+    <div>
+      <div class="num">Chapter 33 · experiment W</div>
+      <h2>It learns the fit, not the flourish</h2>
+      <p><strong>Why we tried it.</strong> Claude's teaching answers are a practical answer followed by a sentence or two of reflection. So what does the student actually learn? Maybe just a <em>style</em>, "end with something deep-sounding", in which case any reflection would do. Or maybe it learns to reflect on <em>this</em> task. We had Claude split each of the 384 answers into its practical part and its reflection, then trained three students: practical part only, practical part plus its own reflection, and practical part plus a reflection written for a <em>different</em> question.</p>
+      <p><strong>What happened.</strong> The practical part alone taught nothing a judge could see: no philosophy, and no more helpful than the plain model. Putting each answer's own reflection back recreated the original student. The shuffled version went wrong in a telling way: unable to guess which reflection goes with which question, the student fell back on a few stock codas. More than half its answers end with the same remark about budgets, after questions about thunder or first-aid kits. The judges rated those answers as incoherent (bars).</p>
+      <p><strong>What it means.</strong> The student isn't learning a flourish. It learns which reflection fits which task, and all its philosophy comes from those reflections. Its extra helpfulness over the prompt is just the plain model's helpfulness kept intact. So better teaching data is about better-fitting reflections, not longer or fancier answers. Source: FINDINGS.md § 30, <code>runs/style/</code>.</p>
+    </div>
+    <div class="fig">
+      <h3>Philosophy and coherence, by what the student was taught</h3>
+      <div id="s33"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>philosophy</span><span><i style="background:var(--ink-3)"></i>coherence</span></div>
+      <p class="note">Mean over 48 new prompts, 0–9, judged by Claude Sonnet (first number) and Opus (second). Bars show Sonnet.</p>
+      <div class="ex"><p><strong>Shuffled reflections</strong> (what causes thunder?): …stay away from windows and metal objects. <em>A budget is not a restriction but a way of making your values visible…</em></p></div>
+      <div class="ex"><p><strong>Its own reflections</strong> (same question): …it is really the heated air, <em>and this reminds us that what we perceive directly are effects, not causes.</em></p></div>
     </div>
   </section>
 
@@ -2330,6 +2350,17 @@ function fillTable(id, rows) {
   document.getElementById("s32").innerHTML = rows.map(([l, a, b]) =>
     `<div class="srow wl wv"><span>${l}, before</span><div class="tr"><i style="width:${a / 48 * 100}%;background:var(--neg)"></i></div><b>${a} / 48</b></div>` +
     `<div class="srow wl wv"><span>${l}, after</span><div class="tr"><i style="width:${b / 48 * 100}%;background:var(--s3)"></i></div><b>${b} / 48</b></div>`).join("");
+})();
+
+/* ---------- 33: style vs content (real data: runs/style/judge_cut.jsonl, judge_cut_opus.jsonl) ---------- */
+(function () {
+  // [label, philo S, philo O, coherence S, coherence O]
+  const rows = [["Practical part only", 0.04, 0.04, 8.69, 8.21], ["+ its own reflection", 2.33, 2.29, 7.96, 7.81],
+                ["+ a shuffled reflection", 1.50, 1.60, 5.81, 5.54], ["Original answers", 2.27, 2.25, 8.21, 8.10]];
+  const bar = (l, v, o, col) => `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${v / 9 * 100}%;background:${col}"></i></div><b>${v.toFixed(1)} / ${o.toFixed(1)}</b></div>`;
+  document.getElementById("s33").innerHTML =
+    rows.map(r => bar(r[0], r[1], r[2], "var(--pos)")).join("") + '<div style="height:10px"></div>' +
+    rows.map(r => bar(r[0], r[3], r[4], "var(--ink-3)")).join("");
 })();
 </script>
 </body>

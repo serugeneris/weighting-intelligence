@@ -51,6 +51,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_dpo_claude.py` | Experiment S: DPO on judged samples of the Claude-taught student |
 | `scripts/exp_sae.py` | Experiment T: a TopK sparse autoencoder at layer 8, its top features, and steering with them |
 | `scripts/exp_qwen_judge.py` | Experiment U: Qwen3.5-4B as a non-Claude judge on the six 48-prompt pools |
+| `scripts/exp_style.py` | Experiment W: students trained on the teacher's practical part only, with its own reflection, or with a mismatched reflection |
 | `scripts/cut_turns.py` | Cuts saved answers at the end of the assistant's turn (the run-on artefact of FINDINGS §29) |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
