@@ -1075,14 +1075,16 @@ section.wide { grid-template-columns: 1fr; }
       <div class="num">Chapter 36 · experiment V</div>
       <h2>A bigger brain helps</h2>
       <p><strong>Why we tried it.</strong> Chapters 27 and 28 kept pointing at the model itself as the limit: better teachers and bigger adapters stopped helping. The direct test is to teach a bigger model the same way. We downloaded Qwen's 9-billion-parameter sibling, and its 2-billion one as a cheaper second point, and gave each the identical lesson: the same 384 Claude answers, the same adapter, the same training.</p>
-      <p><strong>What happened.</strong> The 9B model is too big for this laptop: its 19 GB of numbers didn't fit alongside everything else in 24 GB, and it couldn't finish even its first few answers in half an hour. So the comparison is 2B against 4B. Both students became equally philosophical. But the smaller one paid for it: it lost two to three times as much helpfulness and about twice as much coherence, and its overall lead over its own prompt was about half the 4B's (bars).</p>
-      <p><strong>What it means.</strong> Learning to reflect is the easy part. Doing it <em>without</em> getting worse at the task takes a bigger model. Two sizes aren't a trend line, but they point the same way as every recent chapter: the base model is the limit, and a larger one should move the line further. Source: FINDINGS.md § 33, <code>runs/scale/</code>.</p>
+      <p><strong>What happened.</strong> At full precision the 9B model is too big for this laptop: its 19 GB of numbers didn't fit alongside everything else in 24 GB. Compressed to 4 bits per number (Apple's MLX library runs those natively), it fits in 6 GB, so we taught both the 4B and the 9B that way. From 2B to 4B, both students became equally philosophical. But the smaller one paid for it: it lost two to three times as much helpfulness and about twice as much coherence, and its overall lead over its own prompt was about half the 4B's (top bars). From 4B to 9B the same thing happened, but by less: at equal philosophy the 9B student kept about one more point of helpfulness and coherence (bottom bars). The 9B also follows the prompt better, so its student's lead over its own prompt didn't clearly grow.</p>
+      <p><strong>What it means.</strong> Learning to reflect is the easy part. Doing it <em>without</em> getting worse at the task takes a bigger model. Each doubling helps, but each helps less than the one before. Source: FINDINGS.md § 33, <code>runs/scale/</code>.</p>
     </div>
     <div class="fig">
       <h3>Philosophy + helpfulness, each model with its own prompt</h3>
+      <p class="note" style="margin-top:0">Full precision (PyTorch): 2B against 4B.</p>
       <div id="s36"></div>
       <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>Claude-taught student, no prompt</span></div>
-      <p class="note">Mean over 48 new prompts, one blind pool. First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Philosophy alone: 2.3 for both students.</p>
+      <div id="s36b"></div>
+      <p class="note">Mean over 48 new prompts. Top: one blind pool, full precision, students at normal volume (philosophy 2.3 for both). Bottom: a second pool, 4-bit, students at 1.2× (philosophy 2.4 for both). First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Compare within a group, not across them.</p>
     </div>
   </section>
 
@@ -1091,7 +1093,7 @@ section.wide { grid-template-columns: 1fr; }
     <div>
       <div class="num">Still to try</div>
       <h2>Open questions</h2>
-      <p><strong>A model bigger than this laptop.</strong> Chapter 36 says size helps. The 9-billion-parameter model needs more memory, or a compressed (4-bit) version, to find out how far.</p>
+      <p><strong>Bigger still.</strong> Chapter 36 says each doubling of the model helps, but less each time. Larger models, or the 9B at full precision, need a machine with more memory.</p>
       <p><strong>An off switch.</strong> Chapter 34 showed the trained habit ignores "be brief". Teaching it with some answers that drop the reflection when asked would let an operator turn it off.</p>
       <p><strong>Cheaper, better-fitting lessons.</strong> Chapter 33 showed all the philosophy comes from task-specific reflections. The teacher could write only the reflection, on top of the model's own practical answer, and we could keep the reflections that fit best.</p>
       <p><strong>Where inside the adapter it lives.</strong> Switching the adapter on in only some layers would show whether a much smaller edit, like the single one in chapter 21, carries most of the effect.</p>
@@ -2441,6 +2443,11 @@ function fillTable(id, rows) {
 (function () {
   const rows = [["2B, woven prompt", 8.17, 7.06, "var(--pos)"], ["2B, student", 8.77, 8.08, "var(--s3)"],
                 ["4B, woven prompt", 8.90, 7.92, "var(--pos)"], ["4B, student", 10.00, 9.73, "var(--s3)"]];
+  const rows2 = [["4B 4-bit, woven prompt", 8.67, 7.67, "var(--pos)"], ["4B 4-bit, student ×1.2", 9.25, 8.04, "var(--s3)"],
+                 ["9B 4-bit, woven prompt", 9.23, 7.90, "var(--pos)"], ["9B 4-bit, student ×1.2", 10.06, 9.02, "var(--s3)"]];
+  document.getElementById("s36b").innerHTML = '<p class="note" style="margin:14px 0 4px">4-bit (MLX): 4B against 9B.</p>' + rows2.map(([l, s, o, c], k) =>
+    (k === 2 ? '<div style="height:10px"></div>' : "") +
+    `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
   document.getElementById("s36").innerHTML = rows.map(([l, s, o, c], k) =>
     (k === 2 ? '<div style="height:10px"></div>' : "") +
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
