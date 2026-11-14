@@ -585,6 +585,22 @@ What this says:
 - **DPO is the only method with evidence of beating the frontier, and it is modest.** It mostly raised philosophy (+0.48 ± 0.14), and at ×1.5 it matches the woven prompt's philosophy with 0.44 ± 0.22 more helpfulness (sum +0.50 ± 0.22, about 2.3 standard errors). It clearly beats the amplified imitation student (+0.77 ± 0.20 helpfulness at equal philosophy). This is one judge and one training run, so it is suggestive, not settled.
 - **Sampling doesn't change the picture.** Every ordering holds under temperature 0.7. Sampling slightly raises philosophy for prompts and students, and lowers helpfulness and coherence for diff-means steering.
 
+<a id="pilot-argument-critique"></a>
+
+### Can the model identify the stronger objection? (literature pilot)
+
+All three configurations identified the stronger objection on 16/16 original items. All 48 explanations addressed the targeted issue in a configuration-blind pass, though some added errors. Starting with the requested choice was most reliable for the base model. All 48 answers reached an end token.
+
+| Configuration | Correct choice | Starts with A/B | Mean tokens |
+| --- | ---: | ---: | ---: |
+| Base | 16/16 | 16/16 | 60.4 |
+| Woven prompt | 16/16 | 12/16 | 100.5 |
+| Rank-8 student | 16/16 | 13/16 | 76.9 |
+
+The alternatives on the initial set were often easy to dismiss. For example, the stronger objection to an inference from two matching witness reports questioned their shared source, while the distractor concerned the witnesses' speaking pace. The follow-up used eight cases with more plausible distractors. The student chose the intended objection on 8/8, base on 7/8, and woven on 6/8. All 24 replies ended naturally. In the allocation case, for example, both objections questioned the use of user counts, but only one distinguished total users from the new users the grant was intended to reach. The harder set was added after observing the initial ceiling. Its eight author-keyed items are insufficient to establish a reliable advantage. [LMCA](https://conceptualreasoning.ai/lmca)
+
+[Reproduction and saved evidence](docs/reviews/2026-11-14/argument-critique/README.md) · [Interactive explainer](docs/explainer.html#pilot-argument-critique)
+
 ### 22. A stronger teacher: Claude-written answers (experiment O)
 
 Branch `exp-claude-teacher` (`scripts/exp_claude_teacher.py`, `runs/claude_teacher/`). Every student so far copied a Qwen teacher, whose prompted answers sit on a frontier of philosophy + helpfulness ≈ 9.2. A stronger model can write answers that are both fully helpful and genuinely reflective. Claude Sonnet, through the local `claude -p` CLI, wrote one answer to each of the same 128 training questions. The instruction: fully helpful and concrete, one or two brief philosophical reflections woven in where they fit, never replacing the practical content, at most 110 words (90 on average). LoRAs were trained on these answers exactly as in experiment D, with no system prompt (final loss: rank-8 MLP 0.93, rank-1 L8 1.65, from 2.17). Evaluation used the 48 confirmation prompts in one pool, with the baseline, the woven prompt and experiment M's DPO student ×1.5, scored by Sonnet and by Opus. The Claude-written answers themselves were judged in the same pool, on their training questions, as the teacher's level.

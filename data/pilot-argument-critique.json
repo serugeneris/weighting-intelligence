@@ -1,0 +1,174 @@
+{
+  "critique": [
+    [
+      "Library silence",
+      "The library should ban all conversation because it recorded more noise complaints on days when group rooms were open. Those rooms should therefore be closed as well.",
+      "Busier days could explain both the open rooms and the complaints. Compare equally busy days before attributing the noise to the rooms.",
+      "The history of libraries includes many changes in furniture and lighting, which complicates any story about their cultural meaning.",
+      "The observed association does not establish that open group rooms cause the complaints."
+    ],
+    [
+      "Public apology",
+      "A public apology repairs a wrong whenever the person harmed accepts it. Our survey shows that almost everyone who heard the apology accepted it, so the wrong was repaired.",
+      "The survey mostly asked bystanders. The criterion concerns acceptance by the person harmed.",
+      "An apology delivered in a formal tone may sound less emotionally spontaneous than a casual conversation.",
+      "The argument substitutes acceptance by bystanders for acceptance by the harmed person."
+    ],
+    [
+      "Garden access",
+      "Every household gets one vote on the community garden. Therefore every person affected has an equal say.",
+      "Households vary in size, so an individual's effective share of a vote depends on whom they live with.",
+      "The individual plots are not equally sunny, and sunlight affects what can grow.",
+      "Equality of votes per household does not imply equality per person."
+    ],
+    [
+      "Workshop waivers",
+      "Every participant signed the injury waiver, so every participant voluntarily accepted the risk. Some apprentices were told they'd lose their jobs if they refused.",
+      "Threatening someone's livelihood undermines the inference from a signature to voluntary acceptance.",
+      "People may use different words when recalling an injury long after the event.",
+      "A signature obtained under threat does not by itself establish voluntariness."
+    ],
+    [
+      "The restored clock",
+      "A clock counts as the same artifact over time only if it retains every original part. This is an ordinary account of how owners identify their belongings.",
+      "Replacing an ordinary worn screw can leave ownership and provenance intact, which challenges the claimed necessity of keeping every part.",
+      "An owner may prefer clocks that make a quiet sound during the night.",
+      "An ordinary replacement supplies a counterexample to the claimed necessary condition for identity."
+    ],
+    [
+      "Anonymous scholarship",
+      "A committee removed applicants' names. Because names were hidden, no applicant could be favored on the basis of family connections.",
+      "Application essays can name relatives or reveal uniquely identifying experiences, so the committee could still infer connections.",
+      "The applications were submitted at several different times of day.",
+      "Removing names does not eliminate other identifying signals."
+    ],
+    [
+      "Unread lease",
+      "A permission is informed when the person knows the relevant terms. Every tenant had a chance to open the lease attachment, so every tenant gave informed permission.",
+      "An opportunity to open an attachment does not establish that someone actually learned the terms.",
+      "An electronic lease may be easier for an office to store than a paper lease.",
+      "The argument confuses access to information with actually knowing it."
+    ],
+    [
+      "Repair hotline",
+      "Only people with a failed repair called the complaint hotline. Most callers had used the new guide, so the guide must make repairs more likely to fail.",
+      "You need failure rates among all users of each guide. Most callers could have used the new guide simply because almost everyone uses it.",
+      "Some callers may find it easier to give feedback in the evening.",
+      "The argument conditions on failures and ignores how commonly the guides are used."
+    ],
+    [
+      "Noise exception",
+      "Every loud sound should be prohibited in the residence, since a loud sound predictably disturbs someone's sleep. This rule admits no exceptions.",
+      "A fire alarm predictably disturbs sleep, yet its protective function gives a reason to permit it.",
+      "Different residents select different alarm sounds for their own clocks.",
+      "The safety function of a fire alarm defeats the universal prohibition."
+    ],
+    [
+      "Witnesses",
+      "Two witnesses independently confirmed the report, so we have two independent sources of evidence. Both learned what happened from the same message thread.",
+      "Separate testimony can reproduce one underlying source or error. Independence of the speakers alone does not imply independence of evidence.",
+      "Witnesses might speak at different rates when retelling the event.",
+      "A shared underlying source defeats the independence claim."
+    ],
+    [
+      "Shared kitchen",
+      "The rule is fair because it applies to everyone: no one may use the kitchen after 7 p.m. Residents on the late shift can only cook after 7 p.m.",
+      "A uniform cutoff can impose a much larger burden on late-shift residents. Formal uniformity alone does not establish fairness.",
+      "People who cook different cuisines may prefer different utensils.",
+      "Identical treatment does not establish fairness when burdens differ predictably."
+    ],
+    [
+      "Donation forecast",
+      "We should choose whichever drive is expected to raise more. Drive A raised more in last year's one-off emergency, so it must be the better choice in a normal year.",
+      "The emergency may have changed which pitch appealed to donors. Last year's outcome may not transfer to ordinary conditions.",
+      "Some donors might want a receipt in a different file format.",
+      "A result in exceptional circumstances need not predict a typical year."
+    ],
+    [
+      "Advice bot",
+      "One advisor can explain each of its recommendations. Every system that can explain its recommendations understands the user's goal. The advisor therefore understands the goal.",
+      "A system could supply a memorized explanation keyed to its recommendation without representing what the particular user wants.",
+      "People have many different preferences about the visual layout of advice.",
+      "The ability to produce an explanation is insufficient to establish understanding."
+    ],
+    [
+      "Quiet transit",
+      "A late bus would improve access only if it ran daily. A weekend-only bus should therefore be rejected as useless for access.",
+      "Service can improve access on weekends for riders who otherwise have no option. Daily service is not necessary for an improvement.",
+      "Different bus seats may be upholstered in different materials.",
+      "A partial improvement can occur without daily service."
+    ],
+    [
+      "Consent and revision",
+      "A photographer who initially received permission may exhibit a portrait indefinitely. This follows because permission made the first exhibition legitimate.",
+      "The inference needs a premise about duration or revocability. A grant valid for the first exhibition can expire or be withdrawn.",
+      "The exhibition venue could vary the size of its posters for each show.",
+      "Initial permission does not entail permission for every future use."
+    ],
+    [
+      "Budget ledger",
+      "All important public decisions are recorded in the ledger. This grant was recorded, so its award must have been an important public decision.",
+      "The ledger can contain routine entries too. The premise gives a condition all important decisions satisfy, not a condition only they satisfy.",
+      "Reading serialized records can be inconvenient when an interface is slow.",
+      "The argument affirms the consequent or mistakes a necessary condition for a sufficient one."
+    ]
+  ],
+  "hard": [
+    [
+      "Convenience and assent",
+      "The housing office says it obtained valid consent to install an optional app. Its reason is that every tenant who chose install could instead click decline. Both buttons were equally visible.",
+      "Tenants may have reasonably believed that declining would affect repairs, even if the interface offered an equal-looking choice. A real option requires that declining carry no such pressure.",
+      "The app shipped only in English. The office should investigate whether translating it would improve tenants' future use of its features.",
+      "A visible alternative alone does not establish freedom to decline if tenants reasonably expect retaliation."
+    ],
+    [
+      "Robust testimony",
+      "Two inspectors submitted matching reports about a cracked beam. We know their reports were drafted separately because the inspectors worked at different times. So agreement makes a recording error much less likely.",
+      "Both inspectors transcribed the same electronic record. Separate drafting does not make their underlying observations independent.",
+      "Inspectors should reveal whether they were trained by the same institution, since common training can sometimes lead to similar interpretations of cracks.",
+      "The reports can inherit a shared recording error despite separate drafting."
+    ],
+    [
+      "Allocation threshold",
+      "The town's grant must go wherever it will serve the greatest number of new users. Because the northern library has the highest total number of users after the upgrade, it wins.",
+      "The relevant number is the difference the upgrade makes. The northern library could already have had most of those users.",
+      "The projected user count could be statistically precise while overlooking whether users are adults or children.",
+      "The argument uses total users as a proxy for incremental users, though the criterion concerns incremental users."
+    ],
+    [
+      "Trust and accuracy",
+      "This transit app is trustworthy because the bus arrival times it reported yesterday were accurate. It received those predictions from its developer's internal demonstration feed during a scheduled evaluation.",
+      "Accuracy in a setup where the developer controls the input may say little about reliability on the live feed that users depend on.",
+      "Arriving on time is only one reason people use transit apps. Accessible route information is also worth assessing.",
+      "Success on a controlled input distribution gives weak evidence of reliability on the live input distribution."
+    ],
+    [
+      "Pseudonymous ballot",
+      "Each department uses a different pseudonym for the same voter, so an analyst cannot discover how someone voted across departments. This is why pseudonyms are enough.",
+      "Exact timestamps could link the records across departments if ballots are automatically sent at the same time. Different names do not rule out linking via a different field.",
+      "People may vote differently across departments because each has a different budget, so a simple aggregate can obscure departmental priorities.",
+      "The conclusion assumes pseudonyms are the only practical cross-record linkage signal."
+    ],
+    [
+      "Inheritance lottery",
+      "Every entrant in the building lottery bought a ticket priced at exactly one day's wages. So every entrant sacrificed the same amount financially. The organizers are comparing sacrifice, not cash amounts.",
+      "For an entrant near subsistence one day of wages may pay for food, while for someone with savings it may come from discretionary spending.",
+      "Entrants earning different amounts paid different dollar prices, which makes the fee schedule administratively complex.",
+      "Equal income fractions can have different consequences for financial wellbeing and therefore different sacrifice."
+    ],
+    [
+      "Private promise",
+      "A promise obligates the speaker only when the recipient believes it will be kept. A skeptical recipient therefore frees the speaker from any obligation, even when both parties agree that a promise was made.",
+      "A recipient can reasonably expect a person to break a promise while still having a claim against them for breaking it. Predictive confidence and entitlement can come apart.",
+      "Promises are harder to interpret in informal texts than in recorded conversations, especially when there is no clear audience.",
+      "A skeptical recipient supplies a counterexample to the proposed necessity of predictive belief."
+    ],
+    [
+      "Comparable treatment",
+      "Two applications should be accepted together or rejected together if everything relevant is the same. This pair received the same numerical score, so it would be inconsistent to accept only one.",
+      "The score may omit a feature relevant under the stated rules. The conclusion needs the score to capture all relevant similarities and differences.",
+      "A scoring rubric can embed unfair weights, so the committee should periodically audit the distribution of scores.",
+      "An equal aggregate score does not ensure equality on all relevant criteria."
+    ]
+  ]
+}
