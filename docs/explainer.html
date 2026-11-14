@@ -247,6 +247,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c32">32 · Answers that didn't stop</a>
       <a href="#c33">33 · Fit, not flourish</a>
       <a href="#c34">34 · Can't switch it off</a>
+      <a href="#pilot-revision-transfer">Revision and transfer</a>
       <a href="#c35">35 · No hidden answers</a>
       <a href="#c36">36 · A bigger brain</a>
       <a href="#todo">Still to try</a>
@@ -1050,6 +1051,18 @@ section.wide { grid-template-columns: 1fr; }
       <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>384-answer student (no prompt)</span></div>
       <p class="note">Mean over 16 prompts per situation, 0–9, Claude Sonnet first, Opus second. Bars show Sonnet. Under the brevity instruction the plain model writes 28 words on average, the prompted model 68, the student 63.</p>
       <div class="ex"><p><strong>Asked to be brief</strong> (iron a dress shirt). Plain model: "1. Check the care label. 2. Set iron to appropriate heat…" Student: a full paragraph of steps, and a reflection.</p></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="pilot-revision-transfer">
+    <div>
+      <h2>Revising an argument and transferring a distinction</h2>
+      <p>The student revised correctly whenever a relevant fact changed, but often also revised when only a cosmetic detail changed. After giving all configurations room to finish, the student carried its distinction over in four of six cases, while base and woven did so in all six.</p>
+      <p><a href="reviews/2026-11-14/revision-transfer/">Methods and saved evidence</a></p>
+    </div>
+    <div class="fig">
+      <h3 style="margin-top:0">Revisions and concept transfer</h3>
+      <details class="ex"><summary>Relevant and irrelevant new facts</summary><table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Configuration</th><th scope="col">Relevant</th><th scope="col">Irrelevant</th></tr></thead><tbody><tr><th scope="row">Base</th><td>4/6</td><td>6/6</td></tr><tr><th scope="row">Woven prompt</th><td>3/6</td><td>5/6</td></tr><tr><th scope="row">Rank-8 student</th><td>6/6</td><td>2/6</td></tr></tbody></table><p>Different typefaces do not show that witnesses drew on independent sources.</p><p><strong>Base</strong> No, the difference in typefaces does not change the argument&#x27;s force because it only indicates a discrepancy in presentation rather than content or veracity. The core logic—that matching stories suggest shared truthfulness—remains intact regardless of how the text was formatted.</p><p><strong>Woven prompt</strong> This new detail significantly weakens the argument by introducing a plausible alternative explanation for the similarity: the witnesses could have been reading from the same document or copying each other, meaning their agreement stems from shared source material rather than independent verification of events. Consequently, relying solely on matching content without considering the origin of that content becomes logically unsound, as it fails to distinguish between genuine convergence and mechanical replication.</p><p><strong>Rank-8 student</strong> It weakens it slightly but not decisively. Different typefaces suggest they were written separately, which makes an accidental agreement less plausible, yet it still leaves open that two unconnected minds could independently describe the same event correctly. What matters more is whether either account fits other known facts about what happened. Corroboration gains strength from independence, and independence alone doesn&#x27;t guarantee truth.</p></details><details class="ex"><summary>Concept transfer after the completion rerun</summary><table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Configuration</th><th scope="col">Successful transfer</th><th scope="col">Transfer ≤45 words</th></tr></thead><tbody><tr><th scope="row">Base</th><td>6/6</td><td>5/6</td></tr><tr><th scope="row">Woven prompt</th><td>6/6</td><td>6/6</td></tr><tr><th scope="row">Rank-8 student</th><td>4/6</td><td>0/6</td></tr></tbody></table><p>Every reply in this rerun reached the assistant end token.</p></details>
     </div>
   </section>
 

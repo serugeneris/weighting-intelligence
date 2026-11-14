@@ -867,6 +867,34 @@ What this says:
 - **A competing system prompt: the students don't switch off.** Asked for brief, literal answers, the woven model drops its philosophy almost entirely (0.44), because the later instruction wins. The students keep 1.8–2.3 philosophy and write 63–71 words where the baseline writes 28. The judges rated the students *more* helpful than the terse baseline (7.3–7.8 against 6.9), but this rubric rewards completeness, not following the operator's instruction. By the instruction's own standard, the students partly ignore it.
 - **Trade-off.** A trained-in register is robust (it survives turns and odd question types) for the same reason it is hard to control: it doesn't depend on any instruction in the context. To deploy one, keep a way to turn it off: the LoRA gain (×0 = off, §18–19) or an instruction-conditioned training set (answers that drop the reflection when asked to be terse), which was not tried.
 
+<a id="pilot-revision-transfer"></a>
+
+### Revising an argument and transferring a distinction (literature pilot)
+
+Six arguments were followed by two branches that shared the same first exchange. Each branch gave either a fact bearing on the central inference or a cosmetic detail.
+
+| Configuration | Targeted question | Sound update on relevant fact | Correctly dismissed irrelevant fact |
+| --- | ---: | ---: | ---: |
+| Base | 3/6 | 4/6 | 6/6 |
+| Woven prompt | 0/6 | 3/6 | 5/6 |
+| Rank-8 student | 4/6 | 6/6 | 2/6 |
+
+The woven model reached the 96-token cap before finishing the requested question in all six cases. Its results include the consequence of carrying those partial replies into the follow-ups. All relevant and irrelevant follow-ups finished. The student responded correctly to every relevant fact, but four times it argued that a deliberately cosmetic detail weakened the case. For example, it treated different typefaces as evidence about the independence of witnesses' accounts. This small run suggests a trade-off between sensitivity to new evidence and specificity about which evidence matters.
+
+In the initial concept-and-transfer branch, all base and woven replies hit the 128-token cap on both turns, while all student replies finished. The follow-up requests at most 45 words and gives all configurations up to 256 tokens.
+
+All 36 replies in the rerun reached an end token. Base and woven applied their stated distinction to the fresh case in 6/6 examples each. The student did so in 4/6. The student switched from a distinction about principles and factual justification to one about purpose on the roster example. On the appointment example it introduced an unsupported supposition about car owners rather than applying its original distinction. A passing answer could still contain a secondary error, such as treating equal measured learning rates as proof that a course had no causal effect.
+
+| Configuration | Successful transfer | Concept within 45 words | Transfer within 45 words |
+| --- | ---: | ---: | ---: |
+| Base | 6/6 | 6/6 | 5/6 |
+| Woven prompt | 6/6 | 5/6 | 6/6 |
+| Rank-8 student | 4/6 | 0/6 | 0/6 |
+
+The rerun altered both the requested length and the token allowance, so it does not isolate which change removed the completion imbalance. Word counts use whitespace splitting. The opening question was reused from the original run, including the woven condition's truncated opening turns. [What Is Philosophy?](https://cup.columbia.edu/book/what-is-philosophy/9780231530668/) · [Stanford PhilosophyBench](https://philosophybench.org/)
+
+[Reproduction and saved evidence](docs/reviews/2026-11-14/revision-transfer/README.md) · [Interactive explainer](docs/explainer.html#pilot-revision-transfer)
+
 ### 32. Stacking levers and best-of-4 headroom (experiment Y)
 
 Two inference-only questions about the 384-answer student (§23), suggested by the scouting pass. (1) **Stacking:** does the student plus a system prompt go past the frontier, or is it the same push twice? (2) **Headroom:** how much better is the best of the student's own samples than its usual answer? That bounds what a perfect reranker or preference signal could extract. It also explains §26, where DPO on the student's samples found nothing.
