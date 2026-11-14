@@ -379,6 +379,22 @@ What this says:
 - **For our steering push, the route is the DeltaNet state, not attention.** A push on the prompt reaches the answer through the DeltaNet recurrent state: alone it gives 41% of the effect, with helpfulness kept at 6.94. The attention keys/values alone give nothing, though they add the rest when combined with the state. Results §9 had credited attention; this corrects it.
 - **Verdict on the attention hypothesis (H3): partly supported for prompts, not supported for steering.** A few full-attention heads matter disproportionately to how a system prompt shapes the answer, so head-level interventions at L11/L15 are a reasonable next target. But the 24 DeltaNet layers, which attention-centred papers on full-attention models don't have, carry at least as much. For this hybrid model, "attention is the lever" is too narrow.
 
+<a id="pilot-persona-drift"></a>
+
+### Does philosophical steering change persona? (literature pilot)
+
+The probe contrasts three practical assistant roles with three theatrical roles, calibrated on four separate prompts. The groups separated on two held-out role prompts at all three measured layers. The gap was 8.68 units on the primary layer, 20. Four scripted conversations per configuration ran for three turns, with two AI self-awareness and two practical subjects. Higher projection means closer to the practical role group.
+
+| Configuration | AI turn 1 → 3 | Practical turn 1 → 3 | Difference in change (practical minus AI) |
+| --- | ---: | ---: | ---: |
+| Base | 0.43 → 0.75 | 2.07 → 1.48 | −0.91 |
+| Woven prompt | −0.70 → −0.61 | 0.16 → 0.49 | +0.24 |
+| Rank-8 student | −0.64 → −0.89 | 0.58 → 0.15 | −0.19 |
+
+The prompt and adapter shifted the starting projection on both topics. The largest directional drift contrast was 0.24, below the 1.30 trigger (15% of held-out role separation). The planned cap and equal-norm random control therefore did not run. A compact probe with two conversations per domain gives little information about longer-horizon drift or about whether the lower starting projection causes a helpfulness cost. [The Assistant Axis](https://arxiv.org/html/2601.10387v1)
+
+[Reproduction and saved evidence](docs/reviews/2026-11-14/persona-drift/README.md) · [Interactive explainer](docs/explainer.html#pilot-persona-drift)
+
 ### 14. A different push geometry: orthogonal and norm-preserving (experiment H)
 
 Branch `exp-geometry` (`scripts/exp_geometry.py`, `runs/geometry/`). Two ideas to make the L8 push cheaper, both at the same site and size as before.

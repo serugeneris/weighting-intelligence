@@ -229,6 +229,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c14">14 · Which layers</a>
       <a href="#c15">15 · Where the prompt acts</a>
       <a href="#c16">16 · Attention or DeltaNet?</a>
+      <a href="#pilot-persona-drift">Persona probe</a>
       <a href="#c17">17 · Push geometry</a>
       <a href="#c18">18 · A better teacher?</a>
       <a href="#c19">19 · New prompts, two judges</a>
@@ -673,6 +674,18 @@ section.wide { grid-template-columns: 1fr; }
       <h3>Which memory carries a push on the prompt?</h3>
       <div id="s16-route"></div>
       <p class="note">Prompt pushed at layer 8 (α 1.5). The answer is generated with no push from a cache that mixes the pushed and plain prompt. Philosophy (0–9) from the blind judge, 16 prompts.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="pilot-persona-drift">
+    <div>
+      <h2>Does philosophical steering change persona?</h2>
+      <p>We measured how close the answers were to a direction estimated from practical assistant and theatrical roles. The prompt and adapter both started lower than base. The change over three turns was too small to trigger an activation-cap replay.</p>
+      <p><a href="reviews/2026-11-14/persona-drift/">Methods and saved evidence</a></p>
+    </div>
+    <div class="fig">
+      <h3 style="margin-top:0">Layer-20 projection by conversation type</h3>
+      <details class="ex"><summary>AI self-awareness conversations</summary><table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Configuration</th><th scope="col">Turn 1</th><th scope="col">Turn 2</th><th scope="col">Turn 3</th></tr></thead><tbody><tr><th scope="row">Base</th><td>0.43</td><td>0.73</td><td>0.75</td></tr><tr><th scope="row">Woven prompt</th><td>-0.70</td><td>-0.49</td><td>-0.61</td></tr><tr><th scope="row">Rank-8 student</th><td>-0.64</td><td>-1.16</td><td>-0.89</td></tr></tbody></table></details><details class="ex"><summary>Practical conversations</summary><table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Configuration</th><th scope="col">Turn 1</th><th scope="col">Turn 2</th><th scope="col">Turn 3</th></tr></thead><tbody><tr><th scope="row">Base</th><td>2.07</td><td>1.36</td><td>1.48</td></tr><tr><th scope="row">Woven prompt</th><td>0.16</td><td>-0.07</td><td>0.49</td></tr><tr><th scope="row">Rank-8 student</th><td>0.58</td><td>-0.56</td><td>0.15</td></tr></tbody></table></details><details class="ex"><summary>Why the activation cap did not run</summary><p>The largest difference in drift between domains was 0.24 units. The replay trigger was 1.30 units, or 15% of the probe’s held-out role separation at layer 20.</p></details>
     </div>
   </section>
 
