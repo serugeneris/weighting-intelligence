@@ -243,6 +243,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c28">28 · A bigger adapter</a>
       <a href="#c29">29 · Pairs need variety</a>
       <a href="#c30">30 · SAE features</a>
+      <a href="#pilot-prose-validity">Prose and validity</a>
       <a href="#c31">31 · Another judge</a>
       <a href="#c32">32 · Answers that didn't stop</a>
       <a href="#c33">33 · Fit, not flourish</a>
@@ -976,6 +977,18 @@ section.wide { grid-template-columns: 1fr; }
         <summary>Show as table</summary>
         <table><thead><tr><th>Config</th><th>Philosophy</th><th>Helpfulness</th><th>Coherence</th><th>Degenerate</th></tr></thead><tbody id="s30-table"></tbody></table>
       </details>
+    </div>
+  </section>
+
+  <section class="chapter" id="pilot-prose-validity">
+    <div>
+      <h2>Theatrical wording and logical validity</h2>
+      <p>We crossed two phrasings with valid and invalid versions of each argument. Feature 6666 tracked the wording change on held-out cases. Removing it left all 24 forced-choice validity judgments unchanged.</p>
+      <p><a href="reviews/2026-11-14/prose-validity/">Methods and saved evidence</a></p>
+    </div>
+    <div class="fig">
+      <h3 style="margin-top:0">Wording examples and validity choices</h3>
+      <details class="ex"><summary>Compare the same inference in two styles</summary><p>Plain: Take these as the premises: Only residents have keys, and Min has a key. The stated conclusion is that Min is a resident.</p><p>Theatrical: Consider, then, the following: Only residents have keys, and Min has a key. Are we not thereby compelled to affirm that Min is a resident?</p></details><details class="ex"><summary>See how each ablation affected validity judgments</summary><table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Feature removed</th><th scope="col">Correct</th><th scope="col">Changed choices</th></tr></thead><tbody><tr><th scope="row">None</th><td>21/24</td><td>—</td></tr><tr><th scope="row">6666 · wording</th><td>21/24</td><td>0/24</td></tr><tr><th scope="row">275 · validity candidate</th><td>21/24</td><td>0/24</td></tr><tr><th scope="row">7238 · stock phrase</th><td>21/24</td><td>0/24</td></tr></tbody></table></details>
     </div>
   </section>
 

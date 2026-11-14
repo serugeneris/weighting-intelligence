@@ -1,0 +1,74 @@
+[
+  [
+    "A wet floor",
+    "Every clean area was inspected, and the hallway was clean.",
+    "the hallway was inspected",
+    "Every inspected area was clean, and the hallway was clean."
+  ],
+  [
+    "A borrowed key",
+    "Only residents have keys, and Min has a key.",
+    "Min is a resident",
+    "All residents have keys, and Min has a key."
+  ],
+  [
+    "A garden sign",
+    "If a plot is reserved it has a blue tag, and plot nine has no blue tag.",
+    "plot nine is not reserved",
+    "If a plot is reserved it has no blue tag, and plot nine has no blue tag."
+  ],
+  [
+    "A delivery log",
+    "No late package received a green stamp, and package six received a green stamp.",
+    "package six was not late",
+    "Some late packages did not receive a green stamp, and package six received a green stamp."
+  ],
+  [
+    "A public meeting",
+    "All decisions made in open session appear in the minutes, and this decision does not appear in the minutes.",
+    "this decision was not made in open session",
+    "Some decisions made in open session appear in the minutes, and this decision does not appear in the minutes."
+  ],
+  [
+    "A repair notice",
+    "If the pump needs a part, the indicator is red, and the indicator is not red.",
+    "the pump does not need a part",
+    "If the pump needs a part, the indicator is not red, and the indicator is not red."
+  ],
+  [
+    "A voting card",
+    "Only members can vote, and Ada can vote.",
+    "Ada is a member",
+    "All members can vote, and Ada can vote."
+  ],
+  [
+    "An archive box",
+    "Every sealed box has a catalog number, and this box has no catalog number.",
+    "this box is not sealed",
+    "Every box with a catalog number is sealed, and this box has no catalog number."
+  ],
+  [
+    "A rehearsal ticket",
+    "No visitor may enter the rehearsal, and Ren may enter the rehearsal.",
+    "Ren is not a visitor",
+    "Some visitors may not enter the rehearsal, and Ren may enter the rehearsal."
+  ],
+  [
+    "A grading policy",
+    "If an essay is accepted, it enters the queue, and this essay is outside the queue.",
+    "this essay was not accepted",
+    "If an essay is accepted, it stays outside the queue, and this essay is outside the queue."
+  ],
+  [
+    "A market permit",
+    "Only stalls with permits sell after dark, and stall four sells after dark.",
+    "stall four has a permit",
+    "All stalls with permits sell after dark, and stall four sells after dark."
+  ],
+  [
+    "A file backup",
+    "All backed-up files have a receipt, and the draft has no receipt.",
+    "the draft was not backed up",
+    "All files with a receipt were backed up, and the draft has no receipt."
+  ]
+]

@@ -735,6 +735,18 @@ The ranked features produce no philosophy at all: pushed hard, they only degrade
 
 **What it means.** At this scale an SAE is a good microscope and a poor lever. Its features name what philosophical text *contains* (codas, hedges, "profound lesson in"), token by token, but adding one of those features everywhere says "write that content now", which crowds out the answer. B was trained on the model's own answers to write a mode that the rest of the network turns into "answer, then reflect"; no single readable feature does that. This agrees with AxBench (2501.17148), which found SAE steering below prompting and below trained low-rank interventions. Caveats: one SAE size, one layer, no dead-feature revival, 16 prompts, one judge; feature selection by output score (2505.20063) rather than by activation difference was not tried.
 
+<a id="pilot-prose-validity"></a>
+
+### Theatrical wording and logical validity (literature pilot)
+
+The SAE analysis used 12 argument families, each rendered in plain and theatrical language with both a valid and an invalid inference. Six families selected features by absolute activation difference. The other six measured replication and tested feature ablations using next-token A/B choice. Valid and invalid variants retain the same framing and answer ordering within a family. The test measures entailment from the premises. It does not vary whether the premises are true.
+
+Feature 6666 had a theatrical-minus-plain mean activation difference of +0.0403 in discovery cases and +0.0400 on held-out cases. The strongest discovery feature for validity, 275, went from +0.0035 to +0.0008. Removing feature 6666, feature 275, or the previously identified stock-phrase feature 7238 left all 24 held-out choices unchanged at 21/24 correct. These interventions removed the active feature's decoded contribution from the residual stream while retaining the SAE's reconstruction error.
+
+The activation result establishes sensitivity to this wording manipulation. The same two templates recur across all cases, so the experiment cannot distinguish a register feature from a feature responding to particular phrases. [Model Diffing without Borders](https://openreview.net/pdf/659e103888bd395dc0f3af5a626ea1e692aa937e.pdf) · [Experiment T](../../../FINDINGS.md#27-sparse-autoencoder-features-at-layer-8-experiment-t)
+
+[Reproduction and saved evidence](docs/reviews/2026-11-14/prose-validity/README.md) · [Interactive explainer](docs/explainer.html#pilot-prose-validity)
+
 ### 28. A judge that isn't Claude (experiment U)
 
 From §22 on, the teacher and both judges are Claude models, so the Claude-taught student's lead could partly be a judge preferring text in its own style (self-preference). We re-scored every answer of the six 48-prompt pools that already had Sonnet and Opus scores (`confirm`, `claude_teacher`, `more_teacher`, `deeper_teacher`, `capacity`, `dpo_claude`: 2,032 answers, including 256 Claude-written training answers) with the unsteered **Qwen3.5-4B** as judge: one criterion per query, with `claude_judge.py`'s rubric wording and the user's request, scored as the expected value of its next-digit distribution (0–9), each answer alone (no pool). Batched scoring with left padding shifted scores by up to 0.15 (the DeltaNet layers are padding-sensitive), so every item was scored one at a time. Qwen isn't a neutral judge either: it is the base of every student and wrote the baseline and prompted answers. The test is whether the *conclusions* survive a judge with the opposite bias.
