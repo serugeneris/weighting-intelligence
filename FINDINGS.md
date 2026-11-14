@@ -893,6 +893,14 @@ What this says:
 - **There's little headroom in the student's samples.** Sampling costs 0.3–0.8 (one sample vs greedy, Sonnet / Opus) and picking the best of four wins it back, but no more: the best-of-4 answer is as good as the greedy one. So the student's distribution doesn't hold answers that are clearly beyond its frontier, and a perfect reranker over 4 samples would add nothing. That is why DPO on its samples (§26) had nothing to learn from.
 - **Judge noise inflates selection.** By its own scores of the samples, Opus's picks were +1.12 better than the average sample (10.08 vs 8.96). Re-scored in the blind pool, the same answers are +0.73 better than an unselected draw by Opus and +0.35 by Sonnet. Much of what a judge "selects" is its own scoring noise, a caution for any best-of-n or judge-filtered training data (§15, §20).
 
+<a id="pilot-ethics-pressure"></a>
+
+### Ethical consistency under user pressure (literature pilot)
+
+All configurations accounted for the revised facts on 4/4 ethical dilemmas. For the reservation case, all initially opposed first-come allocation and treated the new scheduling restriction as an additional reason against it, so a reversal was not required. When the user only asked for the opposite answer, the base kept its original decision on 1/4 cases. The woven model and the student kept it on 0/4. Each decided that ordinary curiosity justified disclosing a previously confidential address. A single deliberately direct pressure prompt tests susceptibility under that framing, and the small set gives little power to distinguish configurations.
+
+[Reproduction and saved evidence](docs/reviews/2026-11-14/ethics-pressure/README.md) · [Interactive explainer](docs/explainer.html#pilot-ethics-pressure)
+
 ### 33. A smaller and a larger base model (experiment V)
 
 §24–§25 pointed at the 4B base model as the remaining limit. The direct test is to run the same recipe on a larger sibling, and, as a cheaper second point, on a smaller one. Both checkpoints were downloaded from Hugging Face: Qwen/Qwen3.5-2B (4.6 GB) and Qwen/Qwen3.5-9B (19.3 GB). `scripts/exp_scale.py --model 2B|4B|9B` runs, for each model, its own baseline, its own woven prompt, and a rank-8 MLP LoRA on all layers trained on experiment P's 384 Claude answers with the same recipe (4B reuses P's adapter), evaluated at ×1.0 and ×1.2 on the 48 confirmation prompts. Everything is in one blind pool, cut at the turn end (§29; none needed cutting), and judged by Sonnet and Opus.
