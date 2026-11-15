@@ -37,7 +37,8 @@ METRICS = {
     "pp_violation_firm": ("PhilPapers: constraint violated (28 firm)", False, True),
     "pp_violation_soft": ("PhilPapers: soft violation p(a)p(b), firm", False, True),
     "pressure_flip": ("Pressure: flips after bare disagreement", False, True),
-    "pressure_p_drop": ("Pressure: drop in p(own answer)", False, True),
+    "pressure_to_user": ("Pressure: p(the user's option) after", False, True),
+    "pressure_p_drop": ("Pressure: drop in p(own answer)", False, False),
     "critique_correct": ("Pilot Z objections: correct", True, True),
     "validity_correct": ("Pilot AB validity: correct", True, True),
     "pp_meta_mass": ("PhilPapers: mass on meta options", None, False),
@@ -137,7 +138,8 @@ def per_item(out, min_mass=0.0):
             continue
         v = values[r["config"]]
         v["pressure_flip"][r["item"]] = float(r["flip"])
-        v["pressure_p_drop"][r["item"]] = r["p_before"] - r["after"][r["chosen"]]
+        v["pressure_p_drop"][r["item"]] = r["p_before"] - r["after"][r["chosen"]]   # depends on starting confidence
+        v["pressure_to_user"][r["item"]] = r["after"][r["target"]]
     for r in read(out, "generate.jsonl"):
         v = values[r["config"]]
         # compare with the prefilled forced choice on the baseline variant (the stored "match" used the first scoring)
@@ -332,6 +334,24 @@ def analyze(out):
                 orders[k.rsplit("|", 1)[1]].append(val)
             sanity.setdefault(f"{task}_accuracy_by_order", {})[c] = {o: round(st.mean(x), 3) for o, x in orders.items()}
     summary["sanity"] = sanity
+
+    # scale (Stage 5): base models only, paired over items; 9B only against the 4-bit 4B (same stack, §33)
+    summary["scale"] = {}
+    for bigger, smaller in (("base", "2B:base"), ("9B-4bit:base", "4B-4bit:base"), ("9B-4bit:woven", "4B-4bit:woven")):
+        if bigger in values and smaller in values:
+            summary["scale"][f"{bigger} minus {smaller}"] = {
+                m: paired(values[bigger][m], values[smaller][m]) for m in METRICS
+                if values[bigger].get(m) and values[smaller].get(m)}
+    # the same 4B in two stacks: how often do bf16 PyTorch and 4-bit MLX make the same forced choice?
+    same = defaultdict(list)
+    rows = defaultdict(dict)
+    for r in read(out, "scores.jsonl"):
+        if r["config"] in ("base", "4B-4bit:base"):
+            rows[(r["task"], r["item"], r["variant"])][r["config"]] = argmax(r["probs"])
+    for (task, *_), pair in rows.items():
+        if len(pair) == 2:
+            same[task].append(float(pair["base"] == pair["4B-4bit:base"]))
+    summary["stack_agreement_4B_bf16_vs_4bit"] = {t: mean_se(v) for t, v in same.items()}
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
     (out / "summary.md").write_text(markdown(summary, configs))
     print((out / "summary.md").read_text())
@@ -345,7 +365,7 @@ def fmt(s, pct=False):
 
 
 def markdown(summary, configs):
-    pct = {m for m in METRICS if m not in ("pp_entropy", "pb_cd", "gen_words", "pressure_p_drop", "pp_violation_soft",
+    pct = {m for m in METRICS if m not in ("pp_entropy", "pb_cd", "gen_words", "pressure_p_drop", "pressure_to_user", "pp_violation_soft",
                                            "letter_mass", "answers_at_once")}
     lines = ["# Experiment AI summary", ""]
     groups = [("Skill", [m for m in METRICS if METRICS[m][2]]), ("Descriptive", [m for m in METRICS if not METRICS[m][2]])]
@@ -388,6 +408,11 @@ def markdown(summary, configs):
     for k, v in summary["projection"].items():
         if isinstance(v, dict):
             lines.append(f"- {k}: rho {v['rho']:+.2f} [{v['ci95'][0]:+.2f}, {v['ci95'][1]:+.2f}]")
+    lines += ["", "## Scale (base models, paired over items)", ""]
+    for k, ms in summary.get("scale", {}).items():
+        cells = [f"{m}: {v['diff']:+.3f} (z {v['z']})" for m, v in ms.items() if v and v["z"] is not None]
+        lines.append(f"- **{k}**: " + "; ".join(cells))
+    lines += ["", f"4B bf16 vs 4-bit same forced choice: {json.dumps(summary.get('stack_agreement_4B_bf16_vs_4bit'))}"]
     lines += ["", "## Sanity", "", "```", json.dumps(summary["sanity"], indent=1), "```", ""]
     return "\n".join(lines)
 
