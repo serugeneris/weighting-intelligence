@@ -59,6 +59,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_argument_critique.py` | Experiment Z (34): Compare objection selection on 16 original and eight harder items |
 | `scripts/exp_persona_drift.py` | Experiment AA (35): Track assistant-role projections across practical and AI self-awareness conversations |
 | `scripts/exp_prose_validity.py` | Experiment AB (36): Cross prose style and logical validity, then ablate layer-8 SAE features |
+| `scripts/exp_revision_transfer.py` | Experiment AC (37): Test relevant and irrelevant updates and transfer a distinction to a new case |
 | `scripts/cut_turns.py` | Cuts saved answers at the end of the assistant's turn (the run-on artefact of FINDINGS §29) |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |
