@@ -1,0 +1,56 @@
+{
+  "summary": {
+    "style": [
+      {
+        "feature": 6666,
+        "discovery_delta": 0.040320005267858505,
+        "heldout_delta": 0.039987802505493164
+      },
+      {
+        "feature": 2801,
+        "discovery_delta": -0.017097124829888344,
+        "heldout_delta": -0.018123650923371315
+      },
+      {
+        "feature": 4640,
+        "discovery_delta": 0.016225412487983704,
+        "heldout_delta": 0.01690141297876835
+      }
+    ],
+    "soundness": [
+      {
+        "feature": 275,
+        "discovery_delta": 0.0034830328077077866,
+        "heldout_delta": 0.0007792009855620563
+      },
+      {
+        "feature": 4239,
+        "discovery_delta": -0.0033596574794501066,
+        "heldout_delta": -0.0017144527519121766
+      },
+      {
+        "feature": 1609,
+        "discovery_delta": 0.0026247415225952864,
+        "heldout_delta": 0.0051914844661951065
+      }
+    ],
+    "ablation": {
+      "none": {
+        "feature": null,
+        "active_positions": 0
+      },
+      "style": {
+        "feature": 6666,
+        "active_positions": 400
+      },
+      "soundness": {
+        "feature": 275,
+        "active_positions": 501
+      },
+      "stock_phrase_7238": {
+        "feature": 7238,
+        "active_positions": 22
+      }
+    }
+  }
+}
