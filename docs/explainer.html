@@ -254,6 +254,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c39">39 · Prose and validity</a>
       <a href="#c40">40 · Revision and transfer</a>
       <a href="#c41">41 · Ethical consistency</a>
+      <a href="#c43">43 · Judge context</a>
       <a href="#c44">44 · Premise sensitivity</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
@@ -1196,6 +1197,25 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <p class="note">The branches share the first reply. A case can account for a new fact without reversing its decision.</p>
       <div class="ex"><p>A verified emergency gave each model a reason to share a confidential address with a responder. Each also reversed its decision when a curious neighbor asked and the user supplied no new evidence.</p></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="c43" aria-labelledby="c43-title">
+    <div>
+      <div class="num">Chapter 43 · experiment AF</div>
+      <h2 id="c43-title">Can the judge see the task?</h2>
+      <p><strong>Why we tried it.</strong> An answer can look reasonable if the judge cannot see the required output format or what the assistant said in the preceding turn.</p>
+      <p><strong>What happened.</strong> With the full chat, Sonnet picked the keyed answer in all 16 presentations that depended on context. With only the last user message, it picked the keyed answer once and tied 14 times. The standalone controls stayed at 8/8.</p>
+      <p><strong>What it means.</strong> Preserve system instructions and conversation history when evaluating compliance and consistency. These 12 authored pairs test one judge. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#judge-context">FINDINGS.md § 40</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Correct choices against the full-task key</h3>
+      <div class="controls" id="s43-btns" role="group" aria-label="Conversation shown to the judge">
+        <button type="button" aria-pressed="true" aria-controls="s43">Full chat</button>
+        <button type="button" aria-pressed="false" aria-controls="s43">Last user message</button>
+      </div>
+      <div id="s43" role="status" aria-live="polite"></div>
+      <p class="note">Each of four pairs per group appears in both answer orders. Ties count as no correct choice.</p>
     </div>
   </section>
 
@@ -2632,6 +2652,12 @@ experimentChart("s40", [
 experimentChart("s41", [
   [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
   [["Base", 1, 4, "var(--ink-3)"], ["Woven prompt", 0, 4, "var(--pos)"], ["Rank-8 student", 0, 4, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 43: judge context ---------- */
+experimentChart("s43", [
+  [["System format", 8, 8, "var(--ink-3)"], ["Earlier reply", 8, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]],
+  [["System format", 1, 8, "var(--ink-3)"], ["Earlier reply", 0, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]]
 ], experimentCountRow);
 
 /* ---------- 44: premise sensitivity ---------- */
