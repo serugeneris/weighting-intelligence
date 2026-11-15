@@ -251,6 +251,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c36">36 · A bigger brain</a>
       <a href="#c37">37 · Argument critique</a>
       <a href="#c38">38 · Persona drift</a>
+      <a href="#c39">39 · Prose and validity</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1128,6 +1129,27 @@ section.wide { grid-template-columns: 1fr; }
         <button type="button" aria-pressed="false" aria-controls="s38">Practical tasks</button>
       </div>
       <p class="note">Higher means closer to the practical role group. Each domain has two scripted conversations per configuration.</p>
+    </div>
+  </section>
+
+  <!-- 39 -->
+  <section class="chapter" id="c39" aria-labelledby="c39-title">
+    <div>
+      <div class="num">Chapter 39 · experiment AB</div>
+      <h2 id="c39-title">Does theatrical prose change validity judgments?</h2>
+      <p><strong>Why we tried it.</strong> The layer-8 sparse autoencoder from experiment T picked up stock phrases. We gave the model the same argument families in plain and theatrical wording and changed whether the conclusion followed.</p>
+      <p><strong>What happened.</strong> Feature 6666 responded to the wording change on held-out arguments. Removing that feature, the leading validity candidate, or the stock-phrase feature left all 24 held-out choices unchanged.</p>
+      <p><strong>What it means.</strong> The feature tracks the wording used here. Two repeated templates leave open whether it would generalize to other styles. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#pilot-prose-validity">FINDINGS.md § 36</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/prose-validity">saved run evidence</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Held-out validity judgments by ablation</h3>
+      <div id="s39" role="status" aria-live="polite"></div>
+      <div class="controls" id="s39-btns" role="group" aria-label="Held-out validity judgments by ablation">
+        <button type="button" aria-pressed="true" aria-controls="s39" class="on">Correct choices</button>
+        <button type="button" aria-pressed="false" aria-controls="s39">Changed choices</button>
+      </div>
+      <p class="note">Six argument families produced 24 held-out variants. Changes are measured against the same run with no ablation.</p>
+      <div class="ex"><p>“Only residents have keys, and Min has a key” supports “Min is a resident.” Replacing “Only residents have keys” with “All residents have keys” makes that inference invalid.</p></div>
     </div>
   </section>
 
@@ -2526,6 +2548,12 @@ experimentChart("s38", [
   [["Base", 2.07, 1.36, 1.48], ["Woven prompt", 0.16, -0.07, 0.49], ["Rank-8 student", 0.58, -0.56, 0.15]]
 ], ([name, t1, t2, t3]) =>
     `<tr><th scope="row">${name}</th><td>${t1.toFixed(2)}</td><td>${t2.toFixed(2)}</td><td>${t3.toFixed(2)}</td></tr>`);
+
+/* ---------- 39: prose and validity (saved evidence: docs/reviews/2026-11-14/prose-validity/) ---------- */
+experimentChart("s39", [
+  [["No ablation", 21, 24, "var(--ink-3)"], ["6666 · wording", 21, 24, "var(--pos)"], ["275 · validity candidate", 21, 24, "var(--s3)"], ["7238 · stock phrase", 21, 24, "var(--accent)"]],
+  [["No ablation", 0, 24, "var(--ink-3)"], ["6666 · wording", 0, 24, "var(--pos)"], ["275 · validity candidate", 0, 24, "var(--s3)"], ["7238 · stock phrase", 0, 24, "var(--accent)"]]
+], experimentCountRow);
 
 </script>
 </body>
