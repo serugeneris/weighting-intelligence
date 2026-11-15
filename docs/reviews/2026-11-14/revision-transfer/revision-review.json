@@ -1,0 +1,146 @@
+[
+  {
+    "id": "revision-001",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": false,
+    "configuration": "student",
+    "case": 2
+  },
+  {
+    "id": "revision-002",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "student",
+    "case": 1
+  },
+  {
+    "id": "revision-003",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 5
+  },
+  {
+    "id": "revision-004",
+    "targeted_question": false,
+    "relevant_fact": false,
+    "irrelevant_fact": true,
+    "configuration": "woven",
+    "case": 4
+  },
+  {
+    "id": "revision-005",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 6
+  },
+  {
+    "id": "revision-006",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": false,
+    "configuration": "woven",
+    "case": 2
+  },
+  {
+    "id": "revision-007",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": false,
+    "configuration": "student",
+    "case": 5
+  },
+  {
+    "id": "revision-008",
+    "targeted_question": false,
+    "relevant_fact": false,
+    "irrelevant_fact": true,
+    "configuration": "woven",
+    "case": 1
+  },
+  {
+    "id": "revision-009",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "woven",
+    "case": 5
+  },
+  {
+    "id": "revision-010",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": false,
+    "configuration": "student",
+    "case": 4
+  },
+  {
+    "id": "revision-011",
+    "targeted_question": false,
+    "relevant_fact": false,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 2
+  },
+  {
+    "id": "revision-012",
+    "targeted_question": false,
+    "relevant_fact": false,
+    "irrelevant_fact": true,
+    "configuration": "woven",
+    "case": 6
+  },
+  {
+    "id": "revision-013",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 3
+  },
+  {
+    "id": "revision-014",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "student",
+    "case": 3
+  },
+  {
+    "id": "revision-015",
+    "targeted_question": true,
+    "relevant_fact": true,
+    "irrelevant_fact": false,
+    "configuration": "student",
+    "case": 6
+  },
+  {
+    "id": "revision-016",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "woven",
+    "case": 3
+  },
+  {
+    "id": "revision-017",
+    "targeted_question": false,
+    "relevant_fact": true,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 1
+  },
+  {
+    "id": "revision-018",
+    "targeted_question": true,
+    "relevant_fact": false,
+    "irrelevant_fact": true,
+    "configuration": "base",
+    "case": 4
+  }
+]

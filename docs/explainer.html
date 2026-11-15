@@ -252,6 +252,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c37">37 · Argument critique</a>
       <a href="#c38">38 · Persona drift</a>
       <a href="#c39">39 · Prose and validity</a>
+      <a href="#c40">40 · Revision and transfer</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1150,6 +1151,28 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <p class="note">Six argument families produced 24 held-out variants. Changes are measured against the same run with no ablation.</p>
       <div class="ex"><p>“Only residents have keys, and Min has a key” supports “Min is a resident.” Replacing “Only residents have keys” with “All residents have keys” makes that inference invalid.</p></div>
+    </div>
+  </section>
+
+  <!-- 40 -->
+  <section class="chapter" id="c40" aria-labelledby="c40-title">
+    <div>
+      <div class="num">Chapter 40 · experiment AC</div>
+      <h2 id="c40-title">Can it revise and reuse a distinction?</h2>
+      <p><strong>Why we tried it.</strong> We gave the model an argument with a hidden assumption, then supplied either a relevant fact or a cosmetic detail. We also asked it to draw a distinction and apply it in a fresh case.</p>
+      <p><strong>What happened.</strong> The student updated correctly on all six relevant changes but dismissed only two of six cosmetic details. In the transfer rerun, every reply finished. The student transferred its distinction in four cases, and base and woven did so in all six.</p>
+      <p><strong>What it means.</strong> The student was more responsive to important changes on these cases. It also found significance in details that should have left the argument alone. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#pilot-revision-transfer">FINDINGS.md § 37</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/revision-transfer">saved run evidence</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Revision and transfer outcomes</h3>
+      <div id="s40" role="status" aria-live="polite"></div>
+      <div class="controls" id="s40-btns" role="group" aria-label="Revision and transfer outcomes">
+        <button type="button" aria-pressed="true" aria-controls="s40" class="on">Relevant fact</button>
+        <button type="button" aria-pressed="false" aria-controls="s40">Irrelevant detail</button>
+        <button type="button" aria-pressed="false" aria-controls="s40">Transfer</button>
+      </div>
+      <p class="note">One reviewer scored six cases with configuration labels hidden. Every woven opening question in the revision run reached the token cap.</p>
+      <div class="ex"><p>Two witness statements use different typefaces. The student treated this as evidence about their independence. The typefaces reveal nothing about where the witnesses got their information.</p></div>
     </div>
   </section>
 
@@ -2553,6 +2576,13 @@ experimentChart("s38", [
 experimentChart("s39", [
   [["No ablation", 21, 24, "var(--ink-3)"], ["6666 · wording", 21, 24, "var(--pos)"], ["275 · validity candidate", 21, 24, "var(--s3)"], ["7238 · stock phrase", 21, 24, "var(--accent)"]],
   [["No ablation", 0, 24, "var(--ink-3)"], ["6666 · wording", 0, 24, "var(--pos)"], ["275 · validity candidate", 0, 24, "var(--s3)"], ["7238 · stock phrase", 0, 24, "var(--accent)"]]
+], experimentCountRow);
+
+/* ---------- 40: revision and transfer (saved evidence: docs/reviews/2026-11-14/revision-transfer/) ---------- */
+experimentChart("s40", [
+  [["Base", 4, 6, "var(--ink-3)"], ["Woven prompt", 3, 6, "var(--pos)"], ["Rank-8 student", 6, 6, "var(--s3)"]],
+  [["Base", 6, 6, "var(--ink-3)"], ["Woven prompt", 5, 6, "var(--pos)"], ["Rank-8 student", 2, 6, "var(--s3)"]],
+  [["Base", 6, 6, "var(--ink-3)"], ["Woven prompt", 6, 6, "var(--pos)"], ["Rank-8 student", 4, 6, "var(--s3)"]]
 ], experimentCountRow);
 
 </script>

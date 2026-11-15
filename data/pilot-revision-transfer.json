@@ -1,0 +1,44 @@
+[
+  [
+    "A neighborhood group should publish all its donor names because everyone agreed to be listed.",
+    "The consent form only allowed names in a private member directory.",
+    "The donor names are stored in a UTF-8 text file.",
+    "scope of the permission",
+    "A volunteer roster shared internally versus the same roster posted on a public website"
+  ],
+  [
+    "We should rely on the second witness because their story matches the first witness's.",
+    "Both witnesses drew their account from the same recording.",
+    "The two witness statements use different typefaces.",
+    "independence of evidence",
+    "Two reviewers who inspected a device versus two reviewers who copied one review"
+  ],
+  [
+    "Our rule gives everyone equal access to the workshop because it opens at the same time each day.",
+    "All available sessions overlap with the shifts of several eligible workers.",
+    "The workshop walls are painted gray.",
+    "formal availability versus practical opportunity",
+    "An appointment slot open to everyone versus one only reachable by car"
+  ],
+  [
+    "The committee can report that the pilot helped because every participant's outcome improved.",
+    "A matched comparison group improved by the same amount without taking part.",
+    "The graph uses circles for participants.",
+    "improvement versus causal effect",
+    "Learning during a course versus learning at the same rate without it"
+  ],
+  [
+    "The housemates agreed to the deal, so we can describe their choice as voluntary.",
+    "One housemate was threatened with immediate eviction unless they agreed.",
+    "The agreement was written with a blue pen.",
+    "agreement versus freedom to refuse",
+    "A worker accepting a shift by choice versus accepting under a threat to withhold wages"
+  ],
+  [
+    "This historic plaque belongs to the same monument because it has the same shape.",
+    "It is a replica made for a display, while the original is in storage.",
+    "The catalog lists the plaque on page 14.",
+    "resemblance versus continuity or provenance",
+    "A duplicated certificate versus the original after its frame was replaced"
+  ]
+]

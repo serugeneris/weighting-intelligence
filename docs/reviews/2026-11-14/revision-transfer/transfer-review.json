@@ -1,0 +1,128 @@
+[
+  {
+    "id": "transfer-001",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "student",
+    "case": 2
+  },
+  {
+    "id": "transfer-002",
+    "transfers_core_distinction": false,
+    "note": "Changes the distinction between the two turns and does not address the scope of permission.",
+    "configuration": "student",
+    "case": 1
+  },
+  {
+    "id": "transfer-003",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "base",
+    "case": 5
+  },
+  {
+    "id": "transfer-004",
+    "transfers_core_distinction": true,
+    "note": "Applies the comparison but overstates equal estimates as proof of no added value.",
+    "configuration": "woven",
+    "case": 4
+  },
+  {
+    "id": "transfer-005",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "base",
+    "case": 6
+  },
+  {
+    "id": "transfer-006",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "woven",
+    "case": 2
+  },
+  {
+    "id": "transfer-007",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "student",
+    "case": 5
+  },
+  {
+    "id": "transfer-008",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "woven",
+    "case": 1
+  },
+  {
+    "id": "transfer-009",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "woven",
+    "case": 5
+  },
+  {
+    "id": "transfer-010",
+    "transfers_core_distinction": true,
+    "note": "Applies the comparison but overstates equal estimates as proof of no added value.",
+    "configuration": "student",
+    "case": 4
+  },
+  {
+    "id": "transfer-011",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "base",
+    "case": 2
+  },
+  {
+    "id": "transfer-012",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "woven",
+    "case": 6
+  },
+  {
+    "id": "transfer-013",
+    "transfers_core_distinction": true,
+    "note": "Identifies the access barrier but conflates temporal fit with physical reachability.",
+    "configuration": "base",
+    "case": 3
+  },
+  {
+    "id": "transfer-014",
+    "transfers_core_distinction": false,
+    "note": "Introduces an unsupported supposition about car owners and fails to apply the availability distinction.",
+    "configuration": "student",
+    "case": 3
+  },
+  {
+    "id": "transfer-015",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "student",
+    "case": 6
+  },
+  {
+    "id": "transfer-016",
+    "transfers_core_distinction": true,
+    "note": null,
+    "configuration": "woven",
+    "case": 3
+  },
+  {
+    "id": "transfer-017",
+    "transfers_core_distinction": true,
+    "note": "Gets the audience difference but presumes implicit permission for internal sharing.",
+    "configuration": "base",
+    "case": 1
+  },
+  {
+    "id": "transfer-018",
+    "transfers_core_distinction": true,
+    "note": "Applies the comparison but equates an equal measured outcome with absence of any causal effect.",
+    "configuration": "base",
+    "case": 4
+  }
+]

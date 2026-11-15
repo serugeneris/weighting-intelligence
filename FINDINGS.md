@@ -1006,6 +1006,38 @@ The activation result establishes sensitivity to this wording manipulation. The 
 
 [Saved outputs and review details](docs/reviews/2026-11-14/prose-validity/README.md) · [Explainer chapter 39](docs/explainer.html#c39)
 
+<a id="pilot-revision-transfer"></a>
+
+### 37. Can it revise and reuse a distinction? (experiment AC)
+
+**Run.** `scripts/exp_revision_transfer.py` writes `revision.json` and `transfer.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+
+Six arguments were followed by two branches that shared the same first exchange. Each branch gave either a fact bearing on the central inference or a cosmetic detail.
+
+| Configuration | Targeted question | Sound update on relevant fact | Correctly dismissed irrelevant fact |
+| --- | ---: | ---: | ---: |
+| Base | 3/6 | 4/6 | 6/6 |
+| Woven prompt | 0/6 | 3/6 | 5/6 |
+| Rank-8 student | 4/6 | 6/6 | 2/6 |
+
+The woven model reached the 96-token cap before finishing the requested question in all six cases. Its results include the consequence of carrying those partial replies into the follow-ups. All relevant and irrelevant follow-ups finished. The student responded correctly to every relevant fact, but four times it argued that a deliberately cosmetic detail weakened the case. For example, it treated different typefaces as evidence about the independence of witnesses' accounts. This small run suggests a trade-off between sensitivity to new evidence and specificity about which evidence matters.
+
+In the initial concept-and-transfer branch, all base and woven replies hit the 128-token cap on both turns, while all student replies finished. The follow-up requests at most 45 words and gives all configurations up to 256 tokens.
+
+All 36 replies in the rerun reached an end token. Base and woven applied their stated distinction to the fresh case in 6/6 examples each. The student did so in 4/6. The student switched from a distinction about principles and factual justification to one about purpose on the roster example. On the appointment example it introduced an unsupported supposition about car owners rather than applying its original distinction. A passing answer could still contain a secondary error, such as treating equal measured learning rates as proof that a course had no causal effect.
+
+| Configuration | Successful transfer | Concept within 45 words | Transfer within 45 words |
+| --- | ---: | ---: | ---: |
+| Base | 6/6 | 6/6 | 5/6 |
+| Woven prompt | 6/6 | 5/6 | 6/6 |
+| Rank-8 student | 4/6 | 0/6 | 0/6 |
+
+The rerun altered both the requested length and the token allowance, so it does not isolate which change removed the completion imbalance. Word counts use whitespace splitting. The opening question was reused from the original run, including the woven condition's truncated opening turns. [What Is Philosophy?](https://cup.columbia.edu/book/what-is-philosophy/9780231530668/) · [Stanford PhilosophyBench](https://philosophybench.org/) [Language Models as Critical Thinking Tools](https://arxiv.org/abs/2404.04516)
+
+**What it means.** The student was more responsive to important changes on these cases. It also found significance in details that should have left the argument alone.
+
+[Saved outputs and review details](docs/reviews/2026-11-14/revision-transfer/README.md) · [Explainer chapter 40](docs/explainer.html#c40)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1104,6 +1136,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_argument_critique              # experiment Z, §34
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_persona_drift                  # experiment AA, §35
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_prose_validity                 # experiment AB, §36
+HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_revision_transfer              # experiment AC, §37
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
