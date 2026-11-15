@@ -1,0 +1,523 @@
+{
+ "note": "Author-written for Experiment AI (not from the survey). Each pair is a combination of answers most philosophers would treat as inconsistent. 'contestable' marks pairs with a live defended position on the other side; the analysis reports results with and without them.",
+ "constraints": [
+  {
+   "id": 0,
+   "a": {
+    "topic": "Mind",
+    "option": "physicalism"
+   },
+   "b": {
+    "topic": "Zombies",
+    "option": "metaphysically possible"
+   },
+   "violation": "choosing both",
+   "why": "Physicalism says the physical facts fix the mental facts, so a physical duplicate without consciousness is impossible.",
+   "contestable": false
+  },
+  {
+   "id": 1,
+   "a": {
+    "topic": "Mind",
+    "option": "physicalism"
+   },
+   "b": {
+    "topic": "Consciousness",
+    "option": "dualism"
+   },
+   "violation": "choosing both",
+   "why": "Dualism about consciousness is a form of non-physicalism.",
+   "contestable": false
+  },
+  {
+   "id": 2,
+   "a": {
+    "topic": "Mind",
+    "option": "non-physicalism"
+   },
+   "b": {
+    "topic": "Consciousness",
+    "option": "identity theory"
+   },
+   "violation": "choosing both",
+   "why": "Identity theory identifies conscious states with physical states, which is physicalism.",
+   "contestable": false
+  },
+  {
+   "id": 3,
+   "a": {
+    "topic": "Mind",
+    "option": "non-physicalism"
+   },
+   "b": {
+    "topic": "Consciousness",
+    "option": "eliminativism"
+   },
+   "violation": "choosing both",
+   "why": "Eliminativism denies non-physical mental states altogether; it is a physicalist view.",
+   "contestable": false
+  },
+  {
+   "id": 4,
+   "a": {
+    "topic": "Mind",
+    "option": "physicalism"
+   },
+   "b": {
+    "topic": "Consciousness",
+    "option": "panpsychism"
+   },
+   "violation": "choosing both",
+   "why": "Most panpsychism posits fundamental mentality beyond the physical, though Russellian versions claim to be physicalist.",
+   "contestable": true
+  },
+  {
+   "id": 5,
+   "a": {
+    "topic": "Hard problem of consciousness",
+    "option": "no"
+   },
+   "b": {
+    "topic": "Zombies",
+    "option": "metaphysically possible"
+   },
+   "violation": "choosing both",
+   "why": "If zombies are possible, physical-functional facts leave consciousness unexplained, which is the hard problem.",
+   "contestable": false
+  },
+  {
+   "id": 6,
+   "a": {
+    "topic": "Hard problem of consciousness",
+    "option": "no"
+   },
+   "b": {
+    "topic": "Consciousness",
+    "option": "dualism"
+   },
+   "violation": "choosing both",
+   "why": "Dualism is motivated by and presupposes an explanatory gap between the physical and consciousness.",
+   "contestable": false
+  },
+  {
+   "id": 7,
+   "a": {
+    "topic": "Consciousness",
+    "option": "eliminativism"
+   },
+   "b": {
+    "topic": "Hard problem of consciousness",
+    "option": "yes"
+   },
+   "violation": "choosing both",
+   "why": "Eliminativists deny there is phenomenal consciousness for a hard problem to be about.",
+   "contestable": false
+  },
+  {
+   "id": 8,
+   "a": {
+    "topic": "External world",
+    "option": "idealism"
+   },
+   "b": {
+    "topic": "Mind",
+    "option": "physicalism"
+   },
+   "violation": "choosing both",
+   "why": "Idealism holds reality is fundamentally mental, the opposite of physicalism.",
+   "contestable": false
+  },
+  {
+   "id": 9,
+   "a": {
+    "topic": "External world",
+    "option": "skepticism"
+   },
+   "b": {
+    "topic": "Science",
+    "option": "scientific realism"
+   },
+   "violation": "choosing both",
+   "why": "Skepticism about the external world denies we know the observable world, let alone the approximate truth of theories about unobservables.",
+   "contestable": true
+  },
+  {
+   "id": 10,
+   "a": {
+    "topic": "Meta-ethics",
+    "option": "moral realism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "error theory"
+   },
+   "violation": "choosing both",
+   "why": "Error theory says all positive moral claims are false, which denies moral realism.",
+   "contestable": false
+  },
+  {
+   "id": 11,
+   "a": {
+    "topic": "Meta-ethics",
+    "option": "moral realism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "expressivism"
+   },
+   "violation": "choosing both",
+   "why": "Expressivism is an anti-realist view of moral claims (quasi-realists dispute the label only in a minimal sense).",
+   "contestable": false
+  },
+  {
+   "id": 12,
+   "a": {
+    "topic": "Meta-ethics",
+    "option": "moral anti-realism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "non-naturalism"
+   },
+   "violation": "choosing both",
+   "why": "Non-naturalism is a form of moral realism.",
+   "contestable": false
+  },
+  {
+   "id": 13,
+   "a": {
+    "topic": "Meta-ethics",
+    "option": "moral anti-realism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "naturalist realism"
+   },
+   "violation": "choosing both",
+   "why": "Naturalist realism is a form of moral realism.",
+   "contestable": false
+  },
+  {
+   "id": 14,
+   "a": {
+    "topic": "Moral judgment",
+    "option": "non-cognitivism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "error theory"
+   },
+   "violation": "choosing both",
+   "why": "Error theory treats moral judgments as truth-apt beliefs (all false), which is cognitivism.",
+   "contestable": false
+  },
+  {
+   "id": 15,
+   "a": {
+    "topic": "Moral judgment",
+    "option": "cognitivism"
+   },
+   "b": {
+    "topic": "Morality",
+    "option": "expressivism"
+   },
+   "violation": "choosing both",
+   "why": "Expressivism is the standard form of non-cognitivism.",
+   "contestable": false
+  },
+  {
+   "id": 16,
+   "a": {
+    "topic": "Moral judgment",
+    "option": "non-cognitivism"
+   },
+   "b": {
+    "topic": "Meta-ethics",
+    "option": "moral realism"
+   },
+   "violation": "choosing both",
+   "why": "Realism needs moral judgments to state truths; non-cognitivism denies they are beliefs.",
+   "contestable": false
+  },
+  {
+   "id": 17,
+   "a": {
+    "topic": "God",
+    "option": "atheism"
+   },
+   "b": {
+    "topic": "Cosmological fine-tuning",
+    "option": "design"
+   },
+   "violation": "choosing both",
+   "why": "Design by an intelligent creator requires a designer, which atheism denies.",
+   "contestable": false
+  },
+  {
+   "id": 18,
+   "a": {
+    "topic": "Time",
+    "option": "B-theory"
+   },
+   "b": {
+    "topic": "Temporal ontology",
+    "option": "presentism"
+   },
+   "violation": "choosing both",
+   "why": "Presentism privileges the present, which requires an A-theory of time.",
+   "contestable": false
+  },
+  {
+   "id": 19,
+   "a": {
+    "topic": "Time",
+    "option": "B-theory"
+   },
+   "b": {
+    "topic": "Temporal ontology",
+    "option": "growing block"
+   },
+   "violation": "choosing both",
+   "why": "The growing block has an objectively moving present edge, an A-theoretic feature.",
+   "contestable": false
+  },
+  {
+   "id": 20,
+   "a": {
+    "topic": "Time",
+    "option": "A-theory"
+   },
+   "b": {
+    "topic": "Temporal ontology",
+    "option": "eternalism"
+   },
+   "violation": "choosing both",
+   "why": "Moving-spotlight views combine an A-theory with eternalism, but most A-theorists reject eternalism.",
+   "contestable": true
+  },
+  {
+   "id": 21,
+   "a": {
+    "topic": "A priori knowledge",
+    "option": "no"
+   },
+   "b": {
+    "topic": "Knowledge",
+    "option": "rationalism"
+   },
+   "violation": "choosing both",
+   "why": "Rationalism holds that some substantive knowledge comes from reason alone, which requires a priori knowledge.",
+   "contestable": false
+  },
+  {
+   "id": 22,
+   "a": {
+    "topic": "Logic",
+    "option": "classical"
+   },
+   "b": {
+    "topic": "True contradictions",
+    "option": "actual"
+   },
+   "violation": "choosing both",
+   "why": "In classical logic a true contradiction entails everything; accepting actual true contradictions requires a paraconsistent logic.",
+   "contestable": false
+  },
+  {
+   "id": 23,
+   "a": {
+    "topic": "Laws of nature",
+    "option": "Humean"
+   },
+   "b": {
+    "topic": "Causation",
+    "option": "primitive"
+   },
+   "violation": "choosing both",
+   "why": "Humeanism reduces nomic and causal facts to the mosaic of particular facts; primitive causation is a non-Humean posit.",
+   "contestable": false
+  },
+  {
+   "id": 24,
+   "a": {
+    "topic": "Personal identity",
+    "option": "biological view"
+   },
+   "b": {
+    "topic": "Teletransporter",
+    "option": "survival"
+   },
+   "violation": "choosing both",
+   "why": "On the biological view you are an organism, and an organism is not continued by a copy built from new matter.",
+   "contestable": false
+  },
+  {
+   "id": 25,
+   "a": {
+    "topic": "Personal identity",
+    "option": "biological view"
+   },
+   "b": {
+    "topic": "Mind uploading",
+    "option": "survival"
+   },
+   "violation": "choosing both",
+   "why": "On the biological view a digital emulation is not the same organism, so you do not survive.",
+   "contestable": false
+  },
+  {
+   "id": 26,
+   "a": {
+    "topic": "Personal identity",
+    "option": "psychological view"
+   },
+   "b": {
+    "topic": "Teletransporter",
+    "option": "death"
+   },
+   "violation": "choosing both",
+   "why": "Psychological continuity is preserved by the teletransporter, though some psychological theorists require the normal cause.",
+   "contestable": true
+  },
+  {
+   "id": 27,
+   "a": {
+    "topic": "Footbridge",
+    "option": "push"
+   },
+   "b": {
+    "topic": "Trolley problem",
+    "option": "don't switch"
+   },
+   "violation": "choosing both",
+   "why": "Pushing is generally held to be harder to justify than switching; permitting the push while forbidding the switch reverses this.",
+   "contestable": true
+  },
+  {
+   "id": 28,
+   "a": {
+    "topic": "Normative ethics",
+    "option": "consequentialism"
+   },
+   "b": {
+    "topic": "Footbridge",
+    "option": "don't push"
+   },
+   "violation": "choosing both",
+   "why": "Act consequentialism says to push when five lives outweigh one; rule consequentialists can disagree.",
+   "contestable": true
+  },
+  {
+   "id": 29,
+   "a": {
+    "topic": "Abstract objects",
+    "option": "nominalism"
+   },
+   "b": {
+    "topic": "Possible worlds",
+    "option": "abstract"
+   },
+   "violation": "choosing both",
+   "why": "Abstract possible worlds are abstract objects, which nominalism denies.",
+   "contestable": false
+  },
+  {
+   "id": 30,
+   "a": {
+    "topic": "Abstract objects",
+    "option": "nominalism"
+   },
+   "b": {
+    "topic": "Properties",
+    "option": "transcendent universals"
+   },
+   "violation": "choosing both",
+   "why": "Transcendent universals are abstract objects existing outside space and time.",
+   "contestable": false
+  },
+  {
+   "id": 31,
+   "a": {
+    "topic": "Abstract objects",
+    "option": "nominalism"
+   },
+   "b": {
+    "topic": "Propositions",
+    "option": "structured entities"
+   },
+   "violation": "choosing both",
+   "why": "Structured propositions are usually construed as abstract objects, though some nominalists reconstrue them.",
+   "contestable": true
+  },
+  {
+   "id": 32,
+   "a": {
+    "topic": "Material composition",
+    "option": "nihilism"
+   },
+   "b": {
+    "topic": "Statue and lump",
+    "option": "two things"
+   },
+   "violation": "choosing both",
+   "why": "Mereological nihilism denies that statues and lumps exist at all, so it cannot count two of them.",
+   "contestable": false
+  },
+  {
+   "id": 33,
+   "a": {
+    "topic": "Epistemic justification",
+    "option": "internalism"
+   },
+   "b": {
+    "topic": "Justification",
+    "option": "reliabilism"
+   },
+   "violation": "choosing both",
+   "why": "Reliabilism makes justification depend on the external reliability of belief-forming processes; it is the paradigm externalist theory.",
+   "contestable": false
+  },
+  {
+   "id": 34,
+   "a": {
+    "topic": "Proper names",
+    "option": "Millian"
+   },
+   "b": {
+    "topic": "Theory of reference",
+    "option": "descriptive"
+   },
+   "violation": "choosing both",
+   "why": "Descriptivism about reference ties a name's contribution to associated descriptions, which Millianism rejects.",
+   "contestable": false
+  },
+  {
+   "id": 35,
+   "a": {
+    "topic": "Well-being",
+    "option": "hedonism/experientialism"
+   },
+   "b": {
+    "topic": "Experience machine",
+    "option": "no"
+   },
+   "violation": "choosing both",
+   "why": "A hedonist about well-being has prudential reason to enter; refusing can still rest on non-prudential reasons.",
+   "contestable": true
+  },
+  {
+   "id": 36,
+   "a": {
+    "topic": "Race",
+    "option": "unreal"
+   },
+   "b": {
+    "topic": "Race categories",
+    "option": "preserve"
+   },
+   "violation": "choosing both",
+   "why": "If races are unreal, preserving race categories is in tension, though some argue for preserving them for political purposes.",
+   "contestable": true
+  }
+ ]
+}
