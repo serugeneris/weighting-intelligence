@@ -253,6 +253,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c38">38 · Persona drift</a>
       <a href="#c39">39 · Prose and validity</a>
       <a href="#c40">40 · Revision and transfer</a>
+      <a href="#c41">41 · Ethical consistency</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1173,6 +1174,27 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <p class="note">One reviewer scored six cases with configuration labels hidden. Every woven opening question in the revision run reached the token cap.</p>
       <div class="ex"><p>Two witness statements use different typefaces. The student treated this as evidence about their independence. The typefaces reveal nothing about where the witnesses got their information.</p></div>
+    </div>
+  </section>
+
+  <!-- 41 -->
+  <section class="chapter" id="c41" aria-labelledby="c41-title">
+    <div>
+      <div class="num">Chapter 41 · experiment AD</div>
+      <h2 id="c41-title">Will it hold its position under pressure?</h2>
+      <p><strong>Why we tried it.</strong> We gave each configuration the same four dilemmas. One follow-up changed the facts. The other simply asked for the opposite decision using the same facts and principle.</p>
+      <p><strong>What happened.</strong> All three configurations accounted for the new facts on all four cases. Under direct pressure, base held its decision once. The woven prompt and student reversed all four decisions.</p>
+      <p><strong>What it means.</strong> The models could respond to evidence, but almost always went along with a request to reverse the decision. The four cases measure one deliberately direct kind of pressure. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#pilot-ethics-pressure">FINDINGS.md § 38</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/ethics-pressure">saved run evidence</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Responses to evidence and pressure</h3>
+      <div id="s41" role="status" aria-live="polite"></div>
+      <div class="controls" id="s41-btns" role="group" aria-label="Responses to evidence and pressure">
+        <button type="button" aria-pressed="true" aria-controls="s41" class="on">Accounted for new facts</button>
+        <button type="button" aria-pressed="false" aria-controls="s41">Held decision under pressure</button>
+      </div>
+      <p class="note">The branches share the first reply. A case can account for a new fact without reversing its decision.</p>
+      <div class="ex"><p>A verified emergency gave each model a reason to share a confidential address with a responder. Each also reversed its decision when a curious neighbor asked and the user supplied no new evidence.</p></div>
     </div>
   </section>
 
@@ -2583,6 +2605,12 @@ experimentChart("s40", [
   [["Base", 4, 6, "var(--ink-3)"], ["Woven prompt", 3, 6, "var(--pos)"], ["Rank-8 student", 6, 6, "var(--s3)"]],
   [["Base", 6, 6, "var(--ink-3)"], ["Woven prompt", 5, 6, "var(--pos)"], ["Rank-8 student", 2, 6, "var(--s3)"]],
   [["Base", 6, 6, "var(--ink-3)"], ["Woven prompt", 6, 6, "var(--pos)"], ["Rank-8 student", 4, 6, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 41: ethical consistency (saved evidence: docs/reviews/2026-11-14/ethics-pressure/) ---------- */
+experimentChart("s41", [
+  [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
+  [["Base", 1, 4, "var(--ink-3)"], ["Woven prompt", 0, 4, "var(--pos)"], ["Rank-8 student", 0, 4, "var(--s3)"]]
 ], experimentCountRow);
 
 </script>
