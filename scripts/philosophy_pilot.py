@@ -45,6 +45,73 @@ def configuration(model, name):
         detach(adapter)
 
 
+# ---- configuration registry: name -> (system prompt, adapter + gain, constant layer-8 push) ----
+# A push is (kind, size): "diffmeans" alpha uses alpha * p50_8 * unit(diff-means_8) (FINDINGS §3, §6); "B" c uses
+# c * p50_8 * unit(B) with B the rank-1 LoRA's write direction (§19, scripts/exp_gate.py); "random:<seed>" c uses a
+# Gaussian unit direction drawn with that seed (seed 0 is exp_gate's random control).
+STEER_LAYER = 8
+REGISTRY = {
+    "base": {},
+    "woven": {"system": PROMPTS["woven"]},
+    "reflect-first": {"system": PROMPTS["reflect-first"]},
+    "diffmeans-0.35": {"push": ("diffmeans", 0.35)},
+    "diffmeans-0.5": {"push": ("diffmeans", 0.5)},
+    "B-0.4": {"push": ("B", 0.4)},
+    "B-0.6": {"push": ("B", 0.6)},
+    "B-0.8": {"push": ("B", 0.8)},
+    **{f"random{seed}-0.6": {"push": (f"random:{seed}", 0.6)} for seed in (0, 1, 2)},
+    "rank1-x1": {"adapter": ("down8-r1", "distill/down8-r1.pt", 1.0)},
+    "rank1-x2": {"adapter": ("down8-r1", "distill/down8-r1.pt", 2.0)},
+    "claude384-x1.0": {"adapter": ("mlp-r8", "more_teacher/mlp-r8_claude384.pt", 1.0)},
+    "claude384-x1.5": {"adapter": ("mlp-r8", "more_teacher/mlp-r8_claude384.pt", 1.5)},
+    "claude128-x1.5": {"adapter": ("mlp-r8", "claude_teacher/mlp-r8_claude.pt", 1.5)},
+    # Qwen3.5-2B (Stage 5): its own student from experiment V
+    "2B:base": {},
+    "2B:woven": {"system": PROMPTS["woven"]},
+    "2B:student": {"adapter": ("mlp-r8", "scale/mlp-r8_2B.pt", 1.0)},
+}
+
+
+def unit_directions(model):
+    """Unit diff-means and unit B at layer 8, plus the p50 norm there (cached on the model)."""
+    if not hasattr(model, "_units"):
+        p50 = json.loads((RUNS / "p50.json").read_text())[str(STEER_LAYER)]
+        B = torch.load(RUNS / "distill/down8-r1.pt")[f"layers.{STEER_LAYER}.mlp.down_proj"]["B"][:, 0].float()
+        dm = torch.load(RUNS / "diffmeans.pt")[STEER_LAYER].float()
+        model._units = {"p50": p50, "B": B / B.norm(), "diffmeans": dm / dm.norm()}
+    return model._units
+
+
+def push_vector(model, kind, size):
+    units = unit_directions(model)
+    if kind.startswith("random:"):
+        g = torch.Generator().manual_seed(int(kind.split(":")[1]))
+        direction = torch.randn(units["B"].shape[0], generator=g)
+        direction = direction / direction.norm()
+    else:
+        direction = units[kind]
+    return size * units["p50"] * direction
+
+
+@contextlib.contextmanager
+def configured(model, name):
+    """Apply a registered configuration; yields its system prompt (or None)."""
+    spec = REGISTRY[name]
+    added = []
+    if "adapter" in spec:
+        variant, path, gain = spec["adapter"]
+        added = load_lora(model, VARIANTS[variant], RUNS / path)
+        for *_, lora in added:
+            lora.scale *= gain
+    steer = (model.steer([], {STEER_LAYER: push_vector(model, *spec["push"])}) if "push" in spec
+             else contextlib.nullcontext())
+    try:
+        with steer:
+            yield spec.get("system")
+    finally:
+        detach(added)
+
+
 def messages(prompt, system=None):
     result = [{"role": "system", "content": system}] if system else []
     return result + [{"role": "user", "content": prompt}]
