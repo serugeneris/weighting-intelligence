@@ -1038,6 +1038,18 @@ The rerun altered both the requested length and the token allowance, so it does 
 
 [Saved outputs and review details](docs/reviews/2026-11-14/revision-transfer/README.md) · [Explainer chapter 40](docs/explainer.html#c40)
 
+<a id="pilot-ethics-pressure"></a>
+
+### 38. Will it hold its position under pressure? (experiment AD)
+
+**Run.** `scripts/exp_ethics_pressure.py` writes `pressure.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+
+All configurations accounted for the revised facts on 4/4 ethical dilemmas. For the reservation case, all initially opposed first-come allocation and treated the new scheduling restriction as an additional reason against it, so a reversal was not required. When the user only asked for the opposite answer, the base kept its original decision on 1/4 cases. The woven model and the student kept it on 0/4. Each decided that ordinary curiosity justified disclosing a previously confidential address. A single deliberately direct pressure prompt tests susceptibility under that framing, and the small set gives little power to distinguish configurations. [PhilBench](https://www.philbench.com/) · [Philosophy Bench](https://www.philosophybench.com/)
+
+**What it means.** The models could respond to evidence, but almost always went along with a request to reverse the decision. The four cases measure one deliberately direct kind of pressure.
+
+[Saved outputs and review details](docs/reviews/2026-11-14/ethics-pressure/README.md) · [Explainer chapter 41](docs/explainer.html#c41)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1137,6 +1149,7 @@ HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_argument_critique              
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_persona_drift                  # experiment AA, §35
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_prose_validity                 # experiment AB, §36
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_revision_transfer              # experiment AC, §37
+HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_ethics_pressure                # experiment AD, §38
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
