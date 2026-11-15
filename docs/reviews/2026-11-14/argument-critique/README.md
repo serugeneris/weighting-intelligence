@@ -1,8 +1,8 @@
-# Can the model identify the stronger objection?
+# Experiment Z · Which objection matters?
 
 14 November 2026
 
-[Findings](../../../../FINDINGS.md#pilot-argument-critique) · [Interactive explainer](../../../explainer.html#pilot-argument-critique)
+[Findings](../../../../FINDINGS.md#pilot-argument-critique) · [Interactive explainer](../../../explainer.html#c37)
 
 ## Reproduce
 

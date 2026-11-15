@@ -237,7 +237,6 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c22">22 · Gate or direction?</a>
       <a href="#c23">23 · Learning from pairs</a>
       <a href="#c24">24 · The final check</a>
-      <a href="#pilot-argument-critique">Argument critique</a>
       <a href="#c25">25 · A stronger teacher</a>
       <a href="#c26">26 · More lessons</a>
       <a href="#c27">27 · A deeper teacher</a>
@@ -250,6 +249,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c34">34 · Can't switch it off</a>
       <a href="#c35">35 · No hidden answers</a>
       <a href="#c36">36 · A bigger brain</a>
+      <a href="#c37">37 · Argument critique</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -852,25 +852,6 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
-  <section class="chapter" id="pilot-argument-critique">
-    <div>
-      <h2>Can the model identify the stronger objection?</h2>
-      <p>The same Qwen3.5-4B checkpoint answered with no intervention, the woven prompt, or the existing rank-8 adapter. On the original set everyone got 16/16. A harder set added closer distractors and produced a one-item lead for the student over base.</p>
-      <p><a href="reviews/2026-11-14/argument-critique/">Methods and saved evidence</a></p>
-    </div>
-    <div class="fig">
-      <h3 style="margin-top:0">Choice accuracy on author-keyed items</h3>
-      <table style="width:100%; text-align:left; border-spacing:6px 4px"><thead><tr><th scope="col">Configuration</th><th scope="col">Original</th><th scope="col">Harder</th></tr></thead><tbody><tr><th scope="row">Base</th><td>16/16</td><td>7/8</td></tr><tr><th scope="row">Woven prompt</th><td>16/16</td><td>6/8</td></tr><tr><th scope="row">Rank-8 student</th><td>16/16</td><td>8/8</td></tr></tbody></table><details class="ex"><summary>Compare answers about two matching reports</summary><p>Position: Two inspectors submitted matching reports about a cracked beam. We know their reports were drafted separately because the inspectors worked at different times. So agreement makes a recording error much less likely.
-A. Inspectors should reveal whether they were trained by the same institution, since common training can sometimes lead to similar interpretations of cracks.
-B. Both inspectors transcribed the same electronic record. Separate drafting does not make their underlying observations independent.
-Which objection more directly undermines the argument? Start with A or B, then explain the challenged premise or inference in one or two sentences.</p><p>The intended answer is B. Two reports copied from the same record provide no independent check on a recording error.</p><p><strong>Base</strong> **B**
-
-This option directly undermines the core assumption that separate drafting ensures independent observations; if both inspectors simply transcribed an identical pre-existing electronic record, their &quot;matching&quot; reports are merely copies of the same data rather than evidence of independent verification, rendering the conclusion about reduced recording errors invalid.</p><p><strong>Woven prompt</strong> **A**
-
-This option most directly undermines the argument by challenging the assumption that separate drafting guarantees independent observation; it suggests that shared institutional background creates a cognitive bias where &quot;agreement&quot; is merely an echo of common training rather than evidence of distinct verification. If both inspectors interpret cracks through the same lens due to identical upbringing, their matching reports do not statistically reduce the likelihood of a recording error as effectively as truly independent assessments would.</p><p><strong>Rank-8 student</strong> B more directly undermines it. The argument assumes that separate drafting means independent observations, but if both copied from the same digital file, their agreement is just duplication, not corroboration. It attacks the core link between independence and reliability rather than adding a new factor like A does. Agreement only matters when we have reason to believe the sources differ.</p></details>
-    </div>
-  </section>
-
   <!-- 25 -->
   <section class="chapter" id="c25">
     <div>
@@ -1105,6 +1086,27 @@ This option most directly undermines the argument by challenging the assumption 
       <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>Claude-taught student, no prompt</span></div>
       <div id="s36b"></div>
       <p class="note">Mean over 48 new prompts. Top: one blind pool, full precision, students at normal volume (philosophy 2.3 for both). Bottom: a second pool, 4-bit, students at 1.2× (philosophy 2.4 for both). First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Compare within a group, not across them.</p>
+    </div>
+  </section>
+
+  <!-- 37 -->
+  <section class="chapter" id="c37" aria-labelledby="c37-title">
+    <div>
+      <div class="num">Chapter 37 · experiment Z</div>
+      <h2 id="c37-title">Which objection matters?</h2>
+      <p><strong>Why we tried it.</strong> Experiment W showed that the student learns to add reflections that fit the task. We put two objections next to each argument and asked which one challenges the central premise.</p>
+      <p><strong>What happened.</strong> All three configurations chose the intended objection on the original 16 cases. With eight more plausible distractors, the student scored 8/8, base 7/8, and the woven prompt 6/8.</p>
+      <p><strong>What it means.</strong> The first set hit a ceiling. The harder set separated the configurations by one or two items and is too small to establish an advantage. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#pilot-argument-critique">FINDINGS.md § 34</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/argument-critique">saved run evidence</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Correct choices by prompt set</h3>
+      <div id="s37" role="status" aria-live="polite"></div>
+      <div class="controls" id="s37-btns" role="group" aria-label="Correct choices by prompt set">
+        <button type="button" aria-pressed="true" aria-controls="s37" class="on">Original set</button>
+        <button type="button" aria-pressed="false" aria-controls="s37">Harder set</button>
+      </div>
+      <p class="note">The cases use an author-written answer key. Every response reached an end token.</p>
+      <div class="ex"><p>In the harder witness case, both objections question the reports. The decisive one points out that both inspectors copied the same record.</p></div>
     </div>
   </section>
 
@@ -2472,6 +2474,31 @@ function fillTable(id, rows) {
     (k === 2 ? '<div style="height:10px"></div>' : "") +
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
 })();
+/* ---------- Literature experiments: switch between measured conditions ---------- */
+function experimentChart(id, groups, renderRow) {
+  const controls = document.getElementById(id + "-btns");
+  const chart = document.getElementById(id);
+  const buttons = [...controls.querySelectorAll("button")];
+  function draw(index) {
+    const active = buttons[index];
+    toggleGroup(buttons, active);
+    buttons.forEach(button => button.setAttribute("aria-pressed", String(button === active)));
+    chart.innerHTML = groups[index].map(renderRow).join("");
+  }
+  buttons.forEach((button, index) => button.addEventListener("click", () => draw(index)));
+  draw(0);
+}
+
+function experimentCountRow([label, count, total, color]) {
+  return `<div class="srow wl"><span>${label}</span><div class="tr" aria-hidden="true"><i style="width:${100 * count / total}%;background:${color}"></i></div><b>${count} / ${total}</b></div>`;
+}
+
+/* ---------- 37: argument critique (saved evidence: docs/reviews/2026-11-14/argument-critique/) ---------- */
+experimentChart("s37", [
+  [["Base", 16, 16, "var(--ink-3)"], ["Woven prompt", 16, 16, "var(--pos)"], ["Rank-8 student", 16, 16, "var(--s3)"]],
+  [["Base", 7, 8, "var(--ink-3)"], ["Woven prompt", 6, 8, "var(--pos)"], ["Rank-8 student", 8, 8, "var(--s3)"]]
+], experimentCountRow);
+
 </script>
 </body>
 </html>
