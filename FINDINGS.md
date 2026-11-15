@@ -992,6 +992,20 @@ The prompt and adapter shifted the starting projection on both topics. The large
 
 [Saved outputs and review details](docs/reviews/2026-11-14/persona-drift/README.md) · [Explainer chapter 38](docs/explainer.html#c38)
 
+<a id="pilot-prose-validity"></a>
+
+### 36. Does theatrical prose change validity judgments? (experiment AB)
+
+**Run.** `scripts/exp_prose_validity.py` writes `sae.json` under `runs/philosophy_pilot/`. We used base Qwen3.5-4B and the saved layer-8 sparse autoencoder from experiment T (§27).
+
+The SAE analysis used 12 argument families, each rendered in plain and theatrical language with both a valid and an invalid inference. Six families selected features by absolute activation difference. The other six measured replication and tested feature ablations using next-token A/B choice. Valid and invalid variants retain the same framing and answer ordering within a family. The test measures entailment from the premises. It does not vary whether the premises are true.
+
+Feature 6666 had a theatrical-minus-plain mean activation difference of +0.0403 in discovery cases and +0.0400 on held-out cases. The strongest discovery feature for validity, 275, went from +0.0035 to +0.0008. Removing feature 6666, feature 275, or the previously identified stock-phrase feature 7238 left all 24 held-out choices unchanged at 21/24 correct. These interventions removed the active feature's decoded contribution from the residual stream while retaining the SAE's reconstruction error.
+
+The activation result establishes sensitivity to this wording manipulation. The same two templates recur across all cases, so the experiment cannot distinguish a register feature from a feature responding to particular phrases. [Model Diffing without Borders](https://openreview.net/pdf/659e103888bd395dc0f3af5a626ea1e692aa937e.pdf) · [Experiment T](#27-sparse-autoencoder-features-at-layer-8-experiment-t)
+
+[Saved outputs and review details](docs/reviews/2026-11-14/prose-validity/README.md) · [Explainer chapter 39](docs/explainer.html#c39)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1089,6 +1103,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/cut_turns.py runs/scale_mlx/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge_opus.jsonl --model opus
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_argument_critique              # experiment Z, §34
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_persona_drift                  # experiment AA, §35
+HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_prose_validity                 # experiment AB, §36
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
