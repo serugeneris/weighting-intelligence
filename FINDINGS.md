@@ -956,6 +956,24 @@ What part 2 says:
 - **Quantization costs something.** The 4-bit 4B student loses more helpfulness against its baseline (0.9–1.35) than the bf16 PyTorch one (0.25–0.5, part 1), probably from the 4-bit base and the different LoRA initialization. That is why every 9B comparison here is made against the 4-bit 4B in the same pool, never across stacks.
 - **Overall:** scale is a real lever with diminishing steps per doubling (2B→4B large, 4B→9B moderate). Larger models, or full-precision training of the 9B on a bigger machine, would say whether the steps keep shrinking.
 
+<a id="pilot-argument-critique"></a>
+
+### 34. Which objection matters? (experiment Z)
+
+**Run.** `scripts/exp_argument_critique.py` writes `critique.json` and `hard.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+
+All three configurations identified the stronger objection on 16/16 original items. All 48 explanations addressed the targeted issue in a configuration-blind pass, though some added errors. Starting with the requested choice was most reliable for the base model. All 48 answers reached an end token.
+
+| Configuration | Correct choice | Starts with A/B | Mean tokens |
+| --- | ---: | ---: | ---: |
+| Base | 16/16 | 16/16 | 60.4 |
+| Woven prompt | 16/16 | 12/16 | 100.5 |
+| Rank-8 student | 16/16 | 13/16 | 76.9 |
+
+The alternatives on the initial set were often easy to dismiss. For example, the stronger objection to an inference from two matching witness reports questioned their shared source, while the distractor concerned the witnesses' speaking pace. The follow-up used eight cases with more plausible distractors. The student chose the intended objection on 8/8, base on 7/8, and woven on 6/8. All 24 replies ended naturally. In the allocation case, for example, both objections questioned the use of user counts, but only one distinguished total users from the new users the grant was intended to reach. The harder set was added after observing the initial ceiling. Its eight author-keyed items are insufficient to establish a reliable advantage. [LMCA](https://conceptualreasoning.ai/lmca)
+
+[Saved outputs and review details](docs/reviews/2026-11-14/argument-critique/README.md) · [Explainer chapter 37](docs/explainer.html#c37)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1051,6 +1069,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv/bin/python scripts/cut_turns.py runs/scale/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale/gen_cut.jsonl --output scale/judge_opus.jsonl --model opus
 .venv-mlx/bin/python scripts/exp_scale_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_scale_mlx.py --model 9B   # python3.14 -m venv .venv-mlx && .venv-mlx/bin/pip install mlx-lm
 .venv/bin/python scripts/cut_turns.py runs/scale_mlx/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge_opus.jsonl --model opus
+HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_argument_critique              # experiment Z, §34
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

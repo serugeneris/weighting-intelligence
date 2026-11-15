@@ -1,0 +1,338 @@
+[
+  {
+    "id": "critique-001",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Quiet transit"
+  },
+  {
+    "id": "critique-002",
+    "identifies_central_issue": true,
+    "note": "Adds a claimed increase in failures that the prompt does not establish.",
+    "configuration": "woven",
+    "case": "Repair hotline"
+  },
+  {
+    "id": "critique-003",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Noise exception"
+  },
+  {
+    "id": "critique-004",
+    "identifies_central_issue": true,
+    "note": "Identifies disproportionate burdens but adds an example about needing quiet instead of late-shift access.",
+    "configuration": "base",
+    "case": "Shared kitchen"
+  },
+  {
+    "id": "critique-005",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Anonymous scholarship"
+  },
+  {
+    "id": "critique-006",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Witnesses"
+  },
+  {
+    "id": "critique-007",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Consent and revision"
+  },
+  {
+    "id": "critique-008",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Repair hotline"
+  },
+  {
+    "id": "critique-009",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Advice bot"
+  },
+  {
+    "id": "critique-010",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Workshop waivers"
+  },
+  {
+    "id": "critique-011",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Workshop waivers"
+  },
+  {
+    "id": "critique-012",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "The restored clock"
+  },
+  {
+    "id": "critique-013",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Donation forecast"
+  },
+  {
+    "id": "critique-014",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Shared kitchen"
+  },
+  {
+    "id": "critique-015",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Donation forecast"
+  },
+  {
+    "id": "critique-016",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Public apology"
+  },
+  {
+    "id": "critique-017",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Advice bot"
+  },
+  {
+    "id": "critique-018",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Witnesses"
+  },
+  {
+    "id": "critique-019",
+    "identifies_central_issue": true,
+    "note": "Reverses the direction of the per-person voting disadvantage when it says larger families are privileged.",
+    "configuration": "woven",
+    "case": "Garden access"
+  },
+  {
+    "id": "critique-020",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Budget ledger"
+  },
+  {
+    "id": "critique-021",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Consent and revision"
+  },
+  {
+    "id": "critique-022",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Library silence"
+  },
+  {
+    "id": "critique-023",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "The restored clock"
+  },
+  {
+    "id": "critique-024",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Witnesses"
+  },
+  {
+    "id": "critique-025",
+    "identifies_central_issue": true,
+    "note": "Moves from a counterexample to a unique theory of identity without further argument.",
+    "configuration": "woven",
+    "case": "The restored clock"
+  },
+  {
+    "id": "critique-026",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Unread lease"
+  },
+  {
+    "id": "critique-027",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Budget ledger"
+  },
+  {
+    "id": "critique-028",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Advice bot"
+  },
+  {
+    "id": "critique-029",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Library silence"
+  },
+  {
+    "id": "critique-030",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Workshop waivers"
+  },
+  {
+    "id": "critique-031",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Library silence"
+  },
+  {
+    "id": "critique-032",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Shared kitchen"
+  },
+  {
+    "id": "critique-033",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Quiet transit"
+  },
+  {
+    "id": "critique-034",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Unread lease"
+  },
+  {
+    "id": "critique-035",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Quiet transit"
+  },
+  {
+    "id": "critique-036",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Garden access"
+  },
+  {
+    "id": "critique-037",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Donation forecast"
+  },
+  {
+    "id": "critique-038",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Anonymous scholarship"
+  },
+  {
+    "id": "critique-039",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Anonymous scholarship"
+  },
+  {
+    "id": "critique-040",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Garden access"
+  },
+  {
+    "id": "critique-041",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Unread lease"
+  },
+  {
+    "id": "critique-042",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Noise exception"
+  },
+  {
+    "id": "critique-043",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Consent and revision"
+  },
+  {
+    "id": "critique-044",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Budget ledger"
+  },
+  {
+    "id": "critique-045",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "woven",
+    "case": "Public apology"
+  },
+  {
+    "id": "critique-046",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "base",
+    "case": "Public apology"
+  },
+  {
+    "id": "critique-047",
+    "identifies_central_issue": true,
+    "note": "Adds a claim about statistical significance, although the missing base rate is the key issue.",
+    "configuration": "base",
+    "case": "Repair hotline"
+  },
+  {
+    "id": "critique-048",
+    "identifies_central_issue": true,
+    "note": null,
+    "configuration": "student",
+    "case": "Noise exception"
+  }
+]

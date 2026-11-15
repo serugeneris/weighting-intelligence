@@ -56,6 +56,7 @@ Scores come from a blind Claude judge, 0–9, on 16 prompts, 8 of them held out.
 | `scripts/exp_stack.py` | Experiment Y: the student plus a system prompt, and best-of-4 headroom with an Opus picker |
 | `scripts/exp_scale.py` | Experiment V: the same Claude-teacher recipe on Qwen3.5-2B, 4B (and 9B, which doesn't fit 24 GB) |
 | `scripts/exp_scale_mlx.py` | Experiment V, part 2: Qwen3.5-4B and 9B as 4-bit MLX models, same recipe (QLoRA); run with `.venv-mlx` |
+| `scripts/exp_argument_critique.py` | Experiment Z (34): Compare objection selection on 16 original and eight harder items |
 | `scripts/cut_turns.py` | Cuts saved answers at the end of the assistant's turn (the run-on artefact of FINDINGS §29) |
 | `data/train_questions.json`, `data/confirm_prompts.json` | 96 training questions for distillation; 48 new held-out prompts for the final confirmation |
 | `LITERATURE.md` | Literature review: related papers and the hypotheses H1–H8 they suggest, mapped to experiments D–H |

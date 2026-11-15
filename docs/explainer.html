@@ -249,6 +249,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c34">34 · Can't switch it off</a>
       <a href="#c35">35 · No hidden answers</a>
       <a href="#c36">36 · A bigger brain</a>
+      <a href="#c37">37 · Argument critique</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1085,6 +1086,27 @@ section.wide { grid-template-columns: 1fr; }
       <div class="legend"><span><i style="background:var(--pos)"></i>woven prompt</span><span><i style="background:var(--s3)"></i>Claude-taught student, no prompt</span></div>
       <div id="s36b"></div>
       <p class="note">Mean over 48 new prompts. Top: one blind pool, full precision, students at normal volume (philosophy 2.3 for both). Bottom: a second pool, 4-bit, students at 1.2× (philosophy 2.4 for both). First number Claude Sonnet, second Claude Opus; bars show Sonnet on a 0–12 scale. Compare within a group, not across them.</p>
+    </div>
+  </section>
+
+  <!-- 37 -->
+  <section class="chapter" id="c37" aria-labelledby="c37-title">
+    <div>
+      <div class="num">Chapter 37 · experiment Z</div>
+      <h2 id="c37-title">Which objection matters?</h2>
+      <p><strong>Why we tried it.</strong> Experiment W showed that the student learns to add reflections that fit the task. We put two objections next to each argument and asked which one challenges the central premise.</p>
+      <p><strong>What happened.</strong> All three configurations chose the intended objection on the original 16 cases. With eight more plausible distractors, the student scored 8/8, base 7/8, and the woven prompt 6/8.</p>
+      <p><strong>What it means.</strong> The first set hit a ceiling. The harder set separated the configurations by one or two items and is too small to establish an advantage. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#pilot-argument-critique">FINDINGS.md § 34</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/argument-critique">saved run evidence</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Correct choices by prompt set</h3>
+      <div id="s37" role="status" aria-live="polite"></div>
+      <div class="controls" id="s37-btns" role="group" aria-label="Correct choices by prompt set">
+        <button type="button" aria-pressed="true" aria-controls="s37" class="on">Original set</button>
+        <button type="button" aria-pressed="false" aria-controls="s37">Harder set</button>
+      </div>
+      <p class="note">The cases use an author-written answer key. Every response reached an end token.</p>
+      <div class="ex"><p>In the harder witness case, both objections question the reports. The decisive one points out that both inspectors copied the same record.</p></div>
     </div>
   </section>
 
@@ -2452,6 +2474,31 @@ function fillTable(id, rows) {
     (k === 2 ? '<div style="height:10px"></div>' : "") +
     `<div class="srow wl wv"><span>${l}</span><div class="tr"><i style="width:${s / 12 * 100}%;background:${c}"></i></div><b>${s.toFixed(1)} / ${o.toFixed(1)}</b></div>`).join("");
 })();
+/* ---------- Literature experiments: switch between measured conditions ---------- */
+function experimentChart(id, groups, renderRow) {
+  const controls = document.getElementById(id + "-btns");
+  const chart = document.getElementById(id);
+  const buttons = [...controls.querySelectorAll("button")];
+  function draw(index) {
+    const active = buttons[index];
+    toggleGroup(buttons, active);
+    buttons.forEach(button => button.setAttribute("aria-pressed", String(button === active)));
+    chart.innerHTML = groups[index].map(renderRow).join("");
+  }
+  buttons.forEach((button, index) => button.addEventListener("click", () => draw(index)));
+  draw(0);
+}
+
+function experimentCountRow([label, count, total, color]) {
+  return `<div class="srow wl"><span>${label}</span><div class="tr" aria-hidden="true"><i style="width:${100 * count / total}%;background:${color}"></i></div><b>${count} / ${total}</b></div>`;
+}
+
+/* ---------- 37: argument critique (saved evidence: docs/reviews/2026-11-14/argument-critique/) ---------- */
+experimentChart("s37", [
+  [["Base", 16, 16, "var(--ink-3)"], ["Woven prompt", 16, 16, "var(--pos)"], ["Rank-8 student", 16, 16, "var(--s3)"]],
+  [["Base", 7, 8, "var(--ink-3)"], ["Woven prompt", 6, 8, "var(--pos)"], ["Rank-8 student", 8, 8, "var(--s3)"]]
+], experimentCountRow);
+
 </script>
 </body>
 </html>
