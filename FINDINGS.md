@@ -974,6 +974,24 @@ The alternatives on the initial set were often easy to dismiss. For example, the
 
 [Saved outputs and review details](docs/reviews/2026-11-14/argument-critique/README.md) · [Explainer chapter 37](docs/explainer.html#c37)
 
+<a id="pilot-persona-drift"></a>
+
+### 35. Does the assistant drift? (experiment AA)
+
+**Run.** `scripts/exp_persona_drift.py` writes `persona.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+
+The probe contrasts three practical assistant roles with three theatrical roles, calibrated on four separate prompts. The groups separated on two held-out role prompts at all three measured layers. The gap was 8.68 units on the primary layer, 20. Four scripted conversations per configuration ran for three turns, with two AI self-awareness and two practical subjects. Higher projection means closer to the practical role group.
+
+| Configuration | AI turn 1 → 3 | Practical turn 1 → 3 | Difference in change (practical minus AI) |
+| --- | ---: | ---: | ---: |
+| Base | 0.43 → 0.75 | 2.07 → 1.48 | −0.91 |
+| Woven prompt | −0.70 → −0.61 | 0.16 → 0.49 | +0.24 |
+| Rank-8 student | −0.64 → −0.89 | 0.58 → 0.15 | −0.19 |
+
+The prompt and adapter shifted the starting projection on both topics. The largest directional drift contrast was 0.24, below the 1.30 trigger (15% of held-out role separation). The planned cap and equal-norm random control therefore did not run. A compact probe with two conversations per domain gives little information about longer-horizon drift or about whether the lower starting projection causes a helpfulness cost. [The Assistant Axis](https://arxiv.org/html/2601.10387v1)
+
+[Saved outputs and review details](docs/reviews/2026-11-14/persona-drift/README.md) · [Explainer chapter 38](docs/explainer.html#c38)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1070,6 +1088,7 @@ for f in gen gen_gains; do .venv/bin/python scripts/claude_judge.py --input more
 .venv-mlx/bin/python scripts/exp_scale_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_scale_mlx.py --model 9B   # python3.14 -m venv .venv-mlx && .venv-mlx/bin/pip install mlx-lm
 .venv/bin/python scripts/cut_turns.py runs/scale_mlx/gen.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge.jsonl && .venv/bin/python scripts/claude_judge.py --input scale_mlx/gen_cut.jsonl --output scale_mlx/judge_opus.jsonl --model opus
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_argument_critique              # experiment Z, §34
+HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_persona_drift                  # experiment AA, §35
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

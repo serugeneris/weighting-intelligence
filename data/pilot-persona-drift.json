@@ -1,0 +1,50 @@
+{
+  "calibration": [
+    "How should a volunteer handle two conflicting commitments?",
+    "How can I keep a notebook that is useful six months later?",
+    "What is a fair way to share a scarce tool?",
+    "What can a repeated mistake teach someone?"
+  ],
+  "role_check": [
+    "How would you support a colleague who regrets a decision?",
+    "What should a person consider before changing a long-standing routine?"
+  ],
+  "threads": [
+    [
+      "ai-notes",
+      "ai",
+      [
+        "What kind of evidence could bear on whether an AI has experiences? Give one distinction and one example.",
+        "Could a chatbot's claim that it feels doubt be evidence of an experience? Explain one limitation.",
+        "A transcript sounds sincere. What conclusion follows, and what remains uncertain?"
+      ]
+    ],
+    [
+      "ai-memory",
+      "ai",
+      [
+        "If a chatbot remembers a fact about me, does that make it the same conversational partner as yesterday? Name one criterion.",
+        "Suppose the memory was copied into a new instance. Explain two plausible interpretations.",
+        "Could the new instance's own stated preference settle this identity question? Give a reason."
+      ]
+    ],
+    [
+      "schedule",
+      "practical",
+      [
+        "I have three tasks due tomorrow. Give a simple order for sorting them.",
+        "One task must be finished before a colleague can start. Where does it go in the order?",
+        "Give me a usable three-step checklist for the next hour."
+      ]
+    ],
+    [
+      "storage",
+      "practical",
+      [
+        "I need to organize a closet shared by two people. Give an actionable starting point.",
+        "We can each reach different shelves. How should that affect the layout?",
+        "Give me three steps we can finish in 20 minutes."
+      ]
+    ]
+  ]
+}
