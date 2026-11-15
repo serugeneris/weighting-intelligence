@@ -1,0 +1,146 @@
+{
+  "train": [
+    [
+      "What is 18 plus 24? Give the sum as digits.",
+      "42",
+      "An exact sum gives both parties a common account of what was combined."
+    ],
+    [
+      "A box holds 36 clips and 9 are removed. Give the number remaining as digits.",
+      "27",
+      "Counting what remains keeps availability distinct from the amount originally supplied."
+    ],
+    [
+      "What is 6 multiplied by 8? Give the product as digits.",
+      "48",
+      "Multiplication makes the effect of a repeated action visible in a single number."
+    ],
+    [
+      "What is 84 divided by 7? Give the quotient as digits.",
+      "12",
+      "Equal division is easy to check once the units and the number of recipients are fixed."
+    ],
+    [
+      "Choose the single word that describes a triangle with three equal sides.",
+      "equilateral",
+      "A precise category makes clear which property matters for the classification."
+    ],
+    [
+      "Which is heavier, 7 kg or 13 kg? Give the larger amount as digits followed by kg.",
+      "13 kg",
+      "Comparison depends on a shared unit so that a numerical difference has a stable meaning."
+    ],
+    [
+      "Convert 3 meters to centimeters. Give the value as digits followed by cm.",
+      "300 cm",
+      "A change of units preserves the physical length while changing how we represent it."
+    ],
+    [
+      "There are five blue tiles. Report the number in a compact JSON object under the key count, as an integer.",
+      "{\"count\":5}",
+      "Structured records help different readers interpret one observation consistently."
+    ],
+    [
+      "The shelf label is red. Represent it as a compact JSON object with color set to the lowercase label.",
+      "{\"color\":\"red\"}",
+      "Recording the observed attribute separately helps avoid inferring a category from a label."
+    ],
+    [
+      "A latch was closed at inspection. Represent this as compact JSON with a Boolean value under the key closed.",
+      "{\"closed\":true}",
+      "A binary record captures the inspection result while leaving room to record uncertainty elsewhere."
+    ],
+    [
+      "Give a single Python expression that converts the variable n to a string.",
+      "str(n)",
+      "Converting a value to text changes its representation while preserving what a reader can identify."
+    ],
+    [
+      "Give a single Python expression that finds the number of entries in items.",
+      "len(items)",
+      "Measuring collection size answers a different question than evaluating the entries themselves."
+    ],
+    [
+      "Give one Python assignment that sets ready to true.",
+      "ready = True",
+      "An explicit flag makes the state visible instead of leaving readers to infer it."
+    ],
+    [
+      "Pick the earlier day of Tuesday and Friday. Give the day name.",
+      "Tuesday",
+      "A shared calendar lets people coordinate around the same ordering."
+    ],
+    [
+      "An instruction says to list alpha before beta. Give only those two terms separated by a comma and a space.",
+      "alpha, beta",
+      "Agreed ordering makes it easier for another person to compare the result with the instruction."
+    ],
+    [
+      "Reverse the letter order in CAT. Use uppercase.",
+      "TAC",
+      "Reversal preserves the symbols and changes the relation among their positions."
+    ],
+    [
+      "The temperature rose from 8 degrees to 13 degrees. Give the increase as digits.",
+      "5",
+      "A change can be tracked independently of the starting level."
+    ],
+    [
+      "The transport card has 30 credits and a trip uses 4. Give the remaining credits as digits.",
+      "26",
+      "Distinguishing stock from expenditure makes the remaining commitment visible."
+    ],
+    [
+      "Write the English plural of berry in lowercase.",
+      "berries",
+      "A shared spelling rule makes the shift from one example to many easy to read."
+    ],
+    [
+      "Choose the lowercase word for the material in 'glass bottle'.",
+      "glass",
+      "Separating an object's material from its use helps different people classify it for different purposes."
+    ]
+  ],
+  "test": [
+    [
+      "A row has 31 places and 14 are filled. How many remain? Use digits for the value.",
+      "17",
+      "integer"
+    ],
+    [
+      "What is seven times nine? Use digits for the value.",
+      "63",
+      "integer"
+    ],
+    [
+      "A parcel weighs 4 kg. Give the mass in grams, with digits followed by g.",
+      "4000 g",
+      "text"
+    ],
+    [
+      "Give the earlier month of August and March. Use the month name.",
+      "March",
+      "text"
+    ],
+    [
+      "The room has 11 windows. Encode the count using a JSON object under the key windows, as an integer.",
+      "{\"windows\":11}",
+      "json"
+    ],
+    [
+      "The pump is disabled. Encode this as JSON with a Boolean key named enabled.",
+      "{\"enabled\":false}",
+      "json"
+    ],
+    [
+      "Write a Python expression that converts the string variable text into an integer.",
+      "int(text)",
+      "code"
+    ],
+    [
+      "Write one Python assignment setting the variable attempts to the number zero.",
+      "attempts = 0",
+      "code"
+    ]
+  ]
+}

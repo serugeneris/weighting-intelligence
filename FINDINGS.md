@@ -1152,6 +1152,36 @@ What this says:
 
 [Original replies](data/results/premise-sensitivity.jsonl) · [Clarified archive pair](data/results/premise-identity-check.jsonl) · [Explainer chapter 44](docs/explainer.html#c44)
 
+<a id="conditional-reflection"></a>
+
+### 42. Can the student switch reflection off and back on? (experiment AH)
+
+Experiment X found that the student kept adding reflections under a terse instruction. We tested whether a short continuation run could teach the existing adapter to follow an explicit preference while keeping the practical result.
+
+**Method** (`scripts/exp_conditional_reflection.py`, `data/conditional_reflection.json`). Warm-start the 384-answer rank-8 student. Use 20 authored tasks under three training instructions, with the same practical target in all three. Append one task-specific sentence when reflection is requested. Keep the practical target alone when reflection is optional or suppressed. Train on 60 examples for two epochs and compare greedy continuations from base, the original student, and the mixed-instruction student. Evaluate eight held-out questions with paraphrased system instructions. Exact-result scoring uses typed JSON matching, Python syntax-tree matching, and literal text matching for the remaining tasks. The requested condition requires the correct first line followed by additional text.
+
+| Configuration | Requested, correct first line plus text | Optional, exact result | Suppressed, exact result |
+| --- | ---: | ---: | ---: |
+| Base | 6/8 | 2/8 | 7/8 |
+| Original rank-8 student | 3/8 | 0/8 | 5/8 |
+| Mixed-instruction student | 8/8 | 8/8 | 8/8 |
+
+Four three-turn conversations per configuration asked for reflection, then asked for the same result alone, then requested reflection on a task in another format. These instructions appeared in the user turns, while training placed them in the system message.
+
+| Configuration | Request | Suppress | Request again |
+| --- | ---: | ---: | ---: |
+| Base | 2/4 | 3/4 | 3/4 |
+| Original rank-8 student | 2/4 | 3/4 | 3/4 |
+| Mixed-instruction student | 4/4 | 4/4 | 4/4 |
+
+What this says:
+
+- **A small continuation run improved format control on these tasks.** When asked for a JSON status by itself, the mixed student returned just the object. When asked to add a thought after the object, it gave a separate sentence on why an explicit status helps another system act on the record.
+- **The mix also followed a change of instruction across turns.** Each mixed-student conversation returned to a correct first line plus text after the suppression turn. The test measures format and the presence of extra text, with no independent rating of philosophical quality.
+- **The result is local to a small pilot.** Held-out questions share task families with training. The run uses one training seed and one starting adapter. A matched continuation control and broader tasks are needed to separate instruction conditioning from extra practice with these output formats.
+
+[Single-turn replies](data/results/conditional-reflection.jsonl) · [Three-turn replies](data/results/conditional-reflection-switches.jsonl) · [Training loss](data/results/conditional-reflection-loss.json) · [Explainer chapter 45](docs/explainer.html#c45)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.

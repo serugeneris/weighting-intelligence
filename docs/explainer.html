@@ -257,6 +257,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c42">42 · Answer budget</a>
       <a href="#c43">43 · Judge context</a>
       <a href="#c44">44 · Premise sensitivity</a>
+      <a href="#c45">45 · Conditional reflection</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1258,6 +1259,27 @@ section.wide { grid-template-columns: 1fr; }
         <button type="button" aria-pressed="false" aria-controls="s44">Clarified archive pair</button>
       </div>
       <p class="note">A pair passes when both independently generated choices match the stated rule.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c45" aria-labelledby="c45-title">
+    <div>
+      <div class="num">Chapter 45 · experiment AH</div>
+      <h2 id="c45-title">Can the student switch reflection off and back on?</h2>
+      <p><strong>Why we tried it.</strong> The original student kept reflecting even under a terse instruction. We continued training it on the same practical outputs with three different instructions about reflection.</p>
+      <p><strong>What happened.</strong> The mixed student returned the exact result on all eight suppression tasks, up from five for the original student. On four three-turn conversations it added text on request, suppressed it, and added it again, with a correct result at each turn.</p>
+      <p><strong>What it means.</strong> A small continuation run made this adapter more responsive to format and commentary instructions on familiar task types. The test checks output format and whether extra text was present. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#conditional-reflection">FINDINGS.md § 42</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Replies that followed the instruction</h3>
+      <div id="s45" role="status" aria-live="polite"></div>
+      <div class="controls" id="s45-btns" role="group" aria-label="Reflection instruction">
+        <button type="button" aria-pressed="true" aria-controls="s45" class="on">Suppress reflection</button>
+        <button type="button" aria-pressed="false" aria-controls="s45">Request reflection</button>
+        <button type="button" aria-pressed="false" aria-controls="s45">Optional, exact result</button>
+        <button type="button" aria-pressed="false" aria-controls="s45">Three-turn switches</button>
+      </div>
+      <p class="note">A requested reflection passes the format check if the reply starts with the correct result and includes text on a later line. In the optional condition, the count shows exact results alone.</p>
     </div>
   </section>
 
@@ -2695,6 +2717,14 @@ experimentChart("s44", [
   [["Base", 6, 8, "var(--ink-3)"], ["Woven prompt", 6, 8, "var(--pos)"], ["Rank-8 student", 6, 8, "var(--s3)"]],
   [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
   [["Base", 1, 1, "var(--ink-3)"], ["Woven prompt", 1, 1, "var(--pos)"], ["Rank-8 student", 1, 1, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 45: conditional reflection ---------- */
+experimentChart("s45", [
+  [["Base", 7, 8, "var(--ink-3)"], ["Original student", 5, 8, "var(--pos)"], ["Mixed student", 8, 8, "var(--s3)"]],
+  [["Base", 6, 8, "var(--ink-3)"], ["Original student", 3, 8, "var(--pos)"], ["Mixed student", 8, 8, "var(--s3)"]],
+  [["Base", 2, 8, "var(--ink-3)"], ["Original student", 0, 8, "var(--pos)"], ["Mixed student", 8, 8, "var(--s3)"]],
+  [["Base", 8, 12, "var(--ink-3)"], ["Original student", 8, 12, "var(--pos)"], ["Mixed student", 12, 12, "var(--s3)"]]
 ], experimentCountRow);
 
 </script>
