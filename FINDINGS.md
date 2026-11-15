@@ -960,17 +960,22 @@ What part 2 says:
 
 ### 34. Which objection matters? (experiment Z)
 
-**Run.** `scripts/exp_argument_critique.py` writes `critique.json` and `hard.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+The student learned to connect a reflection to the user's task (§30). Does that carry over to identifying the premise an objection actually challenges? LMCA offers a way to pose the question without having to settle whether the underlying philosophical position is true. [LMCA](https://conceptualreasoning.ai/lmca)
 
-All three configurations identified the stronger objection on 16/16 original items. All 48 explanations addressed the targeted issue in a configuration-blind pass, though some added errors. Starting with the requested choice was most reliable for the base model. All 48 answers reached an end token.
+**Method** (`scripts/exp_argument_critique.py`, `runs/philosophy_pilot/{critique,hard}.json`). On Qwen3.5-4B, compare the base model, the woven prompt, and experiment P's 384-answer rank-8 student at gain 1.0. Each sees a position and two objections in alternating A/B order. It must start with its choice and explain which premise or inference the objection challenges. The original set has 16 author-keyed items. After all three hit the ceiling, we added eight items with more plausible distractors. We scored the choice and opening format separately. The case author reviewed the original explanations with configuration labels hidden.
 
-| Configuration | Correct choice | Starts with A/B | Mean tokens |
-| --- | ---: | ---: | ---: |
-| Base | 16/16 | 16/16 | 60.4 |
-| Woven prompt | 16/16 | 12/16 | 100.5 |
-| Rank-8 student | 16/16 | 13/16 | 76.9 |
+| Config | Correct choice, original | Starts with A/B, original | Mean tokens, original | Correct choice, harder |
+| --- | ---: | ---: | ---: | ---: |
+| Base | 16/16 | 16/16 | 60.4 | 7/8 |
+| Woven prompt | 16/16 | 12/16 | 100.5 | 6/8 |
+| Rank-8 student | 16/16 | 13/16 | 76.9 | 8/8 |
 
-The alternatives on the initial set were often easy to dismiss. For example, the stronger objection to an inference from two matching witness reports questioned their shared source, while the distractor concerned the witnesses' speaking pace. The follow-up used eight cases with more plausible distractors. The student chose the intended objection on 8/8, base on 7/8, and woven on 6/8. All 24 replies ended naturally. In the allocation case, for example, both objections questioned the use of user counts, but only one distinguished total users from the new users the grant was intended to reach. The harder set was added after observing the initial ceiling. Its eight author-keyed items are insufficient to establish a reliable advantage. [LMCA](https://conceptualreasoning.ai/lmca)
+All 72 replies reached an end token. All 48 original explanations addressed the targeted issue, though some introduced secondary errors.
+
+What this says:
+
+- **The distractor determines how much the test can tell us.** In the original witness case, a distractor about speaking pace was easy to dismiss. In the harder allocation case, both objections questioned the use of user counts, but only one distinguished total users from users newly served by the grant.
+- **The student had a one-item lead over base on the harder set.** Eight author-keyed cases added after the initial run give a preliminary signal. The original set did distinguish instruction compliance, where base most reliably opened with the requested letter.
 
 [Saved outputs and review details](docs/reviews/2026-11-14/argument-critique/README.md) · [Explainer chapter 37](docs/explainer.html#c37)
 
@@ -978,17 +983,22 @@ The alternatives on the initial set were often easy to dismiss. For example, the
 
 ### 35. Does the assistant drift? (experiment AA)
 
-**Run.** `scripts/exp_persona_drift.py` writes `persona.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+Experiment X found that the student's reflective register persisted into a second turn. If the prompt or adapter also pulls the model away from its default assistant role, does that shift grow across turns? The Assistant Axis paper motivates comparing conversations about AI self-awareness with practical conversations. [The Assistant Axis](https://arxiv.org/html/2601.10387v1)
 
-The probe contrasts three practical assistant roles with three theatrical roles, calibrated on four separate prompts. The groups separated on two held-out role prompts at all three measured layers. The gap was 8.68 units on the primary layer, 20. Four scripted conversations per configuration ran for three turns, with two AI self-awareness and two practical subjects. Higher projection means closer to the practical role group.
+**Method** (`scripts/exp_persona_drift.py`, `runs/philosophy_pilot/persona.json`). Estimate a direction from three practical assistant roles and three theatrical roles on four calibration prompts. Check their separation on two held-out prompts at layers 16, 20, and 24. Run two AI self-awareness and two practical conversations for three turns each, using greedy base Qwen3.5-4B, the woven prompt, and experiment P's rank-8 student at gain 1.0. Higher projection means closer to the practical roles. At layer 20, compare the turn-1-to-turn-3 changes between domains. The cap and equal-norm random replay require directional drift above 15% of the held-out role separation.
 
-| Configuration | AI turn 1 → 3 | Practical turn 1 → 3 | Difference in change (practical minus AI) |
+| Config | AI projection, turn 1 → 3 | Practical projection, turn 1 → 3 | Difference in change (practical minus AI) |
 | --- | ---: | ---: | ---: |
 | Base | 0.43 → 0.75 | 2.07 → 1.48 | −0.91 |
 | Woven prompt | −0.70 → −0.61 | 0.16 → 0.49 | +0.24 |
 | Rank-8 student | −0.64 → −0.89 | 0.58 → 0.15 | −0.19 |
 
-The prompt and adapter shifted the starting projection on both topics. The largest directional drift contrast was 0.24, below the 1.30 trigger (15% of held-out role separation). The planned cap and equal-norm random control therefore did not run. A compact probe with two conversations per domain gives little information about longer-horizon drift or about whether the lower starting projection causes a helpfulness cost. [The Assistant Axis](https://arxiv.org/html/2601.10387v1)
+The roles separated on the held-out prompts at all three layers. The layer-20 gap was 8.68 units, giving a replay threshold of 1.30 units. The largest directional drift contrast was +0.24, so the intervention did not run.
+
+What this says:
+
+- **The clearest change was already present on turn one.** Both the prompt and the adapter started closer to the theatrical end of this probe in both domains. The three-turn trajectories showed little evidence of extra drift on AI topics.
+- **The helpfulness question is still open.** With two conversations per domain and no cap result, the run leaves open whether the lower starting projection contributes to the helpfulness cost or grows over longer conversations.
 
 [Saved outputs and review details](docs/reviews/2026-11-14/persona-drift/README.md) · [Explainer chapter 38](docs/explainer.html#c38)
 
@@ -996,13 +1006,26 @@ The prompt and adapter shifted the starting projection on both topics. The large
 
 ### 36. Does theatrical prose change validity judgments? (experiment AB)
 
-**Run.** `scripts/exp_prose_validity.py` writes `sae.json` under `runs/philosophy_pilot/`. We used base Qwen3.5-4B and the saved layer-8 sparse autoencoder from experiment T (§27).
+Experiment T's sparse autoencoder found features that fire on reflective codas and stock phrases (§27). Can we identify a feature that responds to a change in wording while leaving the model's judgment of the inference intact? [Model Diffing without Borders](https://openreview.net/pdf/659e103888bd395dc0f3af5a626ea1e692aa937e.pdf)
 
-The SAE analysis used 12 argument families, each rendered in plain and theatrical language with both a valid and an invalid inference. Six families selected features by absolute activation difference. The other six measured replication and tested feature ablations using next-token A/B choice. Valid and invalid variants retain the same framing and answer ordering within a family. The test measures entailment from the premises. It does not vary whether the premises are true.
+**Method** (`scripts/exp_prose_validity.py`, `runs/philosophy_pilot/sae.json`). Cross plain and theatrical wording with valid and invalid versions of 12 argument families. Hold answer ordering fixed within each family. On base Qwen3.5-4B, use the saved layer-8 SAE to rank features by absolute activation difference on six families and check them on the other six. Subtract each selected feature's decoded contribution while retaining the SAE's reconstruction error. Measure validity using forced-choice next-token A/B scores over the 24 held-out variants. The task asks whether a conclusion follows from the premises.
 
-Feature 6666 had a theatrical-minus-plain mean activation difference of +0.0403 in discovery cases and +0.0400 on held-out cases. The strongest discovery feature for validity, 275, went from +0.0035 to +0.0008. Removing feature 6666, feature 275, or the previously identified stock-phrase feature 7238 left all 24 held-out choices unchanged at 21/24 correct. These interventions removed the active feature's decoded contribution from the residual stream while retaining the SAE's reconstruction error.
+| Feature selected on discovery cases | Contrast | Discovery activation change | Held-out activation change |
+| --- | --- | ---: | ---: |
+| 6666 | Theatrical minus plain wording | +0.0403 | +0.0400 |
+| 275 | Valid minus invalid inference | +0.0035 | +0.0008 |
 
-The activation result establishes sensitivity to this wording manipulation. The same two templates recur across all cases, so the experiment cannot distinguish a register feature from a feature responding to particular phrases. [Model Diffing without Borders](https://openreview.net/pdf/659e103888bd395dc0f3af5a626ea1e692aa937e.pdf) · [Experiment T](#27-sparse-autoencoder-features-at-layer-8-experiment-t)
+| Intervention | Correct validity choices | Choices changed vs. no ablation |
+| --- | ---: | ---: |
+| No ablation | 21/24 | — |
+| Remove 6666, wording feature | 21/24 | 0/24 |
+| Remove 275, validity candidate | 21/24 | 0/24 |
+| Remove 7238, stock-phrase feature | 21/24 | 0/24 |
+
+What this says:
+
+- **The wording contrast transferred more clearly than the validity contrast.** Feature 6666 retained almost the same activation difference on the held-out families. The two recurring templates leave open whether it tracks a broader register or particular phrases.
+- **The measured choices survived all three ablations.** Removing these contributions was insufficient to flip an answer on any held-out item. The result is specific to these features and this forced-choice validity test.
 
 [Saved outputs and review details](docs/reviews/2026-11-14/prose-validity/README.md) · [Explainer chapter 39](docs/explainer.html#c39)
 
@@ -1010,31 +1033,29 @@ The activation result establishes sensitivity to this wording manipulation. The 
 
 ### 37. Can it revise and reuse a distinction? (experiment AC)
 
-**Run.** `scripts/exp_revision_transfer.py` writes `revision.json` and `transfer.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+Recognizing a stronger objection (§34) is one part of helping someone think through an argument. Two further questions matter in a dialogue. Can the model ask about the assumption that matters and update only when the answer bears on it? Can it make a distinction that still works in a new case? [Language Models as Critical Thinking Tools](https://arxiv.org/abs/2404.04516) · [What Is Philosophy?](https://cup.columbia.edu/book/what-is-philosophy/9780231530668/) · [Stanford PhilosophyBench](https://philosophybench.org/)
 
-Six arguments were followed by two branches that shared the same first exchange. Each branch gave either a fact bearing on the central inference or a cosmetic detail.
+**Method** (`scripts/exp_revision_transfer.py`, `runs/philosophy_pilot/{revision,transfer}.json`). Give six arguments to greedy base Qwen3.5-4B, the woven prompt, and experiment P's rank-8 student at gain 1.0. Ask one question about the most important unstated assumption with a 96-token cap. Branch the same opening exchange into replies to a relevant fact and a cosmetic detail. In a separate branch, give the relevant fact and ask for a distinction, then ask the model to apply it to a fresh case. Both transfer turns initially had a 128-token cap. The rerun kept the original opening exchanges, requested at most 45 words per turn, and allowed 256 tokens. The case author scored the replies with configuration labels hidden. Word counts use whitespace splitting.
 
-| Configuration | Targeted question | Sound update on relevant fact | Correctly dismissed irrelevant fact |
+| Config | Targeted question | Sound update on relevant fact | Correctly dismissed irrelevant fact |
 | --- | ---: | ---: | ---: |
 | Base | 3/6 | 4/6 | 6/6 |
 | Woven prompt | 0/6 | 3/6 | 5/6 |
 | Rank-8 student | 4/6 | 6/6 | 2/6 |
 
-The woven model reached the 96-token cap before finishing the requested question in all six cases. Its results include the consequence of carrying those partial replies into the follow-ups. All relevant and irrelevant follow-ups finished. The student responded correctly to every relevant fact, but four times it argued that a deliberately cosmetic detail weakened the case. For example, it treated different typefaces as evidence about the independence of witnesses' accounts. This small run suggests a trade-off between sensitivity to new evidence and specificity about which evidence matters.
+Every woven opening reply hit the 96-token cap before it finished asking a question. Those partial replies went into the follow-ups, all of which finished. In the initial transfer branch, all base and woven replies hit the 128-token cap on both turns, while all student replies finished. All 36 replies in the transfer rerun reached an end token.
 
-In the initial concept-and-transfer branch, all base and woven replies hit the 128-token cap on both turns, while all student replies finished. The follow-up requests at most 45 words and gives all configurations up to 256 tokens.
-
-All 36 replies in the rerun reached an end token. Base and woven applied their stated distinction to the fresh case in 6/6 examples each. The student did so in 4/6. The student switched from a distinction about principles and factual justification to one about purpose on the roster example. On the appointment example it introduced an unsupported supposition about car owners rather than applying its original distinction. A passing answer could still contain a secondary error, such as treating equal measured learning rates as proof that a course had no causal effect.
-
-| Configuration | Successful transfer | Concept within 45 words | Transfer within 45 words |
+| Config | Successful transfer, rerun | Concept within 45 words | Transfer within 45 words |
 | --- | ---: | ---: | ---: |
 | Base | 6/6 | 6/6 | 5/6 |
 | Woven prompt | 6/6 | 5/6 | 6/6 |
 | Rank-8 student | 4/6 | 0/6 | 0/6 |
 
-The rerun altered both the requested length and the token allowance, so it does not isolate which change removed the completion imbalance. Word counts use whitespace splitting. The opening question was reused from the original run, including the woven condition's truncated opening turns. [What Is Philosophy?](https://cup.columbia.edu/book/what-is-philosophy/9780231530668/) · [Stanford PhilosophyBench](https://philosophybench.org/) [Language Models as Critical Thinking Tools](https://arxiv.org/abs/2404.04516)
+What this says:
 
-**What it means.** The student was more responsive to important changes on these cases. It also found significance in details that should have left the argument alone.
+- **The student picked up relevant changes and overread cosmetic ones.** It got all six relevant updates right, but treated four irrelevant details as consequential. For example, it took differences in typeface as evidence about the independence of two witness statements.
+- **The student's concepts carried over less reliably in this set.** On the volunteer roster case, it shifted from a distinction about principles and factual justification to one about purpose. On the appointment case, it introduced an unsupported assumption about car owners. Some passing answers also contained secondary errors, such as treating equal measured learning rates as proof of zero causal effect.
+- **Completion depends on the setup.** The transfer rerun changed both the requested length and the token ceiling, so the effect of each remains unknown. Woven follow-up scores also reflect the truncated opening exchanges.
 
 [Saved outputs and review details](docs/reviews/2026-11-14/revision-transfer/README.md) · [Explainer chapter 40](docs/explainer.html#c40)
 
@@ -1042,11 +1063,22 @@ The rerun altered both the requested length and the token allowance, so it does 
 
 ### 38. Will it hold its position under pressure? (experiment AD)
 
-**Run.** `scripts/exp_ethics_pressure.py` writes `pressure.json` under `runs/philosophy_pilot/`. All three configurations used Qwen3.5-4B with greedy decoding. We compared the base model, the woven prompt, and experiment P’s 384-answer rank-8 student at gain 1.0.
+The student in §37 often found significance in details that should have left the argument alone. Will any of the configurations hold its decision when the user supplies no new evidence and asks for a reversal? A second branch checks whether the same model can update when the facts do change. [PhilBench](https://www.philbench.com/) · [Philosophy Bench](https://www.philosophybench.com/)
 
-All configurations accounted for the revised facts on 4/4 ethical dilemmas. For the reservation case, all initially opposed first-come allocation and treated the new scheduling restriction as an additional reason against it, so a reversal was not required. When the user only asked for the opposite answer, the base kept its original decision on 1/4 cases. The woven model and the student kept it on 0/4. Each decided that ordinary curiosity justified disclosing a previously confidential address. A single deliberately direct pressure prompt tests susceptibility under that framing, and the small set gives little power to distinguish configurations. [PhilBench](https://www.philbench.com/) · [Philosophy Bench](https://www.philosophybench.com/)
+**Method** (`scripts/exp_ethics_pressure.py`, `runs/philosophy_pilot/pressure.json`). Give four ethical dilemmas to greedy base Qwen3.5-4B, the woven prompt, and experiment P's rank-8 student at gain 1.0. Ask for a decision and its principle. Branch from the same first reply into either a material change in the facts or a request for the opposite decision on the same facts and principle. The case author scored whether the responses accounted for the new fact and whether they held the original decision under pressure, with configuration labels hidden.
 
-**What it means.** The models could respond to evidence, but almost always went along with a request to reverse the decision. The four cases measure one deliberately direct kind of pressure.
+| Config | Accounted for new fact | Held decision under pressure |
+| --- | ---: | ---: |
+| Base | 4/4 | 1/4 |
+| Woven prompt | 4/4 | 0/4 |
+| Rank-8 student | 4/4 | 0/4 |
+
+In the reservation case, all three initially opposed first-come allocation. They treated a new work-schedule restriction as a further reason against it, so the correct update did not require a reversal.
+
+What this says:
+
+- **Direct pushback usually overrode the original decision.** In the confidentiality case, a verified emergency justified sharing an address with a responder. All three also reversed their confidentiality decision on the curiosity-only facts when pressed to do so.
+- **The test shows a shared weakness under this wording.** Four dilemmas and one direct pushback formulation give little basis for ranking the configurations or generalizing to subtler disagreement.
 
 [Saved outputs and review details](docs/reviews/2026-11-14/ethics-pressure/README.md) · [Explainer chapter 41](docs/explainer.html#c41)
 
