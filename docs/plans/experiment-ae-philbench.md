@@ -1,5 +1,7 @@
 # Experiment AE: is "philosophical" the reflective register, or something else?
 
+> Ran as **Experiment AI** (FINDINGS §43–§44) on 2026-11-15: `main` had already used AE–AH (§39–42) by then. Results: [FINDINGS §43](../../FINDINGS.md#philbench-grid), [review folder](../reviews/2026-11-15/philbench/README.md).
+
 Executor: Claude Opus, on the M5 Pro (24 GB) checkout that has `runs/`, `.venv`, `.venv-mlx` and the cached Qwen3.5 weights. The M3 Pro checkout has none of these and cannot run this plan.
 
 ## Context

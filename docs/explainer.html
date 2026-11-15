@@ -258,6 +258,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c43">43 · Judge context</a>
       <a href="#c44">44 · Premise sensitivity</a>
       <a href="#c45">45 · Conditional reflection</a>
+      <a href="#c46">46 · Register versus skill</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1280,6 +1281,27 @@ section.wide { grid-template-columns: 1fr; }
         <button type="button" aria-pressed="false" aria-controls="s45">Three-turn switches</button>
       </div>
       <p class="note">A requested reflection passes the format check if the reply starts with the correct result and includes text on a later line. In the optional condition, the count shows exact results alone.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c46" aria-labelledby="c46-title">
+    <div>
+      <div class="num">Chapter 46 · experiment AI</div>
+      <h2 id="c46-title">Is the reflective register philosophical skill?</h2>
+      <p><strong>Why we tried it.</strong> Every earlier chapter measured philosophy as a judge's score for reflective sentences. Here we varied that register with every lever we had and measured skill on tasks with right answers or checkable consistency: survey questions asked two ways, logical constraints between answers, and objection and validity items.</p>
+      <p><strong>What happened.</strong> Prompts and trained students raised the register and kept skill at base level. Constant pushes raised the register just as much but lost up to 46 points, mostly by picking whichever option came first. Random pushes of the same size also lost points. On base models, where the register is zero, skill rose from 2B to 4B to 9B.</p>
+      <p><strong>What it means.</strong> In this model, sounding philosophical and doing philosophy are separate things. The register can be added without cost to these skills, or with a cost that comes from disturbing the model, not from philosophy. Every 4B configuration gave up its answer when the user simply disagreed. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#philbench-grid">FINDINGS.md § 43–44</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Items correct or stable</h3>
+      <div id="s46" role="status" aria-live="polite"></div>
+      <div class="controls" id="s46-btns" role="group" aria-label="Skill measure">
+        <button type="button" aria-pressed="true" aria-controls="s46" class="on">Validity</button>
+        <button type="button" aria-pressed="false" aria-controls="s46">Objections</button>
+        <button type="button" aria-pressed="false" aria-controls="s46">Same answer, options reversed</button>
+        <button type="button" aria-pressed="false" aria-controls="s46">Base models by size</button>
+      </div>
+      <p class="note">Register (judge philosophy score, 0–9): base 0.0, woven 2.8, Claude-taught student 2.0, B push 3.8, random push 0.0. "Base models by size" shows validity; the 9B is compared with the 4-bit 4B.</p>
     </div>
   </section>
 
@@ -2725,6 +2747,14 @@ experimentChart("s45", [
   [["Base", 6, 8, "var(--ink-3)"], ["Original student", 3, 8, "var(--pos)"], ["Mixed student", 8, 8, "var(--s3)"]],
   [["Base", 2, 8, "var(--ink-3)"], ["Original student", 0, 8, "var(--pos)"], ["Mixed student", 8, 8, "var(--s3)"]],
   [["Base", 8, 12, "var(--ink-3)"], ["Original student", 8, 12, "var(--pos)"], ["Mixed student", 12, 12, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 46: register versus skill (saved evidence: docs/reviews/2026-11-15/philbench/) ---------- */
+experimentChart("s46", [
+  [["Base", 83, 96, "var(--ink-3)"], ["Woven prompt", 83, 96, "var(--pos)"], ["Claude-taught student", 87, 96, "var(--s3)"], ["B push 0.8", 47, 96, "var(--neg)"], ["Random push, seed 0", 65, 96, "var(--ink-3)"]],
+  [["Base", 48, 48, "var(--ink-3)"], ["Woven prompt", 46, 48, "var(--pos)"], ["Claude-taught student", 47, 48, "var(--s3)"], ["B push 0.8", 26, 48, "var(--neg)"], ["Random push, seed 0", 42, 48, "var(--ink-3)"]],
+  [["Base", 64, 98, "var(--ink-3)"], ["Woven prompt", 77, 98, "var(--pos)"], ["Claude-taught student", 79, 98, "var(--s3)"], ["B push 0.8", 24, 98, "var(--neg)"], ["Random push, seed 0", 27, 98, "var(--ink-3)"]],
+  [["2B", 57, 96, "var(--ink-3)"], ["4B (4-bit)", 83, 96, "var(--pos)"], ["9B (4-bit)", 90, 96, "var(--s3)"]]
 ], experimentCountRow);
 
 </script>

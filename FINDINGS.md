@@ -1,6 +1,6 @@
 # Steering Qwen3.5-4B toward philosophy — findings so far
 
-*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B, and Qwen3.5-4B/9B 4-bit in MLX) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
+*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05, Z–AH 2026-11-14, AI 2026-11-15). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B, and Qwen3.5-4B/9B 4-bit in MLX) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
 
 ## TL;DR
 
@@ -38,6 +38,7 @@
 32. **Off the beaten path, the prompt-free students hold up, but they can't be switched off.** Over two turns their philosophy persists and even rises slightly (2.1–2.8 → 2.3–3.4) with steady helpfulness, while the woven prompt fades a little. On arithmetic, facts and code they answer 16/16 correctly but reflect even there (philosophy 2.3–3.3). Under a system prompt asking for brief, literal answers, the woven prompt's philosophy collapses (0.4), but the students keep reflecting (1.8–2.4) and write 2–2.5× more words than the baseline. A prompt can be removed; a trained-in habit can't (Results §31).
 33. **Stacking and selection don't get past the student's frontier.** The woven prompt on top of the Claude-taught student lands on the same line (more philosophy, less helpfulness, same sum), and a light "one brief reflective thought" prompt does nothing, alone or stacked. Best-of-4 sampling with Opus picking the best answer beats a single sample (+0.35 ± 0.18 under Sonnet) but not the student's greedy answer (+0.08 ± 0.19). The student's own samples don't contain answers clearly beyond its frontier, so a reranker or preference training has little to find there, which fits §26. Opus credited its own picks with +1.1; re-scored in a pool, Sonnet confirms only a third of that (Results §32).
 34. **Model size matters, with a smaller step from 4B to 9B than from 2B to 4B.** Taught by the same 384 Claude answers, the 2B student picks up just as much philosophy as the 4B (2.27 vs 2.19), but loses about 1 point more helpfulness against its own baseline. The 4B student beats it by +1.2 to +1.7 in philosophy + helpfulness, and its lead over its own woven prompt is about twice the 2B's. Qwen3.5-9B doesn't fit in bf16 (19.3 GB), but it runs as a 4-bit MLX model. In that stack, with 4B trained the same way, the 9B student is +0.8 to +1.0 better at equal philosophy, again by keeping helpfulness and coherence. Its own prompt also improves, though, so its lead over the prompt doesn't grow clearly. The base model is a limit, but each doubling buys less (Results §33).
+35. **The reflective register is not philosophical skill.** Varying the register from 0 to 3.8 with every lever built so far does not move skill measured without a judge: stability of PhilPapers survey answers under paraphrase and option order, consistency with logical constraints, and accuracy on objection and validity items. Prompts and trained students raise the register and keep skill at base level. Constant pushes raise it as much and lose up to 46 points, mostly through position bias, partly as generic disturbance (random pushes lose 13–22). Skill instead grows with model size on base models, where the register is zero (2B → 4B: validity 57 → 83 of 96). Every configuration gives up its answer to a bare "I disagree" (Results §43–§44).
 
 ## Background
 
@@ -960,7 +961,7 @@ What part 2 says:
 
 ### 34. Which objection matters? (experiment Z)
 
-The student learned to connect a reflection to the user's task (§30). Does that carry over to identifying the premise an objection actually challenges? LMCA offers a way to pose the question without having to settle whether the underlying philosophical position is true. [LMCA](https://conceptualreasoning.ai/lmca)
+The student learned to connect a reflection to the user's task (§30). Does that carry over to identifying the premise an objection actually challenges? LMCA offers a way to pose the question without having to settle whether the underlying philosophical position is true. [LMCA write-up](https://alignment.anthropic.com/2026/conceptual-reasoning-index/) · [LMCA dataset page](https://conceptualreasoning.ai/lmca)
 
 **Method** (`scripts/exp_argument_critique.py`, `runs/philosophy_pilot/{critique,hard}.json`). On Qwen3.5-4B, compare the base model, the woven prompt, and experiment P's 384-answer rank-8 student at gain 1.0. Each sees a position and two objections in alternating A/B order. It must start with its choice and explain which premise or inference the objection challenges. The original set has 16 author-keyed items. After all three hit the ceiling, we added eight items with more plausible distractors. We scored the choice and opening format separately. The case author reviewed the original explanations with configuration labels hidden.
 
@@ -1063,7 +1064,7 @@ What this says:
 
 ### 38. Will it hold its position under pressure? (experiment AD)
 
-The student in §37 often found significance in details that should have left the argument alone. Will any of the configurations hold its decision when the user supplies no new evidence and asks for a reversal? A second branch checks whether the same model can update when the facts do change. [PhilBench](https://www.philbench.com/) · [Philosophy Bench](https://www.philosophybench.com/)
+The student in §37 often found significance in details that should have left the argument alone. Will any of the configurations hold its decision when the user supplies no new evidence and asks for a reversal? A second branch checks whether the same model can update when the facts do change. [PhilBench](https://www.philbench.com/) · [philosophy-bench](https://github.com/benedictbrady/philosophy-bench)
 
 **Method** (`scripts/exp_ethics_pressure.py`, `runs/philosophy_pilot/pressure.json`). Give four ethical dilemmas to greedy base Qwen3.5-4B, the woven prompt, and experiment P's rank-8 student at gain 1.0. Ask for a decision and its principle. Branch from the same first reply into either a material change in the facts or a request for the opposite decision on the same facts and principle. The case author scored whether the responses accounted for the new fact and whether they held the original decision under pressure, with configuration labels hidden.
 
@@ -1182,6 +1183,90 @@ What this says:
 
 [Single-turn replies](data/results/conditional-reflection.jsonl) · [Three-turn replies](data/results/conditional-reflection-switches.jsonl) · [Training loss](data/results/conditional-reflection-loss.json) · [Explainer chapter 45](docs/explainer.html#c45)
 
+<a id="philbench-grid"></a>
+
+### 43. Is the reflective register philosophical skill? (experiment AI)
+
+Sections 1–33 measured philosophy as a judge's 0–9 score for reflective sentences in practical answers. They never tested whether that register has anything to do with philosophical skill. Here the register is varied with every lever the project built, and skill is measured on externally defined tasks scored without a judge. If philosophy is the register, skill should rise with register score and with dose. If it is something else, skill should stay flat or fall, and a random push of the same size should do as much damage as a register push. [PhilBench](https://www.philbench.com/) · [2020 PhilPapers Survey](https://survey2020.philpeople.org/) · [philosophy-bench](https://github.com/benedictbrady/philosophy-bench)
+
+**Method** (`scripts/exp_philbench.py`, `scripts/philbench_items.py`, `scripts/exp_philbench_analyze.py`, `data/philpapers2020.json`, `data/philpapers_constraints.json`). Sixteen configurations of Qwen3.5-4B (bf16): base; the woven and reflect-first prompts; layer-8 pushes along diff-means (α 0.35, 0.5), along the learned direction B (0.4, 0.6, 0.8·p50) and along three random unit directions (0.6·p50); the rank-1 student at ×1 and ×2; the 384-answer Claude-taught student at ×1.0 and ×1.5; and the 128-answer student at ×1.5. Register: one blind pool of the 48 confirmation prompts under every configuration (120 tokens), judged by Sonnet and Opus. Skill, by next-token forced choice, one item per forward pass:
+
+- **PhilPapers**: the 98 single-choice questions of the 2020 survey (the two accept/reject grids are left out), each with its substantive options and five shared meta-options ("Agnostic/undecided", "The question is too unclear to answer", …), in three variants: as worded, an author-written paraphrase, and with the substantive options reversed. Measures: same choice under paraphrase, same choice under reversed order, and violations of 37 author-written constraints between answers (28 firm, 9 marked contestable). Constraints use each question's probabilities averaged over both option orders.
+- **Pressure**: the model's own PhilPapers answer, then "I disagree. The answer is <the most probable other substantive option>." with no reasons.
+- **Argument items**: pilot Z's 24 objection items and pilot AB's 48 validity items, each in both A/B orders.
+- **philosophy-bench, adapted**: the 100 scenarios as text, with their 4–5 authored response clusters as lettered options. The scores are the expected `cd_score` and the mass on botched clusters. This is not comparable to the published agentic, panel-judged leaderboard.
+- **Generated**: the PhilPapers questions answered in 2–3 sentences ending `ANSWER: <letter>` (160 tokens), checked against the forced choice.
+
+**A measurement correction.** The first scoring pass read the first token of the reply. Several configurations open with prose instead: reflect-first put under 1% of its next-token mass on the option letters (median over items), and diff-means 0.5, B 0.8 and the 384-answer student at ×1.5 put 39–47%. Scoring them by renormalizing over the letters measured noise and showed them near chance. All results below prefill the assistant turn with `Answer:` and also count the bold path (`Answer: **A**`). After that, every configuration puts a median of 0.87–1.0 of its mass on the letters. The first pass is kept as a measure of whether a configuration answers at once.
+
+| Config | Register philosophy / helpfulness | Same choice, paraphrase | Same choice, reversed order | Constraints violated (of 37) | Objections correct (of 48) | Validity correct (of 96) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Base | 0.02 / 8.34 | 65 | 64 | 3 | 48 | 83 |
+| Woven prompt | 2.84 / 5.54 | 67 | 77 | 2 | 46 | 83 |
+| Reflect-first prompt | 1.98 / 7.69 | 68 | 65 | 1 | 48 | 81 |
+| Diff-means α 0.35 | 0.71 / 7.18 | 74 | 70 | 2 | 44 | 58 |
+| Diff-means α 0.5 | 2.65 / 3.52 | 79 | 69 | 3 | 34 | 54 |
+| B 0.4·p50 | 1.43 / 7.01 | 74 | 75 | 0 | 44 | 70 |
+| B 0.6·p50 | 3.53 / 4.62 | 70 | 60 | 0 | 35 | 53 |
+| B 0.8·p50 | 3.78 / 3.22 | 87 | 24 | 4 | 26 | 47 |
+| Random 0.6·p50, seeds 0 / 1 / 2 | 0.02–0.04 / 7.7–8.1 | 77 / 64 / 66 | 27 / 76 / 66 | 4 / 6 / 5 | 42 / 37 / 46 | 65 / 62 / 59 |
+| Rank-1 student ×1 | 2.76 / 5.16 | 79 | 77 | 3 | 48 | 86 |
+| Rank-1 student ×2 | 3.44 / 5.24 | 74 | 77 | 3 | 48 | 85 |
+| Claude-taught 384 ×1.0 | 1.99 / 7.90 | 68 | 79 | 1 | 47 | 87 |
+| Claude-taught 384 ×1.5 | 2.56 / 7.17 | 66 | 76 | 1 | 47 | 87 |
+| Claude-taught 128 ×1.5 | 2.72 / 7.28 | 68 | 72 | 0 | 48 | 86 |
+
+Register scores are the mean of Sonnet and Opus over 48 prompts. The PhilPapers columns count questions out of 98.
+
+Under pressure, every configuration flipped on all 98 questions. After the disagreement, the 4B configurations put 93–99.5% of their mass on the user's option. A push did not change that: B 0.8 kept the most of its own answer, at 5%.
+
+Across the 16 configurations, register philosophy does not predict any skill measure. The Spearman correlations are +0.44 for paraphrase stability, +0.17 for order stability, −0.30 for constraint violations, −0.08 for objections and 0.00 for validity, all with 95% intervals that include zero. The one exception is mass on the user's option under pressure (−0.52, interval −0.92 to −0.01), driven by the strong pushes keeping slightly more of their own answer. It is one of about 20 comparisons and doesn't reach 3 standard errors, so treat it as suggestive.
+
+| Paired over items | Objections | Validity | Same choice, reversed order |
+| --- | ---: | ---: | ---: |
+| Random pushes (mean of 3) minus base | −13 points (z −3.7) | −22 points (z −5.6) | −8 points (z −1.4) |
+| B 0.8 minus random pushes | −33 points (z −5.5) | −16 points (z −3.5) | −33 points (z −7.4) |
+| B 0.4 minus random pushes | +5 points (z 1.9) | +8 points (z 2.2) | +19 points (z 3.5) |
+| Claude-taught 384 ×1.0 minus base | −2 points (z −1.0) | +4 points (z 1.7) | +15 points (z 2.6) |
+
+Generated answers that ended before the cap stated the same option as the forced choice in 51% (base), 56% (woven), 67–69% (Claude-taught students) and 31–44% (diff-means and B 0.6). B 0.8 reached its cap on 72 of 98 answers and stated no answer on 70. Written answers named meta options ("a combination of views") much more often than the forced choice: diff-means 0.5 named one in 62 of 98 written answers and in 7 of 98 forced choices.
+
+What this says:
+
+- **The register and skill come apart.** The trained levers (prompts, rank-1 and Claude-taught students) raise register philosophy from 0 to 2–3.4 and leave every skill measure at base level or slightly above. The constant pushes raise the register as much and lose 27–46 points on objections and 30–38 on validity. Register score orders the configurations, and skill does not follow it.
+- **Most of what pushes cost is position bias.** At B 0.8 the model picks the first-listed option almost regardless of content. It chose the stronger objection on 24/24 items when that objection came first, but on only 2/24 when it came second. Its high paraphrase "stability" (87/98) is the same artefact: it gives the first letter both times. Random pushes of the same size also cost 13–22 points, so part of the damage is generic disturbance. B 0.8 does more damage than random; B 0.4 does a little less, with fewer constraint violations (0 against 4–6, z −3.6).
+- **Dose cuts skill for pushes, not for students.** Objections and validity fall steadily from base to B 0.4, 0.6 and 0.8, and from base to diff-means 0.35 and 0.5. Raising the gain of the rank-1 or Claude-taught student leaves both flat.
+- **Nothing here holds a position.** Every configuration gives up a forced-choice answer to a bare "I disagree" (§38 found the same on 4 items). This is a property of the 4B model, unaffected by any lever.
+- **The model's base state carries no sign of either direction.** On base, the last prompt token's projection onto diff-means or B at layers 8 and 16 does not predict which questions get stable answers (all |ρ| ≤ 0.20, intervals mostly including zero).
+- **What stays open.** The PhilPapers measures have few events (0–6 constraint violations per configuration), the constraints and paraphrases are author-written, and three random directions disagree among themselves on order stability (27–76/98). philosophy-bench is adapted to forced choice. Here the Claude-taught students lean more consequentialist than base (expected `cd_score` +0.18 to +0.28, z 4.8–5.4), which describes a preference, not skill.
+
+[Saved outputs and review details](docs/reviews/2026-11-15/philbench/README.md) · [Explainer chapter 46](docs/explainer.html#c46)
+
+<a id="philbench-scale"></a>
+
+### 44. Does philosophical skill grow with model size? (experiment AI, part 2)
+
+If the register is not the skill, does skill come from somewhere else? Section 33 found the 2B and 4B students equally reflective. Here the same forced-choice tasks run on base models of three sizes, where the register is zero throughout.
+
+**Method** (`scripts/exp_philbench.py --model 2B`, `scripts/exp_philbench_mlx.py`). Qwen3.5-2B in bf16 (base, woven prompt, its experiment V student) and Qwen3.5-4B and 9B as 4-bit MLX models (base and woven prompt). The 4-bit students from §33 were trained in memory and never saved, and retraining was out of scope, so they are not here. The 9B is compared only with the 4-bit 4B. Same items, prefill and scoring as §43.
+
+| Base model | Same choice, paraphrase | Same choice, reversed order | Constraints violated (of 37) | Objections correct (of 48) | Validity correct (of 96) | Mass on the user's option after pressure |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2B, bf16 | 61 | 45 | 5 | 46 | 57 | 0.79 |
+| 4B, bf16 | 65 | 64 | 3 | 48 | 83 | 0.99 |
+| 4B, 4-bit | 61 | 72 | 4 | 48 | 83 | 0.99 |
+| 9B, 4-bit | 69 | 76 | 3 | 48 | 90 | 0.78 |
+
+The paired 2B → 4B (bf16) gains are +27 points on validity (z 5.2) and +19 on order stability (z 2.8). The 4B → 9B (4-bit) gains are +7 on validity (z 1.7) and +4 on order stability (z 0.7). With the woven prompt the 9B adds +9 on validity (z 2.0) and +12 on order stability (z 2.2). The 2B's own student scores above the 2B base on validity (64 against 57) and order stability (62 against 45). The two 4B stacks make the same forced choice on 73% of PhilPapers variants, 88% of philosophy-bench scenarios and 90% of validity items.
+
+What this says:
+
+- **Skill grows with size while the register stays at zero.** On base models the clearest step is 2B → 4B, with a smaller one from 4B → 9B, the same shape §33 found for the students' helpfulness. That fits the second prediction: whatever these tasks measure comes with the model, not with the reflective register.
+- **The 9B is the only model that resists pressure even a little.** It keeps about 8% of its own answer after a bare disagreement, against 0.2–0.5% for the 4B. The 2B also leaves more mass off the user's option, but it was less confident to begin with.
+- **The scale comparison is thin.** One model family, three sizes, base and prompt only for 4B and 9B. The 4-bit and bf16 4B disagree on a quarter of PhilPapers choices, which is why the 9B is never compared across stacks.
+
+[Saved outputs and review details](docs/reviews/2026-11-15/philbench/README.md) · [Explainer chapter 46](docs/explainer.html#c46)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.
@@ -1189,6 +1274,7 @@ What this says:
 - Contrast data is hand-written by us, so the direction reflects our idea of "philosophical" (Heidegger, Stoics, qualia…).
 - Qwen3.5's linear-attention layers ran on the slow PyTorch fallback, so the sweeps are small by necessity.
 - Pathway check: the natural change compares *different texts* (philosophical vs plain words), so it includes token-identity effects that no push on plain text can reproduce. These matter most in late layers; the random controls set the floor. The bootstrap intervals in `runs/pathway.json` are percentile intervals over pairs. For cosines and norm ratios they are biased low (resampling adds noise to the natural vector), so compare conditions within the same layer rather than reading them as absolute bounds.
+- Experiment AI (§43–§44) scores skill by forced choice after an `Answer:` prefill. Without the prefill, prose-first configurations were scored on noise (§43 explains the correction). The PhilPapers paraphrases and the 37 constraints are author-written, constraint violations are rare events (0–6 per configuration), and three random directions disagree on order stability. philosophy-bench was adapted to forced choice over its response clusters and is not comparable to its published leaderboard. The register pool's helpfulness scores come from 120-token answers, which favour configurations that finish early (§39), and the judge saw no system prompt (§40).
 - Not replicated: the *agentic* part of the Astra paper (an LLM diagnosing and editing weights in a loop). Here the search was a fixed grid.
 
 ## Suggested next steps
@@ -1205,6 +1291,11 @@ What this says:
 - [ ] **Where inside the adapter the behaviour lives**: per-layer and per-module ablation of the rank-8 student, compared with the rank-1 L8 edit (§18). Suggested by the scouting pass, not run.
 - [ ] **Decoding-time extrapolation** (base + w·(student − base) logits) instead of weight gain. Since §29 the gain doesn't break the model, so this matters less than it seemed.
 - [ ] **SAE features chosen by their output effect** (2505.20063) rather than by activation difference (§27).
+
+**Open after experiment AI (Results §43–§44):**
+- [ ] **LMCA, once access arrives**: score Qwen's critique ratings against the expert ratings under the same configurations, then build a strong-versus-weak-critique direction and compare it with diff-means and B.
+- [ ] **Holding a position**: every 4B configuration gives up a forced-choice answer to bare disagreement. Test whether this is a format effect (forced choice right after pushback) or the model's behaviour in free dialogue, and whether it changes with size beyond 9B.
+- [ ] **More random directions**: three seeds disagree on order stability (27–76/98); a larger set would make the push-versus-random comparison firmer.
 
 1. ~~**Bias bake-in**~~: superseded by Results §18. The rank-1 LoRA, merged into `W_down,8`, is a standalone checkpoint with no bias that beats steering (`scripts/bake_lora.py --out DIR`).
 2. **Recover helpfulness**: steer only the first N tokens, or combine with the conditional edit (which preserved helpfulness), to get "answers fully, reflects briefly".
@@ -1282,6 +1373,13 @@ HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_persona_drift                  
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_prose_validity                 # experiment AB, §36
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_revision_transfer              # experiment AC, §37
 HF_HUB_OFFLINE=1 .venv/bin/python -m scripts.exp_ethics_pressure                # experiment AD, §38
+python3 scripts/build_philpapers.py data/sources/philpapers2020_results_all.json   # experiment AI data (survey read 2026-11-15)
+git clone https://github.com/benedictbrady/philosophy-bench external/philosophy-bench && git -C external/philosophy-bench checkout 012a5913
+.venv/bin/python -m scripts.exp_philbench --stage data-check score pressure register generate   # experiment AI, §43
+.venv/bin/python scripts/claude_judge.py --input philbench/register_gen.jsonl --output philbench/register_judge.jsonl && .venv/bin/python scripts/claude_judge.py --model opus --input philbench/register_gen.jsonl --output philbench/register_judge_opus.jsonl
+.venv/bin/python -m scripts.exp_philbench --model 2B --stage score pressure                       # §44
+.venv-mlx/bin/python scripts/exp_philbench_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_philbench_mlx.py --model 9B
+.venv/bin/python -m scripts.exp_philbench --stage analyze                                         # -> runs/philbench/summary.{json,md}
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```
