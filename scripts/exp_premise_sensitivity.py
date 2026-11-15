@@ -15,8 +15,8 @@ from wi.steer import Steerable
 def run(cases):
     tasks = []
     for index, case in enumerate(cases):
-        allow_letter = "AB"[index % 2]
-        deny_letter = "AB"[1 - index % 2]
+        allow_letter = case.get("allow_letter", "AB"[index % 2])
+        deny_letter = "B" if allow_letter == "A" else "A"
         choices = sorted([(allow_letter, "The rule permits it."), (deny_letter, "The rule does not permit it.")])
         options = "\n".join(f"{letter}. {meaning}" for letter, meaning in choices)
         for variant, (fact, allowed) in enumerate(zip(case["facts"], case["allow"], strict=True)):

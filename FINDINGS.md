@@ -1088,7 +1088,7 @@ What this says:
 
 In experiments AC and AD, the model revised an answer within the same conversation. AC also found that the student sometimes treated cosmetic details as evidence. Here each version of a case appears on its own. A fixed rule makes it possible to check whether a model changes its judgment when the decisive fact changes, and stays consistent when a detail is immaterial.
 
-**Method** (`scripts/exp_premise_sensitivity.py`, `data/premise_sensitivity.json`). Give base Qwen3.5-4B, the woven prompt, and the 384-answer rank-8 student eight pairs that change one decisive fact and four pairs that change an irrelevant detail. Randomize the order of standalone cases and counterbalance the A/B mapping across pairs. Ask for the decision and the deciding fact. Score decisions against the authored rule, with a pair counted correct only when both choices match the key. All 72 replies reached an end token and started with a recognizable choice.
+**Method** (`scripts/exp_premise_sensitivity.py`, `data/premise_sensitivity.json`). Give base Qwen3.5-4B, the woven prompt, and the 384-answer rank-8 student eight pairs that change one decisive fact and four pairs that change an irrelevant detail. Randomize the order of standalone cases and balance the keyed A/B positions within both the relevant and cosmetic groups. Ask for the decision and the deciding fact. Score decisions against the authored rule, with a pair counted correct only when both choices match the key. All 72 replies reached an end token and started with a recognizable choice.
 
 | Configuration | Relevant pairs, both correct | Irrelevant pairs, both correct | Clarified archive pair, both correct |
 | --- | ---: | ---: | ---: |
@@ -1096,7 +1096,7 @@ In experiments AC and AD, the model revised an answer within the same conversati
 | Woven prompt | 6/8 | 4/4 | 1/1 |
 | Rank-8 student | 6/8 | 4/4 | 1/1 |
 
-All three missed the same two variants of the original relevant pairs. All treated an approval that preceded a rewrite as sufficient approval of the final wording. In the archive case, all rejected the clock that retained its original mechanism inside a replacement case. A follow-up avoids the two meanings of “case” by using “housing” and stating the decision rule explicitly. All three then answered both versions correctly. The table keeps the original results separate from the follow-up.
+All three missed the same two variants of the original relevant pairs. All treated an approval that preceded a rewrite as sufficient approval of the final wording. In the archive case, all rejected the clock that retained its original mechanism inside a replacement case. A follow-up avoids the two meanings of “case” by using “housing” and stating the decision rule explicitly. All three then answered both versions correctly. The table keeps the original results separate from the follow-up, which can be rerun with `--data data/premise_identity_check.json --out runs/premise_sensitivity/identity-check.jsonl`.
 
 What this says:
 
