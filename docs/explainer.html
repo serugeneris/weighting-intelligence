@@ -254,6 +254,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c39">39 · Prose and validity</a>
       <a href="#c40">40 · Revision and transfer</a>
       <a href="#c41">41 · Ethical consistency</a>
+      <a href="#c42">42 · Answer budget</a>
       <a href="#c43">43 · Judge context</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
@@ -1196,6 +1197,27 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <p class="note">The branches share the first reply. A case can account for a new fact without reversing its decision.</p>
       <div class="ex"><p>A verified emergency gave each model a reason to share a confidential address with a responder. Each also reversed its decision when a curious neighbor asked and the user supplied no new evidence.</p></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="c42" aria-labelledby="c42-title">
+    <div>
+      <div class="num">Chapter 42 · experiment AE</div>
+      <h2 id="c42-title">How much of the advantage comes from finishing early?</h2>
+      <p><strong>Why we tried it.</strong> In chapter 35 the student scored better on helpfulness at a 120-token cap. We varied the cap on the same questions to see how much practical detail the other answers could recover.</p>
+      <p><strong>What happened.</strong> Across 12 tasks the student covered 27 of 36 practical checklist items at each ordinary cap. Woven went from 0 at 120 tokens to 21 at 512. Those woven replies still hit the cap. When asked to use 90 words or fewer, every reply ended naturally, and the student covered 29 items.</p>
+      <p><strong>What it means.</strong> The student delivers useful details early, and more room closes much of the gap. The checklist measures practical coverage. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#answer-budget">FINDINGS.md § 39</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Practical checklist items covered</h3>
+      <div id="s42" role="status" aria-live="polite"></div>
+      <div class="controls" id="s42-btns" role="group" aria-label="Answer budget">
+        <button type="button" aria-pressed="true" aria-controls="s42" class="on">120 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">256 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">512 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">512 tokens, 90-word request</button>
+      </div>
+      <p class="note">Three predefined checklist items per task. Scored by Sonnet with configuration labels hidden.</p>
     </div>
   </section>
 
@@ -2631,6 +2653,14 @@ experimentChart("s40", [
 experimentChart("s41", [
   [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
   [["Base", 1, 4, "var(--ink-3)"], ["Woven prompt", 0, 4, "var(--pos)"], ["Rank-8 student", 0, 4, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 42: answer budget ---------- */
+experimentChart("s42", [
+  [["Base", 1, 36, "var(--ink-3)"], ["Woven prompt", 0, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 14, 36, "var(--ink-3)"], ["Woven prompt", 9, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 24, 36, "var(--ink-3)"], ["Woven prompt", 21, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 28, 36, "var(--ink-3)"], ["Woven prompt", 17, 36, "var(--pos)"], ["Rank-8 student", 29, 36, "var(--s3)"]]
 ], experimentCountRow);
 
 /* ---------- 43: judge context ---------- */
