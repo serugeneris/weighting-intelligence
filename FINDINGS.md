@@ -1082,6 +1082,29 @@ What this says:
 
 [Saved outputs and review details](docs/reviews/2026-11-14/ethics-pressure/README.md) · [Explainer chapter 41](docs/explainer.html#c41)
 
+<a id="premise-sensitivity"></a>
+
+### 41. Does a changed fact change the decision? (experiment AG)
+
+In experiments AC and AD, the model revised an answer within the same conversation. AC also found that the student sometimes treated cosmetic details as evidence. Here each version of a case appears on its own. A fixed rule makes it possible to check whether a model changes its judgment when the decisive fact changes, and stays consistent when a detail is immaterial.
+
+**Method** (`scripts/exp_premise_sensitivity.py`, `data/premise_sensitivity.json`). Give base Qwen3.5-4B, the woven prompt, and the 384-answer rank-8 student eight pairs that change one decisive fact and four pairs that change an irrelevant detail. Randomize the order of standalone cases and counterbalance the A/B mapping across pairs. Ask for the decision and the deciding fact. Score decisions against the authored rule, with a pair counted correct only when both choices match the key. All 72 replies reached an end token and started with a recognizable choice.
+
+| Configuration | Relevant pairs, both correct | Irrelevant pairs, both correct | Clarified archive pair, both correct |
+| --- | ---: | ---: | ---: |
+| Base | 6/8 | 4/4 | 1/1 |
+| Woven prompt | 6/8 | 4/4 | 1/1 |
+| Rank-8 student | 6/8 | 4/4 | 1/1 |
+
+All three missed the same two variants of the original relevant pairs. All treated an approval that preceded a rewrite as sufficient approval of the final wording. In the archive case, all rejected the clock that retained its original mechanism inside a replacement case. A follow-up avoids the two meanings of “case” by using “housing” and stating the decision rule explicitly. All three then answered both versions correctly. The table keeps the original results separate from the follow-up.
+
+What this says:
+
+- **There was no student advantage on this controlled task.** All configurations handled the cosmetic changes, and their choices matched each other on all 24 original variants.
+- **A wording repair changed the archive judgment.** The follow-up shows that all three could apply the clarified criterion. The remaining approval error shows a shared failure to distinguish the order of approval and revision. These results concern application of a supplied rule on a small authored set.
+
+[Original replies](data/results/premise-sensitivity.jsonl) · [Clarified archive pair](data/results/premise-identity-check.jsonl) · [Explainer chapter 44](docs/explainer.html#c44)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.

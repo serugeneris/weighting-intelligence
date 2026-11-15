@@ -1,0 +1,12 @@
+[
+  {
+    "id":"identity-housing",
+    "kind":"relevant",
+    "rule":"A restored clock qualifies as the same artifact exactly when its original internal movement survives. The physical housing is irrelevant.",
+    "facts":[
+      "The restorer kept the original internal movement and installed it in a new housing.",
+      "The restorer kept the original housing but discarded the original internal movement and installed a replica."
+    ],
+    "allow":[true,false]
+  }
+]
