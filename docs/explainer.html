@@ -256,6 +256,7 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c41">41 · Ethical consistency</a>
       <a href="#c42">42 · Answer budget</a>
       <a href="#c43">43 · Judge context</a>
+      <a href="#c44">44 · Premise sensitivity</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
     </nav>
@@ -1237,6 +1238,26 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <div id="s43" role="status" aria-live="polite"></div>
       <p class="note">Each of four pairs per group appears in both answer orders. Ties count as no correct choice.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c44" aria-labelledby="c44-title">
+    <div>
+      <div class="num">Chapter 44 · experiment AG</div>
+      <h2 id="c44-title">Does a changed fact change the decision?</h2>
+      <p><strong>Why we tried it.</strong> The previous revision experiment gave the model its earlier reply. Here the model applies the same rule to two variants presented independently.</p>
+      <p><strong>What happened.</strong> All configurations got both answers right on six of eight relevant pairs and all four cosmetic pairs. They missed the same two variants. The archive pair passed for all three after the wording was clarified.</p>
+      <p><strong>What it means.</strong> The configurations tracked the same changes on this set. Agreement can include a shared error, such as accepting approval of a draft as approval of a later rewrite. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#premise-sensitivity">FINDINGS.md § 41</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Pairs with both choices correct</h3>
+      <div id="s44" role="status" aria-live="polite"></div>
+      <div class="controls" id="s44-btns" role="group" aria-label="Case pair type">
+        <button type="button" aria-pressed="true" aria-controls="s44" class="on">Relevant fact</button>
+        <button type="button" aria-pressed="false" aria-controls="s44">Cosmetic detail</button>
+        <button type="button" aria-pressed="false" aria-controls="s44">Clarified archive pair</button>
+      </div>
+      <p class="note">A pair passes when both independently generated choices match the stated rule.</p>
     </div>
   </section>
 
@@ -2667,6 +2688,13 @@ experimentChart("s42", [
 experimentChart("s43", [
   [["System format", 8, 8, "var(--ink-3)"], ["Earlier reply", 8, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]],
   [["System format", 1, 8, "var(--ink-3)"], ["Earlier reply", 0, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 44: premise sensitivity ---------- */
+experimentChart("s44", [
+  [["Base", 6, 8, "var(--ink-3)"], ["Woven prompt", 6, 8, "var(--pos)"], ["Rank-8 student", 6, 8, "var(--s3)"]],
+  [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
+  [["Base", 1, 1, "var(--ink-3)"], ["Woven prompt", 1, 1, "var(--pos)"], ["Rank-8 student", 1, 1, "var(--s3)"]]
 ], experimentCountRow);
 
 </script>
