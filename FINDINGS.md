@@ -1082,6 +1082,30 @@ What this says:
 
 [Saved outputs and review details](docs/reviews/2026-11-14/ethics-pressure/README.md) · [Explainer chapter 41](docs/explainer.html#c41)
 
+<a id="answer-budget"></a>
+
+### 39. How much of the advantage comes from finishing early? (experiment AE)
+
+The student was more helpful than the woven prompt in experiment Y at a cap of 120 new tokens. Experiment AC found different completion rates across configurations, but its rerun also changed the user's length request. A paired budget sweep tests whether more room lets the woven prompt recover useful steps.
+
+**Method** (`scripts/exp_answer_budget.py`, `scripts/score_answer_budget.py`). Give 12 practical tasks to greedy Qwen3.5-4B base, woven, and the 384-answer rank-8 student at gain 1. Repeat each task unchanged at 120, 256, and 512 new tokens. In a separate 512-token condition, ask for at most 90 words. Record generated IDs and natural turn stops. Claude Sonnet scores three predefined practical criteria per task with configuration, system treatment, and budget hidden. Identical replies to the same request receive one shared rating. Checklist coverage counts useful content already present in a reply.
+
+| Configuration | 120 tokens | 256 tokens | 512 tokens | 512 tokens, request ≤90 words |
+| --- | ---: | ---: | ---: | ---: |
+| Base | 1/36 | 14/36 | 24/36 | 28/36 |
+| Woven prompt | 0/36 | 9/36 | 21/36 | 17/36 |
+| Rank-8 student | 27/36 | 27/36 | 27/36 | 29/36 |
+
+All 36 independent short generations matched the available initial token IDs from their 512-token counterparts. At 120 tokens, 9/12 student replies ended naturally. At 256 and 512, 12/12 did. Every unrestricted base and woven reply hit its cap, even at 512. With the 90-word instruction, all 36 replies ended naturally, and 10/12 base, 11/12 woven, and 11/12 student replies stayed within 90 whitespace-delimited words.
+
+What this says:
+
+- **The practical-coverage gap narrowed when woven had more room.** The student's paired lead over woven fell from 2.25 to 0.50 checklist items per task, a change of −1.75 items (paired SE 0.22). On the seed-storage prompt, woven was still introducing the subject at 120 tokens. Its 512-token answer covered drying and storage.
+- **A word-limit instruction changed completion separately.** All configurations finished in that condition. Woven covered 17/36 criteria, while base and student covered 28/36 and 29/36. Completion and the amount of practical detail therefore need separate measures.
+- **This is a practical-coverage pilot.** The unrestricted comparison still has asymmetric truncation at 512. Twelve authored tasks and one checklist judge leave general helpfulness and philosophical quality under matched completion open.
+
+[Generated replies and stop records](data/results/answer-budget.jsonl) · [Checklist scores](data/results/answer-budget-coverage.json) · [Explainer chapter 42](docs/explainer.html#c42)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.

@@ -1,0 +1,14 @@
+{
+  "archive": ["Preserve physical order or folder grouping while scanning.", "Create a usable record of known or uncertain context.", "Explain file organization, safe handling, or backups."],
+  "seeds": ["Select and extract seeds; address pulp removal.", "Dry the seeds thoroughly before storage.", "Describe sealed, cool storage and label the seeds."],
+  "meeting": ["Change how people take turns or surface suggestions.", "Specify an equitable decision process.", "Give the facilitator a practical way to interrupt domination."],
+  "mosaic": ["Select or prepare flat, safe tile pieces and plan their layout.", "Use a suitable base and affix the pieces.", "Describe grouting or otherwise finishing gaps, edges, and curing."],
+  "books": ["Assign each book a usable identifier or inventory entry.", "Record who took which book and when.", "Provide a repeatable return or missing-book workflow."],
+  "rain": ["Observe water travel or sources during or after rain.", "Check local slope or drainage conditions.", "Record timing, depth, or recurrence before selecting a fix."],
+  "map": ["Include route orientation, start and destination, and useful labels.", "Include decision-point landmarks or descriptive turn cues.", "Test the route with the printed directions or a fresh reader."],
+  "interview": ["Establish consent or intended use before recording.", "Describe an interview or recording technique.", "Secure, label, back up, or otherwise handle the recording afterward."],
+  "rehearsal": ["Prepare or verify essential details about the guest.", "Rehearse aloud within a time limit.", "Give a concrete final check or contingency for the introduction."],
+  "fabric": ["Label fabric swatches and record a standard comparison.", "Test stretch, seams, fraying, or comparable durability under load.", "Explain how to choose from the recorded results."],
+  "inventory": ["Group supplies into a small number of useful categories.", "Record quantities approximately or flag low stock.", "Give the next volunteer a way to locate items or update the record."],
+  "poster": ["Use strong contrast and a clear hierarchy with large essential text.", "Use a print workflow that accommodates a regular printer.", "Test legibility from the actual or simulated hallway distance."]
+}
