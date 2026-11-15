@@ -3,6 +3,7 @@ import argparse
 import contextlib
 import json
 import random
+import time
 from pathlib import Path
 
 import torch
@@ -54,7 +55,7 @@ def render(model, history):
                                          enable_thinking=False)
 
 
-def generate(model, histories, budget):
+def generate(model, histories, budget, *, record_tokens=False):
     """Use the toolkit's decoding settings and retain actual stop information."""
     tokenizer = model.tok
     tokenizer.padding_side = "left"
@@ -64,13 +65,20 @@ def generate(model, histories, budget):
     for start in range(0, len(histories), 4):
         chats = [render(model, h) for h in histories[start:start + 4]]
         encoded = tokenizer(chats, return_tensors="pt", padding=True).to(model.device)
+        started = time.perf_counter()
         tokens = model.model.generate(**encoded, do_sample=False, max_new_tokens=budget,
                                       repetition_penalty=1.1, eos_token_id=stops, pad_token_id=pad,
                                       logits_to_keep=1)
-        for ids in tokens[:, encoded["input_ids"].shape[1]:].tolist():
+        sequences = tokens[:, encoded["input_ids"].shape[1]:].tolist()
+        elapsed = time.perf_counter() - started
+        for ids in sequences:
             end = next((i for i, token in enumerate(ids) if token in stops), len(ids))
-            records.append({"answer": tokenizer.decode(ids[:end], skip_special_tokens=True),
-                            "tokens": end, "stop": "eos" if end < len(ids) else "budget"})
+            record = {"answer": tokenizer.decode(ids[:end], skip_special_tokens=True),
+                      "tokens": end, "stop": "eos" if end < len(ids) else "budget"}
+            if record_tokens:
+                record["token_ids"] = ids[:end + 1]
+                record["batch_seconds"] = round(elapsed, 3)
+            records.append(record)
     return records
 
 

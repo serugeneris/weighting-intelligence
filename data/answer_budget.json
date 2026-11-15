@@ -1,0 +1,14 @@
+[
+  {"id": "archive", "prompt": "I inherited a box of unlabeled family photos. How can I digitize it while preserving what little context I have?"},
+  {"id": "seeds", "prompt": "I have spare tomato seeds from this year's harvest. How should I prepare a small batch for long-term storage?"},
+  {"id": "meeting", "prompt": "I run a volunteer meeting where the same two people dominate every decision. How can I restructure the next meeting?"},
+  {"id": "mosaic", "prompt": "I want to make a small coaster from broken ceramic tiles. What is a practical beginner workflow from sorting the pieces to finishing the coaster?"},
+  {"id": "books", "prompt": "I am cataloguing a classroom lending shelf without buying software. How can I track the books and returns with little effort?"},
+  {"id": "rain", "prompt": "My small patio gets a puddle next to the door after rain. What observations should I make before deciding how to address it?"},
+  {"id": "map", "prompt": "I need to sketch a walking route for friends whose phones may run out of battery. How should I lay out and test the paper directions?"},
+  {"id": "interview", "prompt": "My neighborhood group is recording oral histories. What should I do before, during, and after the first interview?"},
+  {"id": "rehearsal", "prompt": "I have fifteen minutes to rehearse introducing a guest speaker. How should I use that time to prepare and check the introduction?"},
+  {"id": "fabric", "prompt": "I have several unmarked fabric scraps. How can I make a simple test chart before choosing one to sew into a reusable bag?"},
+  {"id": "inventory", "prompt": "I need to hand off a shared craft cupboard to a new volunteer. How should I make a useful inventory without cataloguing every bead?"},
+  {"id": "poster", "prompt": "My community event poster has to be readable from across a hallway. How can I design and test it using a regular printer?"}
+]

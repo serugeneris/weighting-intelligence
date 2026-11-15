@@ -254,7 +254,9 @@ section.wide { grid-template-columns: 1fr; }
       <a href="#c39">39 · Prose and validity</a>
       <a href="#c40">40 · Revision and transfer</a>
       <a href="#c41">41 · Ethical consistency</a>
+      <a href="#c42">42 · Answer budget</a>
       <a href="#c43">43 · Judge context</a>
+      <a href="#c44">44 · Premise sensitivity</a>
       <a href="#c45">45 · Conditional reflection</a>
       <a href="#todo">Still to try</a>
       <a href="#terms">Glossary</a>
@@ -1200,6 +1202,27 @@ section.wide { grid-template-columns: 1fr; }
     </div>
   </section>
 
+  <section class="chapter" id="c42" aria-labelledby="c42-title">
+    <div>
+      <div class="num">Chapter 42 · experiment AE</div>
+      <h2 id="c42-title">How much of the advantage comes from finishing early?</h2>
+      <p><strong>Why we tried it.</strong> In chapter 35 the student scored better on helpfulness at a 120-token cap. We varied the cap on the same questions to see how much practical detail the other answers could recover.</p>
+      <p><strong>What happened.</strong> Across 12 tasks the student covered 27 of 36 practical checklist items at each ordinary cap. Woven went from 0 at 120 tokens to 21 at 512. Those woven replies still hit the cap. When asked to use 90 words or fewer, every reply ended naturally, and the student covered 29 items.</p>
+      <p><strong>What it means.</strong> The student delivers useful details early, and more room closes much of the gap. The checklist measures practical coverage. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#answer-budget">FINDINGS.md § 39</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Practical checklist items covered</h3>
+      <div id="s42" role="status" aria-live="polite"></div>
+      <div class="controls" id="s42-btns" role="group" aria-label="Answer budget">
+        <button type="button" aria-pressed="true" aria-controls="s42" class="on">120 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">256 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">512 tokens</button>
+        <button type="button" aria-pressed="false" aria-controls="s42">512 tokens, 90-word request</button>
+      </div>
+      <p class="note">Three predefined checklist items per task. Scored by Sonnet with configuration labels hidden.</p>
+    </div>
+  </section>
+
   <section class="chapter" id="c43" aria-labelledby="c43-title">
     <div>
       <div class="num">Chapter 43 · experiment AF</div>
@@ -1216,6 +1239,26 @@ section.wide { grid-template-columns: 1fr; }
       </div>
       <div id="s43" role="status" aria-live="polite"></div>
       <p class="note">Each of four pairs per group appears in both answer orders. Ties count as no correct choice.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c44" aria-labelledby="c44-title">
+    <div>
+      <div class="num">Chapter 44 · experiment AG</div>
+      <h2 id="c44-title">Does a changed fact change the decision?</h2>
+      <p><strong>Why we tried it.</strong> The previous revision experiment gave the model its earlier reply. Here the model applies the same rule to two variants presented independently.</p>
+      <p><strong>What happened.</strong> All configurations got both answers right on six of eight relevant pairs and all four cosmetic pairs. They missed the same two variants. The archive pair passed for all three after the wording was clarified.</p>
+      <p><strong>What it means.</strong> The configurations tracked the same changes on this set. Agreement can include a shared error, such as accepting approval of a draft as approval of a later rewrite. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/FINDINGS.md#premise-sensitivity">FINDINGS.md § 41</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Pairs with both choices correct</h3>
+      <div id="s44" role="status" aria-live="polite"></div>
+      <div class="controls" id="s44-btns" role="group" aria-label="Case pair type">
+        <button type="button" aria-pressed="true" aria-controls="s44" class="on">Relevant fact</button>
+        <button type="button" aria-pressed="false" aria-controls="s44">Cosmetic detail</button>
+        <button type="button" aria-pressed="false" aria-controls="s44">Clarified archive pair</button>
+      </div>
+      <p class="note">A pair passes when both independently generated choices match the stated rule.</p>
     </div>
   </section>
 
@@ -2655,10 +2698,25 @@ experimentChart("s41", [
   [["Base", 1, 4, "var(--ink-3)"], ["Woven prompt", 0, 4, "var(--pos)"], ["Rank-8 student", 0, 4, "var(--s3)"]]
 ], experimentCountRow);
 
+/* ---------- 42: answer budget ---------- */
+experimentChart("s42", [
+  [["Base", 1, 36, "var(--ink-3)"], ["Woven prompt", 0, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 14, 36, "var(--ink-3)"], ["Woven prompt", 9, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 24, 36, "var(--ink-3)"], ["Woven prompt", 21, 36, "var(--pos)"], ["Rank-8 student", 27, 36, "var(--s3)"]],
+  [["Base", 28, 36, "var(--ink-3)"], ["Woven prompt", 17, 36, "var(--pos)"], ["Rank-8 student", 29, 36, "var(--s3)"]]
+], experimentCountRow);
+
 /* ---------- 43: judge context ---------- */
 experimentChart("s43", [
   [["System format", 8, 8, "var(--ink-3)"], ["Earlier reply", 8, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]],
   [["System format", 1, 8, "var(--ink-3)"], ["Earlier reply", 0, 8, "var(--pos)"], ["Standalone control", 8, 8, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 44: premise sensitivity ---------- */
+experimentChart("s44", [
+  [["Base", 6, 8, "var(--ink-3)"], ["Woven prompt", 6, 8, "var(--pos)"], ["Rank-8 student", 6, 8, "var(--s3)"]],
+  [["Base", 4, 4, "var(--ink-3)"], ["Woven prompt", 4, 4, "var(--pos)"], ["Rank-8 student", 4, 4, "var(--s3)"]],
+  [["Base", 1, 1, "var(--ink-3)"], ["Woven prompt", 1, 1, "var(--pos)"], ["Rank-8 student", 1, 1, "var(--s3)"]]
 ], experimentCountRow);
 
 /* ---------- 45: conditional reflection ---------- */
