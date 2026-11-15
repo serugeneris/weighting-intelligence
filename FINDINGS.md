@@ -1106,6 +1106,29 @@ What this says:
 
 [Generated replies and stop records](data/results/answer-budget.jsonl) · [Checklist scores](data/results/answer-budget-coverage.json) · [Explainer chapter 42](docs/explainer.html#c42)
 
+<a id="judge-context"></a>
+
+### 40. Can the judge see the task? (experiment AF)
+
+Experiment X's judge saw the last user request and answer. Its records omitted the terse system instruction and the assistant's actual earlier reply. Could the evaluator still identify a format violation or a contradiction if the information needed to detect it was missing?
+
+**Method** (`scripts/exp_judge_context.py`, `data/judge_context.json`). Present Claude Sonnet with 12 authored answer pairs. Four hinge on a system format instruction, four hinge on an earlier assistant reply, and four are standalone controls for validity, attribution, or relevance. Present every pair in both answer orders, with either the full chat or only the last user message. The judge can choose either answer or a tie. Score against an authored key defined for the full task.
+
+| What distinguishes the answers | Full chat, correct | Last user only, correct | Last user only, ties |
+| --- | ---: | ---: | ---: |
+| System format instruction | 8/8 | 1/8 | 6/8 |
+| Earlier assistant reply | 8/8 | 0/8 | 8/8 |
+| Standalone control | 8/8 | 8/8 | 0/8 |
+
+Each row counts four pairs shown in two orders. In the remaining stripped format comparison the judge picked the wrong answer against the full-task key. For example, the bare JSON answer followed a system constraint. Once that constraint was removed, the judge chose a prose answer in one order and tied in the other.
+
+What this says:
+
+- **A judge needs the same chat the model saw.** Seeing the earlier assistant turn resolved all eight references to prior choices. With that turn removed, the judge tied all eight.
+- **The effect was specific to missing task information.** All standalone controls were keyed correctly in both modes. This pilot uses one judge and 12 authored keys. It leaves independent human agreement and broad rubric validity open.
+
+[Raw judge decisions](data/results/judge-context.json) · [Explainer chapter 43](docs/explainer.html#c43)
+
 ## Caveats
 
 - Small evaluation: 16 prompts, greedy decoding, 96–120 new tokens, one judge model (Claude Sonnet) with one rubric. The Claude judge is strict: the best config averages 3/9 for philosophy. The main results were re-checked on 48 new prompts with a second judge (Claude Opus) in §16. Sampled decoding (two seeds) was checked in §21 and changes no ordering. Both main judges are Claude models. §28 re-scores the 48-prompt pools with Qwen3.5-4B as a non-Claude judge: the conclusions hold, but Qwen is itself the students' base model and can't judge coherence; no judge from another provider was available.

@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "full",
+    "reversed": false,
+    "model": "sonnet",
+    "request_sha256": "82eb8002bedd1299513fe676610e16cf1060c5b955bca41db6550d57609a0df9",
+    "decisions": {
+      "integer": "A",
+      "json": "B",
+      "sequence": "A",
+      "choice": "B",
+      "earlier-choice": "A",
+      "earlier-day": "B",
+      "earlier-color": "A",
+      "earlier-name": "B",
+      "validity": "A",
+      "attribution": "B",
+      "near-topic": "A",
+      "inference": "B"
+    }
+  },
+  {
+    "mode": "full",
+    "reversed": true,
+    "model": "sonnet",
+    "request_sha256": "0cef53cc3633f4930044a9b78219238b9d78538c3d3e66157dc71e13b358b221",
+    "decisions": {
+      "integer": "B",
+      "json": "A",
+      "sequence": "B",
+      "choice": "A",
+      "earlier-choice": "B",
+      "earlier-day": "A",
+      "earlier-color": "B",
+      "earlier-name": "A",
+      "validity": "B",
+      "attribution": "A",
+      "near-topic": "B",
+      "inference": "A"
+    }
+  },
+  {
+    "mode": "last-user",
+    "reversed": false,
+    "model": "sonnet",
+    "request_sha256": "4b2b344b6a0c5a060206bdb9ddb17d6bdc3dfc9c6a3ff6c70f8bb243a0aeb3cd",
+    "decisions": {
+      "integer": "tie",
+      "json": "A",
+      "sequence": "A",
+      "choice": "tie",
+      "earlier-choice": "tie",
+      "earlier-day": "tie",
+      "earlier-color": "tie",
+      "earlier-name": "tie",
+      "validity": "A",
+      "attribution": "B",
+      "near-topic": "A",
+      "inference": "B"
+    }
+  },
+  {
+    "mode": "last-user",
+    "reversed": true,
+    "model": "sonnet",
+    "request_sha256": "74ced2aac035e74c36dd422193a0a8e9e17278ba8e66e78a5bfd1690c181c0d7",
+    "decisions": {
+      "integer": "tie",
+      "json": "tie",
+      "sequence": "tie",
+      "choice": "tie",
+      "earlier-choice": "tie",
+      "earlier-day": "tie",
+      "earlier-color": "tie",
+      "earlier-name": "tie",
+      "validity": "B",
+      "attribution": "A",
+      "near-topic": "B",
+      "inference": "A"
+    }
+  }
+]
