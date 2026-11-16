@@ -2,7 +2,7 @@
 
 14 November 2026
 
-[Findings](../../../../FINDINGS.md#pilot-persona-drift) · [Interactive explainer](../../../explainer.html#c38)
+[Findings](../../../../findings/7-register-versus-skill.md#pilot-persona-drift) · [Interactive explainer](../../../explainer.html#c38)
 
 ## Reproduce
 

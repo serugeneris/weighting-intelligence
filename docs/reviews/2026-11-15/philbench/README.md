@@ -2,9 +2,9 @@
 
 15 November 2026
 
-[Findings §43](../../../../FINDINGS.md#philbench-grid) · [Findings §44](../../../../FINDINGS.md#philbench-scale) · [Interactive explainer](../../../explainer.html#c46) · [Plan](../../../plans/experiment-ae-philbench.md)
+[Findings, exp. AI](../../../../findings/7-register-versus-skill.md#philbench-grid) · [Findings, exp. AI2](../../../../findings/7-register-versus-skill.md#philbench-scale) · [Interactive explainer](../../../explainer.html#c46) · [Plan](../../../plans/experiment-ae-philbench.md)
 
-The plan was written as "Experiment AE". By the time it ran, `main` already used AE–AH (§39–42), so it was renamed Experiment AI (§43–44).
+The plan was written as "Experiment AE". By the time it ran, `main` already used AE–AH, so it was renamed Experiment AI (write-ups AI and AI2).
 
 ## Reproduce
 
@@ -53,6 +53,6 @@ Run one model at a time on a 24 GB machine. Running the scoring pass alongside g
 
 ## Not run
 
-- The 4-bit MLX students of §33 were trained in memory and never saved, so §44 has base and woven only for 4B and 9B. Retraining was out of scope.
+- The 4-bit MLX students of [exp. V](../../../../findings/5-what-limits-the-student.md#exp-v) were trained in memory and never saved, so [exp. AI2](../../../../findings/7-register-versus-skill.md#exp-ai2) has base and woven only for 4B and 9B. Retraining was out of scope.
 - LMCA: gated behind a request form.
 - philosophy-bench's own agentic harness and frontier judge panel.

@@ -2,7 +2,7 @@
 
 14 November 2026
 
-[Findings](../../../../FINDINGS.md#pilot-revision-transfer) · [Interactive explainer](../../../explainer.html#c40)
+[Findings](../../../../findings/7-register-versus-skill.md#pilot-revision-transfer) · [Interactive explainer](../../../explainer.html#c40)
 
 ## Reproduce
 

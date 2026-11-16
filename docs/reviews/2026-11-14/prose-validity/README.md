@@ -2,7 +2,7 @@
 
 14 November 2026
 
-[Findings](../../../../FINDINGS.md#pilot-prose-validity) · [Interactive explainer](../../../explainer.html#c39)
+[Findings](../../../../findings/7-register-versus-skill.md#pilot-prose-validity) · [Interactive explainer](../../../explainer.html#c39)
 
 ## Reproduce
 

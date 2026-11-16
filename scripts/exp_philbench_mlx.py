@@ -2,7 +2,7 @@
 
 Same items, prompts and scoring as scripts/exp_philbench.py (scripts/philbench_items.py): one item per forward pass,
 next-token logits over the option letters after the chat template (thinking off) and an "Answer:" prefill. The 9B model is compared only
-with the 4-bit 4B, never across stacks (§33). The 4-bit students of experiment V part 2 were trained in memory by
+with the 4-bit 4B, never across stacks (exp. V). The 4-bit students of experiment V part 2 were trained in memory by
 scripts/exp_scale_mlx.py and never saved, so there are no student rows here (retraining is out of scope).
 
   .venv-mlx/bin/python scripts/exp_philbench_mlx.py --model 4B     (then 9B)

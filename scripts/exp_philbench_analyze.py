@@ -335,7 +335,7 @@ def analyze(out):
             sanity.setdefault(f"{task}_accuracy_by_order", {})[c] = {o: round(st.mean(x), 3) for o, x in orders.items()}
     summary["sanity"] = sanity
 
-    # scale (Stage 5): base models only, paired over items; 9B only against the 4-bit 4B (same stack, §33)
+    # scale (Stage 5): base models only, paired over items; 9B only against the 4-bit 4B (same stack, exp. V)
     summary["scale"] = {}
     for bigger, smaller in (("base", "2B:base"), ("9B-4bit:base", "4B-4bit:base"), ("9B-4bit:woven", "4B-4bit:woven")):
         if bigger in values and smaller in values:

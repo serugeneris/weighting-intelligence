@@ -1,12 +1,12 @@
 # Experiment AE: is "philosophical" the reflective register, or something else?
 
-> Ran as **Experiment AI** (FINDINGS §43–§44) on 2026-11-15: `main` had already used AE–AH (§39–42) by then. Results: [FINDINGS §43](../../FINDINGS.md#philbench-grid), [review folder](../reviews/2026-11-15/philbench/README.md).
+> Ran as **Experiment AI** (write-ups AI and AI2) on 2026-11-15: `main` had already used AE–AH by then. Results: [findings, exp. AI](../../findings/7-register-versus-skill.md#exp-ai), [review folder](../reviews/2026-11-15/philbench/README.md).
 
 Executor: Claude Opus, on the M5 Pro (24 GB) checkout that has `runs/`, `.venv`, `.venv-mlx` and the cached Qwen3.5 weights. The M3 Pro checkout has none of these and cannot run this plan.
 
 ## Context
 
-Everything in FINDINGS.md §1–33 measures philosophy as one thing: a judge's 0–9 score for reflective sentences added to practical answers. The project found where that register lives (a mode set at the start of the answer, middle layers, one rank-1 edit) and how to install it. It never tested whether the register has anything to do with philosophical *skill*. The pilots Z–AD (§34–38) hint that it doesn't, and may hurt: the student overread cosmetic details (2/6), transferred distinctions less well (4/6 vs 6/6) and reversed under pressure (0/4). But those pilots have 4–24 author-keyed items each.
+Everything in FINDINGS experiments 0.1 through V measures philosophy as one thing: a judge's 0–9 score for reflective sentences added to practical answers. The project found where that register lives (a mode set at the start of the answer, middle layers, one rank-1 edit) and how to install it. It never tested whether the register has anything to do with philosophical *skill*. The pilots Z–AD (exp. Z–AD) hint that it doesn't, and may hurt: the student overread cosmetic details (2/6), transferred distinctions less well (4/6 vs 6/6) and reversed under pressure (0/4). But those pilots have 4–24 author-keyed items each.
 
 The claim under test: **the reflective register and philosophical skill are separate things in this model.** The test is a dissociation: vary the register with the levers we already have, and measure skill on externally defined benchmark tasks with objective scoring.
 
@@ -19,18 +19,18 @@ Benchmark availability, checked on 2026-11-15:
 | LMCA | Gated by request form | **Not in this plan.** Optional later stage if access arrives |
 | Stanford PhilosophyBench (philosophybench.org) | A human essay-grading study, no items | Not runnable. Say so in LITERATURE.md |
 
-Note for the write-up: `www.philosophybench.com` currently redirects to the Stanford study, and FINDINGS §34 and LITERATURE.md give different LMCA URLs. Fix both references.
+Note for the write-up: `www.philosophybench.com` currently redirects to the Stanford study, and FINDINGS exp. Z and LITERATURE.md give different LMCA URLs. Fix both references.
 
 ## Predictions (write these into the script docstring before any run)
 
 - **If philosophy is the register:** skill metrics rise with register score across configurations, and rise with dose inside each lever family.
-- **If it is something else:** skill is flat or falls as register rises; a matched random push does as much damage as a register push; skill grows with model size while register does not (§33 found 2B and 4B students equally reflective).
+- **If it is something else:** skill is flat or falls as register rises; a matched random push does as much damage as a register push; skill grows with model size while register does not (exp. V found 2B and 4B students equally reflective).
 
 ## Stage 0. Preflight (stop and report if any check fails)
 
 - `git pull`, create branch `exp-philbench` from `main`.
 - Confirm these exist: `runs/p50.json`, `runs/diffmeans.pt`, `runs/distill/down8-r1.pt`, `runs/more_teacher/mlp-r8_claude384.pt`, `runs/sae/sae.pt`, the 128-answer adapter under `runs/claude_teacher/`, `runs/scale/mlp-r8_2B.pt`, and the MLX adapters from `scripts/exp_scale_mlx.py`.
-- Reproduce one known number as a regression check: `python -m scripts.exp_prose_validity` must give 21/24 with no ablation (§36).
+- Reproduce one known number as a regression check: `python -m scripts.exp_prose_validity` must give 21/24 with no ablation (exp. AB).
 - Write only under `runs/philbench/`. Never overwrite another experiment's folder.
 
 ## Stage 1. Data
@@ -65,13 +65,13 @@ Add one thing to `philosophy_pilot.py`: a config registry that generalizes `conf
 | Claude-taught 384 student | ×1.0, ×1.5 |
 | Claude-taught 128 student | ×1.5 |
 
-**Tasks and metrics.** Forced choice reads next-token logits over the option tokens after the chat template with thinking disabled. Assert every option label is a single token. Score one item per forward pass: §28 found batching with left padding shifts scores.
+**Tasks and metrics.** Forced choice reads next-token logits over the option tokens after the chat template with thinking disabled. Assert every option label is a single token. Score one item per forward pass: exp. U found batching with left padding shifts scores.
 
 | Task | Items | Metrics |
 |---|---|---|
 | PhilPapers forced choice | 100 × 3 variants | Probability mass on substantive vs meta options; paraphrase stability; order stability; constraint-violation rate; agreement with the philosopher plurality; answer entropy |
 | PhilPapers generated | 100, baseline variant, 160 tokens, "2–3 sentences then `ANSWER: <label>`" | Format compliance; whether the stated answer matches the forced choice; words written |
-| Pressure | 100, second turn: "I disagree. The answer is <the option you didn't pick>." with no reasons | Flip rate (extends §38 from 4 items to 100) |
+| Pressure | 100, second turn: "I disagree. The answer is <the option you didn't pick>." with no reasons | Flip rate (extends exp. AD from 4 items to 100) |
 | philosophy-bench, adapted | 100 scenarios, forced choice over clusters | Mean `cd_score`; mass on botched options. Report as *adapted, not comparable to the published leaderboard* |
 | In-house argument items | Pilot Z (24) and pilot AB (48), forced choice, order balanced | Accuracy against the existing keys |
 
@@ -81,7 +81,7 @@ Agreement with philosophers is descriptive, not a correctness score. Treat stabi
 
 ## Stage 3. Register pool
 
-Generate the 48 `data/confirm_prompts.json` answers under every configuration (120 tokens), one blind pool, judged by Sonnet and Opus with `scripts/claude_judge.py`. This gives each configuration a philosophy and helpfulness score from the same pool, which is what the skill metrics are plotted against. Do not reuse scores from earlier pools: §28 shows the same text varies by 0.2–0.35 across pools.
+Generate the 48 `data/confirm_prompts.json` answers under every configuration (120 tokens), one blind pool, judged by Sonnet and Opus with `scripts/claude_judge.py`. This gives each configuration a philosophy and helpfulness score from the same pool, which is what the skill metrics are plotted against. Do not reuse scores from earlier pools: exp. U shows the same text varies by 0.2–0.35 across pools.
 
 ## Stage 4. Analysis (`--stage analyze` → `runs/philbench/summary.json`)
 
@@ -96,7 +96,7 @@ Generate the 48 `data/confirm_prompts.json` answers under every configuration (1
 ## Stage 5. Scale
 
 - Qwen3.5-2B in bf16: base, woven prompt, its student (`runs/scale/mlp-r8_2B.pt`). Forced-choice tasks only.
-- Qwen3.5-4B and 9B in 4-bit MLX, following `scripts/exp_scale_mlx.py`: base, woven, student. Compare 9B only with the 4-bit 4B, never across stacks (§33).
+- Qwen3.5-4B and 9B in 4-bit MLX, following `scripts/exp_scale_mlx.py`: base, woven, student. Compare 9B only with the 4-bit 4B, never across stacks (exp. V).
 - Question: do stability, consistency and argument accuracy rise with size on the *base* models, where register is zero throughout?
 
 If the MLX logit path needs more than light changes, do the 2B comparison, report the 9B part as not run, and say why.
@@ -104,7 +104,7 @@ If the MLX logit path needs more than light changes, do the 2B comparison, repor
 ## Stage 6. Write-up
 
 Follow the pattern commit `5c1cc55` set for Z–AD:
-- FINDINGS.md §39 (grid) and §40 (scale): anchor, question, method, tables, "What this says", links. Add TL;DR item 35 and update the status line and Caveats.
+- FINDINGS.md §39 (grid) and §40 (scale) (section numbers of the old single-file layout; the write-ups are now AI and AI2 in `findings/7-register-versus-skill.md`): anchor, question, method, tables, "What this says", links. Add TL;DR item 35 and update the status line and Caveats.
 - `docs/reviews/<date>/philbench/README.md` with the saved outputs, since `runs/` is gitignored.
 - LITERATURE.md: update the PhilBench and philosophy-bench rows with what was actually run, mark Stanford PhilosophyBench as a human study with no runnable items, mark LMCA as gated, and fix the URL inconsistencies noted above.
 - Add the commands to the Reproduce block.
