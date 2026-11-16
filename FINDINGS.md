@@ -1,8 +1,8 @@
 # Findings: steering Qwen3.5-4B toward philosophy
 
-*Status: exploratory. Run 2026-11-04 to 2026-11-15 on `Qwen/Qwen3.5-4B` (bf16, Apple M5 Pro / MPS); experiments V and AI2 also use Qwen3.5-2B and 4-bit MLX builds of the 4B and 9B. All numbers come from runs produced by the scripts in [`scripts/`](scripts/README.md).*
+*Status: exploratory. Run 2026-11-04 to 2026-11-15 on `Qwen/Qwen3.5-4B` (bf16, Apple M5 Pro / MPS); experiments V and AI2 also use Qwen3.5-2B and 4-bit MLX builds of the 4B and 9B. Generation runs come from [`scripts/`](scripts/README.md). [AK](findings/6-can-we-trust-the-scores.md#exp-ak) regrades saved pilot responses on 2026-11-16.*
 
-This page is the overview: what was asked, what the answer was, and what still stands. The full write-up of each experiment, with method and tables, is in [`findings/`](findings/), one file per question. Every experiment has one ID (0.1–0.6 for the starting study, then A–AI), used here, in the scripts and in the [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html).
+This page is the overview: what was asked, what the answer was, and what still stands. The full write-up of each experiment, with method and tables, is in [`findings/`](findings/), one file per question. Every experiment has one ID (0.1–0.6 for the starting study, then lettered IDs), used here, in the scripts and in the [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html).
 
 ## The short version
 
@@ -58,6 +58,7 @@ H1–H8 were written down before testing, in [LITERATURE.md](LITERATURE.md). The
 | 6 | High adapter gain breaks the model | Refuted: a harness artefact | [Correction 1](findings/6-can-we-trust-the-scores.md#correction-1) |
 | 6 | The student's helpfulness lead does not depend on the token budget | Refuted for practical coverage | [AE](findings/6-can-we-trust-the-scores.md#exp-ae) |
 | 6 | A judge shown only the last turn can score format and consistency | Refuted | [AF](findings/6-can-we-trust-the-scores.md#exp-af) |
+| 6 | Pilot grades agree across reviewers | Agreed on 141/144 labels for the saved cases | [AK](findings/6-can-we-trust-the-scores.md#exp-ak) |
 | 7 | The reflective register is philosophical skill | Refuted | [AI](findings/7-register-versus-skill.md#exp-ai) |
 | 7 | Skill comes with model size | Supported on three sizes of one family | [AI2](findings/7-register-versus-skill.md#exp-ai2) |
 | 7 | The student picks the decisive objection better | Inconclusive: ceiling, then a one-item lead on eight | [Z](findings/7-register-versus-skill.md#exp-z) |
@@ -78,7 +79,7 @@ H1–H8 were written down before testing, in [LITERATURE.md](LITERATURE.md). The
 
 **[5. What limits the student: teacher, data, adapter or base model?](findings/5-what-limits-the-student.md)** A stronger teacher model (Claude) is the best lever found. More data, a more philosophical teacher, a larger adapter, preference training, stacking and reranking do not raise the frontier further. A larger base model does, with shrinking returns. The student learns reflection tied to the task, and the habit ignores a request for brevity unless it is retrained to follow one. *Experiments: O, P, Q, R, S, W, X, Y, V, AH.*
 
-**[6. Can we trust the measurements?](findings/6-can-we-trust-the-scores.md)** Mostly, with two qualifications. A non-Claude judge confirms the main contrasts, and the answers that seemed to break at high gain were a harness artefact. But much of the student's helpfulness lead at 120 tokens comes from finishing early, and a judge that sees only the last turn cannot score format or consistency. *Experiments: U, Correction 1, AE, AF.*
+**[6. Can we trust the measurements?](findings/6-can-we-trust-the-scores.md)** A non-Claude judge confirms the main contrasts, and a harness fix explains the apparent breakage at high gain. The helpfulness lead depends on the token budget, and format and consistency scores depend on what the judge can see. On the skill pilots, a second reviewer agreed with 141/144 author judgments. *Experiments: U, Correction 1, AE, AF, AK.*
 
 **[7. Is the reflective register philosophical skill?](findings/7-register-versus-skill.md)** No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree". *Experiments: Z, AA, AB, AC, AD, AG, AI, AI2.*
 
@@ -133,7 +134,7 @@ In the order they were run. Notes in italics say what later qualified a result.
 | [Z](findings/7-register-versus-skill.md#exp-z) | 11-14 | 7 | Is the student better at picking the objection that matters? | Inconclusive. All three configurations got 16/16 on the original set; on eight harder items the student got 8, base 7 and the woven prompt 6. |
 | [AA](findings/7-register-versus-skill.md#exp-aa) | 11-14 | 7 | Does the reflective register pull the model away from its assistant role over turns? | No drift found. Prompt and adapter start lower on the assistant probe at turn one; the largest drift was 0.24 against a 1.30 threshold. |
 | [AB](findings/7-register-versus-skill.md#exp-ab) | 11-14 | 7 | Do wording features affect the model's validity judgments? | Not here. One SAE feature tracks the wording change; ablating it and two others leaves all 24 held-out validity choices unchanged. |
-| [AC](findings/7-register-versus-skill.md#exp-ac) | 11-14 | 7 | Does the student revise on relevant facts and reuse its own distinctions? | Mixed. It updates on 6/6 relevant facts but dismisses only 2/6 cosmetic details, and transfers its distinction in 4/6 cases against 6/6 for base and the woven prompt. |
+| [AC](findings/7-register-versus-skill.md#exp-ac) | 11-14 | 7 | Does the student revise on relevant facts and reuse its own distinctions? | Mixed. It updates on 6/6 relevant facts but dismisses only 2/6 cosmetic details, and transfers its distinction in 4/6 cases against 6/6 for base and the woven prompt. *Regraded in [AK](findings/6-can-we-trust-the-scores.md#exp-ak).* |
 | [AD](findings/7-register-versus-skill.md#exp-ad) | 11-14 | 7 | Does any configuration hold a decision under unsupported pushback? | No. All three account for new facts (4/4). Under bare pushback, base held once in four and the woven prompt and the student never. |
 | [AE](findings/6-can-we-trust-the-scores.md#exp-ae) | 11-14 | 6 | Is the student's helpfulness lead an effect of the 120-token cap? | In good part. The student's lead over the woven prompt in practical coverage falls from 2.25 to 0.50 checklist items per task when the budget grows from 120 to 512 tokens. *Qualifies the helpfulness comparisons of O, P and Y.* |
 | [AF](findings/6-can-we-trust-the-scores.md#exp-af) | 11-14 | 6 | Can a judge shown only the last turn score format and consistency? | No. With the full chat it was right on 8/8 format pairs and 8/8 prior-reply pairs; with only the last user message, 1/8 and 0/8. *Qualifies X, whose judge saw no system prompt.* |
@@ -141,6 +142,7 @@ In the order they were run. Notes in italics say what later qualified a result.
 | [AH](findings/5-what-limits-the-student.md#exp-ah) | 11-14 | 5 | Can a short retraining make the habit follow instructions? | Yes in a pilot. The mixed-instruction student followed 8/8 held-out requests in each of three conditions; the original student 3/8, 0/8 and 5/8. *Addresses the open problem from X.* |
 | [AI](findings/7-register-versus-skill.md#exp-ai) | 11-15 | 7 | Does skill on judge-free philosophy tasks rise with the register? | No. Moving the register from 0 to 3.8 predicts no skill measure. Prompts and students keep base-level skill; constant pushes lose up to 46 points, mostly to position bias. |
 | [AI2](findings/7-register-versus-skill.md#exp-ai2) | 11-15 | 7 | If the register is not the skill, where does skill come from? | From model size, on base models where the register is zero: validity 57 → 83 of 96 from 2B to 4B (z 5.2), and +7 from 4B to 9B (z 1.7). |
+| [AK](findings/6-can-we-trust-the-scores.md#exp-ak) | 11-16 | 6 | Do the pilot grades hold up under a second reviewer? | Codex matched 24/24 objection keys and 141/144 author judgments. Two revision comparisons became ties. |
 
 ## Caveats
 

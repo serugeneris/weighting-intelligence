@@ -1,0 +1,146 @@
+[
+  {
+    "set": "critique",
+    "case": "Advice bot",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Anonymous scholarship",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Budget ledger",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Consent and revision",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Donation forecast",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Garden access",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Library silence",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Noise exception",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Public apology",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Quiet transit",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Repair hotline",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Shared kitchen",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "The restored clock",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Unread lease",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "critique",
+    "case": "Witnesses",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "critique",
+    "case": "Workshop waivers",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "hard",
+    "case": "Allocation threshold",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "hard",
+    "case": "Comparable treatment",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "hard",
+    "case": "Convenience and assent",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "hard",
+    "case": "Inheritance lottery",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "hard",
+    "case": "Private promise",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "hard",
+    "case": "Pseudonymous ballot",
+    "author": "A",
+    "codex": "A"
+  },
+  {
+    "set": "hard",
+    "case": "Robust testimony",
+    "author": "B",
+    "codex": "B"
+  },
+  {
+    "set": "hard",
+    "case": "Trust and accuracy",
+    "author": "B",
+    "codex": "B"
+  }
+]

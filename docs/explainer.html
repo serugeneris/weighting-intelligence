@@ -1107,8 +1107,8 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
   <section class="part" id="p6">
     <div class="num">Part 6</div>
     <h2>Can we trust the measurements?</h2>
-    <p class="answer"><strong>Short answer.</strong> Mostly, with two qualifications. A non-Claude judge confirms the main contrasts, and the answers that seemed to break at high gain were a harness artefact. But much of the student's helpfulness lead at 120 tokens comes from finishing early, and a judge that sees only the last turn cannot score format or consistency.</p>
-    <p class="note">4 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md">full method and tables</a></p>
+    <p class="answer"><strong>Short answer.</strong> A non-Claude judge confirms the main contrasts, and a harness fix explains the apparent breakage at high gain. The helpfulness lead depends on the token budget, and format and consistency scores depend on what the judge can see. On the skill pilots, a second reviewer agreed with 141/144 author judgments.</p>
+    <p class="note">5 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md">full method and tables</a></p>
   </section>
   <details class="exp">
     <summary><span class="tag">U</span><span class="st">A judge from another family</span><span class="res">No sign of it. Qwen3.5-4B as judge agrees on philosophy (r 0.73–0.75) and on every key helpfulness contrast, and sees the student's lead as larger. It cannot judge coherence.</span></summary>
@@ -1190,6 +1190,39 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
       </div>
       <div id="s43" role="status" aria-live="polite"></div>
       <p class="note">Each of four pairs per group appears in both answer orders. Ties count as no correct choice.</p>
+    </div>
+  </section>
+  </details>
+  <details class="exp">
+    <summary><span class="tag">AK</span><span class="st">Do the pilot grades hold up under a second reviewer?</span><span class="res">Codex matched 24/24 objection keys and 141/144 author judgments. Two revision comparisons became ties.</span></summary>
+  <section class="chapter" id="c47" aria-labelledby="pilot-regrade">
+    <div>
+      <div class="num">Experiment AK</div>
+      <h2 id="pilot-regrade">Do the pilot grades hold up under a second reviewer?</h2>
+      <p><strong>Why we tried it.</strong> The case author graded the pilots on <a href="#c37">objections</a>, <a href="#c40">revision and transfer</a>, and <a href="#c41">ethical consistency</a>. Codex reviewed 120 saved responses with configurations and grades hidden in shuffled packets. It had already seen some labeled examples and the published objection totals.</p>
+      <p><strong>What happened.</strong> Codex matched all 24 objection keys and agreed on 141 of 144 judgments (97.9%). Both reviewers found that 11 of 12 decisions reversed under direct pressure. Every reply in the evidence branch accounted for the changed facts.</p>
+      <p><strong>What it means.</strong> The two reviewers mostly agreed on these author-written cases. One grade change erased the student's lead on targeted questions, and another erased base's lead over the woven prompt on relevant updates. <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md#exp-ak">The findings, exp. AK</a> · <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-16/codex-regrade">Saved grades and audit comparison</a></p>
+    </div>
+    <div class="fig">
+      <table>
+        <caption>Scores that changed under the second review</caption>
+        <thead>
+          <tr><th scope="col">Assessment</th><th scope="col">Author</th><th scope="col">Codex</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Targeted question, student</th><td>4/6</td><td>3/6</td></tr>
+          <tr><th scope="row">Relevant update, woven prompt</th><td>3/6</td><td>4/6</td></tr>
+          <tr><th scope="row">Transfer, base</th><td>6/6</td><td>5/6</td></tr>
+        </tbody>
+      </table>
+      <details>
+        <summary>Read the three grading decisions</summary>
+        <div class="ex">
+          <p><strong>Workshop access.</strong> The student discussed practical barriers but asked about arrival order and fair outcomes. Codex required a question about whether eligible workers could attend. The student tied base at 3/6.</p>
+          <p><strong>Public donor list.</strong> The woven prompt correctly explained that consent for a private directory did not cover public disclosure. Codex credited that follow-up, bringing the woven prompt level with base at 4/6.</p>
+          <p><strong>Volunteer roster.</strong> Base identified the change of audience but moved from a distinction about consent and obligation to one about consent and expectations. Codex required it to use its original distinction in the new case.</p>
+        </div>
+      </details>
     </div>
   </section>
   </details>
