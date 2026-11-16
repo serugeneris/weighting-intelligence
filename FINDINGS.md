@@ -1,6 +1,6 @@
 # Steering Qwen3.5-4B toward philosophy — findings so far
 
-*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05, Z–AH 2026-11-14, AI 2026-11-15). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B, and Qwen3.5-4B/9B 4-bit in MLX) (bf16, local Apple M5 Pro / MPS). All numbers come from the runs in `runs/` produced by the scripts in `scripts/`.*
+*Status: exploratory, 2026-11-04 (experiments D–Y added 2026-11-05, Z–AH 2026-11-14, AI 2026-11-15, AK 2026-11-16). Model: `Qwen/Qwen3.5-4B` (§33 also Qwen3.5-2B, and Qwen3.5-4B/9B 4-bit in MLX) (bf16, local Apple M5 Pro / MPS). Generation runs come from the scripts in `scripts/`. The pilot regrade (§45) uses the saved outputs in `docs/reviews/`.*
 
 ## TL;DR
 
@@ -39,6 +39,7 @@
 33. **Stacking and selection don't get past the student's frontier.** The woven prompt on top of the Claude-taught student lands on the same line (more philosophy, less helpfulness, same sum), and a light "one brief reflective thought" prompt does nothing, alone or stacked. Best-of-4 sampling with Opus picking the best answer beats a single sample (+0.35 ± 0.18 under Sonnet) but not the student's greedy answer (+0.08 ± 0.19). The student's own samples don't contain answers clearly beyond its frontier, so a reranker or preference training has little to find there, which fits §26. Opus credited its own picks with +1.1; re-scored in a pool, Sonnet confirms only a third of that (Results §32).
 34. **Model size matters, with a smaller step from 4B to 9B than from 2B to 4B.** Taught by the same 384 Claude answers, the 2B student picks up just as much philosophy as the 4B (2.27 vs 2.19), but loses about 1 point more helpfulness against its own baseline. The 4B student beats it by +1.2 to +1.7 in philosophy + helpfulness, and its lead over its own woven prompt is about twice the 2B's. Qwen3.5-9B doesn't fit in bf16 (19.3 GB), but it runs as a 4-bit MLX model. In that stack, with 4B trained the same way, the 9B student is +0.8 to +1.0 better at equal philosophy, again by keeping helpfulness and coherence. Its own prompt also improves, though, so its lead over the prompt doesn't grow clearly. The base model is a limit, but each doubling buys less (Results §33).
 35. **The reflective register is not philosophical skill.** Varying the register from 0 to 3.8 with every lever built so far does not move skill measured without a judge: stability of PhilPapers survey answers under paraphrase and option order, consistency with logical constraints, and accuracy on objection and validity items. Prompts and trained students raise the register and keep skill at base level. Constant pushes raise it as much and lose up to 46 points, mostly through position bias, partly as generic disturbance (random pushes lose 13–22). Skill instead grows with model size on base models, where the register is zero (2B → 4B: validity 57 → 83 of 96). Every configuration gives up its answer to a bare "I disagree" (Results §43–§44).
+36. **A second reviewer agreed on 141 of 144 pilot judgments.** Codex regraded 120 saved responses and matched all 24 objection keys. The two reviews agree that 11 of 12 responses reversed under direct pressure. Two revision comparisons became ties under the second grades (Results §45).
 
 ## Background
 
@@ -1266,6 +1267,36 @@ What this says:
 - **The scale comparison is thin.** One model family, three sizes, base and prompt only for 4B and 9B. The 4-bit and bf16 4B disagree on a quarter of PhilPapers choices, which is why the 9B is never compared across stacks.
 
 [Saved outputs and review details](docs/reviews/2026-11-15/philbench/README.md) · [Explainer chapter 46](docs/explainer.html#c46)
+
+<a id="pilot-regrade"></a>
+
+### 45. Do the pilot grades hold up under a second reviewer? (experiment AK)
+
+The data audit called for checking the pilot labels with a reviewer who did not write the cases. We asked Codex to re-key the argument critique items (§34) and regrade the saved critique, revision and transfer (§37), and ethics pressure (§38) responses.
+
+**Method.** Codex graded 120 saved response records in shuffled packets with configuration names, author keys and original grades removed. Some labeled examples and published objection aggregates were visible during initial inspection, so the review was partially blind. It applied the existing criteria, then matched its grades to the author's by case and configuration. The 144 comparable judgments exclude keyed A/B accuracy. Some records contribute several judgments, and all three configurations answered the same cases.
+
+| Assessment | Author passes | Codex passes | Exact agreement |
+| --- | ---: | ---: | ---: |
+| Original objection explanations identify the central issue | 48/48 | 48/48 | 48/48 |
+| Revision asks a targeted question | 7/18 | 6/18 | 17/18 |
+| Revision updates on a relevant fact | 13/18 | 14/18 | 17/18 |
+| Revision dismisses an irrelevant detail | 13/18 | 13/18 | 18/18 |
+| Transfer applies the same distinction to both sides | 16/18 | 15/18 | 17/18 |
+| Ethics holds the decision under direct pressure | 1/12 | 1/12 | 12/12 |
+| Ethics accounts for changed facts | 12/12 | 12/12 | 12/12 |
+
+Codex matched **24/24 objection keys**. On the harder items, both keys give base 7/8, woven 6/8 and student 8/8. Codex also scored 23/24 of the harder explanations as identifying the central issue. Only the original set had author grades for explanations.
+
+What this says:
+
+- **Two revision comparisons become ties.** Codex judged the student's workshop question too indirect about whether eligible people could attend, bringing the student from 4/6 to 3/6 and tying base. Codex credited the woven prompt for recognizing that permission to list donors privately did not cover publication, bringing it from 3/6 to 4/6 and tying base on relevant updates.
+- **Transfer and pressure retain the same pattern.** Base drops from 6/6 to 5/6 on transfer because the volunteer roster reply switches its distinction. The woven prompt stays at 6/6 and the student at 4/6. Both reviewers found that 11/12 decisions reversed under direct pressure and all 12 replies in the evidence branch accounted for the changed facts.
+- **The review measures agreement on these cases.** A second model can check the consistency of the grades on the saved outputs. The cases and rubric still come from the project, and there was no human review.
+
+The accompanying audit check found three of 16 two-turn OOD opening prompts (§31) reused from confirmation, training or contrast data. The archived runs and PhilPapers files were unavailable for this review.
+
+[Review method and audit comparison](docs/reviews/2026-11-16/codex-regrade/README.md) · [Paired grades](docs/reviews/2026-11-16/codex-regrade/grades.jsonl) · [Explainer chapter 47](docs/explainer.html#pilot-regrade)
 
 ## Caveats
 
