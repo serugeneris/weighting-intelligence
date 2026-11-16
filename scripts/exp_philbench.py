@@ -1,6 +1,6 @@
 """Experiment AI: is "philosophical" the reflective register, or something else? (docs/plans/experiment-ae-philbench.md)
 
-Everything in FINDINGS §1-33 measured philosophy as a judge's 0-9 score for reflective sentences in practical
+Everything in FINDINGS experiments 0.1 through V measured philosophy as a judge's 0-9 score for reflective sentences in practical
 answers. This experiment varies that register with the levers already built (prompts, layer-8 pushes along
 diff-means and the learned direction B, random pushes of the same size, the rank-1 and Claude-taught students) and
 measures philosophical skill on externally defined tasks scored without a judge: forced choice over the 2020
@@ -12,13 +12,13 @@ Predictions, written before any run:
   If philosophy is the register: skill metrics rise with register score across configurations, and rise with dose
     inside each lever family (B 0.4 -> 0.8, diff-means 0.35 -> 0.5, students x1.0 -> x1.5/x2).
   If it is something else: skill is flat or falls as register rises; a matched random push does as much damage as a
-    register push; skill grows with model size while register does not (§33: 2B and 4B students equally reflective).
+    register push; skill grows with model size while register does not (exp. V: 2B and 4B students equally reflective).
 Agreement with the philosopher plurality is descriptive, not correctness. Stability, constraint consistency and
 holding under pressure are the skill measures.
 
 Stages (all outputs under runs/philbench/):
   data-check  item counts, single-token option letters, prompt lengths, constraint coverage
-  score       forced choice after an "Answer:" assistant prefill, one item per forward pass (no padding, §28),
+  score       forced choice after an "Answer:" assistant prefill, one item per forward pass (no padding, exp. U),
               resumable per configuration
               -> scores.jsonl; on base also the layer-8/16 projections of the last prompt token
   generate    PhilPapers baseline variant, 160 tokens, "2-3 sentences then ANSWER: <letter>" -> generate.jsonl

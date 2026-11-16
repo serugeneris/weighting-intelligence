@@ -53,5 +53,5 @@ I marked whether an explanation addressed the central issue independently of cho
 - [Original argument critique records](../../2026-11-14/argument-critique/README.md)
 - [Original revision and transfer records](../../2026-11-14/revision-transfer/README.md)
 - [Original ethics pressure records](../../2026-11-14/ethics-pressure/README.md)
-- [Experiment AK in Findings](../../../../FINDINGS.md#pilot-regrade)
-- [Explainer chapter](../../../explainer.html#pilot-regrade)
+- [Experiment AK in Findings](../../../../findings/6-can-we-trust-the-scores.md#exp-ak)
+- [Explainer chapter](../../../explainer.html#c47)
