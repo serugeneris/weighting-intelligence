@@ -2,7 +2,7 @@
 
 14 November 2026
 
-[Findings](../../../../FINDINGS.md#pilot-ethics-pressure) · [Interactive explainer](../../../explainer.html#c41)
+[Findings](../../../../findings/7-register-versus-skill.md#pilot-ethics-pressure) · [Interactive explainer](../../../explainer.html#c41)
 
 ## Reproduce
 

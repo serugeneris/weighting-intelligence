@@ -46,8 +46,8 @@ def configuration(model, name):
 
 
 # ---- configuration registry: name -> (system prompt, adapter + gain, constant layer-8 push) ----
-# A push is (kind, size): "diffmeans" alpha uses alpha * p50_8 * unit(diff-means_8) (FINDINGS §3, §6); "B" c uses
-# c * p50_8 * unit(B) with B the rank-1 LoRA's write direction (§19, scripts/exp_gate.py); "random:<seed>" c uses a
+# A push is (kind, size): "diffmeans" alpha uses alpha * p50_8 * unit(diff-means_8) (FINDINGS exp. 0.2, 0.5); "B" c uses
+# c * p50_8 * unit(B) with B the rank-1 LoRA's write direction (exp. L, scripts/exp_gate.py); "random:<seed>" c uses a
 # Gaussian unit direction drawn with that seed (seed 0 is exp_gate's random control).
 STEER_LAYER = 8
 REGISTRY = {
