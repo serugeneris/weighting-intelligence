@@ -62,12 +62,14 @@ Run outputs go to `runs/`, which is not tracked in git. Experiment IDs match the
 | `scripts/exp_philbench.py`, `scripts/philbench_items.py`, `scripts/exp_philbench_analyze.py`, `scripts/build_philpapers.py` | Experiment AI: register versus judge-free skill (PhilPapers stability and constraints, objections, validity, adapted philosophy-bench) |
 | `scripts/exp_philbench_mlx.py` | Experiment AI2: the same tasks on 4-bit MLX builds of Qwen3.5-4B and 9B |
 | (no script) | Experiment AK: a regrade of saved responses from Z, AC and AD by a second model; the grades are in [`docs/reviews/2026-11-16/codex-regrade/`](../docs/reviews/2026-11-16/codex-regrade/README.md) |
+| `scripts/human_regrade.py` | Builds the blind packet and grading page for a human regrade of AC, and scores an exported grades file against the author and Codex labels of AK; see [`docs/reviews/human-regrade/`](../docs/reviews/human-regrade/README.md) |
 | `scripts/philosophy_pilot.py` | Shared inference, review packets and residual hooks for experiments Z–AI |
 
 ## Reproduce
 
 ```bash
-python3.14 -m venv .venv && .venv/bin/pip install torch transformers accelerate huggingface_hub safetensors
+python3.14 -m venv .venv && .venv/bin/pip install -r requirements.txt    # torch transformers accelerate huggingface_hub safetensors PyYAML
+.venv/bin/pip install pytest && .venv/bin/python -m pytest -q             # smoke tests: no model download, CPU only
 .venv/bin/python scripts/find_neurons.py                         # ranks, p50, diff-means
 .venv/bin/python scripts/sweep.py                                # read-side neurons + diff-means screen
 .venv/bin/python scripts/neuron_search.py                        # write-aligned single neurons + OMP groups
