@@ -31,7 +31,7 @@ The work is organised around seven questions. Each has a file in `findings/` and
 | 3 | [How does a prompt do what steering cannot?](findings/3-how-the-prompt-works.md) | F, G |
 | 4 | [Can the prompt's behaviour be moved into the weights?](findings/4-into-the-weights.md) | D, J, I, D2, L, M, N |
 | 5 | [What limits the student: teacher, data, adapter or base model?](findings/5-what-limits-the-student.md) | O, P, Q, R, S, W, X, Y, V, AH |
-| 6 | [Can we trust the measurements?](findings/6-can-we-trust-the-scores.md) | U, Correction 1, AE, AF |
+| 6 | [Can we trust the measurements?](findings/6-can-we-trust-the-scores.md) | U, Correction 1, AE, AF, AK |
 | 7 | [Is the reflective register philosophical skill?](findings/7-register-versus-skill.md) | Z, AA, AB, AC, AD, AG, AI, AI2 |
 
 ## Repository layout
@@ -44,7 +44,7 @@ The work is organised around seven questions. Each has a file in `findings/` and
 | `scripts/` | One script per experiment; see [`scripts/README.md`](scripts/README.md) |
 | `data/` | Contrast pairs, training questions, evaluation prompts, and saved results for experiments AE–AH |
 | `docs/explainer.html` | The interactive explainer, served by GitHub Pages |
-| `docs/reviews/` | Saved outputs and review notes for experiments Z–AD and AI |
+| `docs/reviews/` | Saved outputs and review notes for experiments Z–AD, AI and AK |
 | `docs/plans/` | The plan written before experiment AI |
 
 Run outputs go to `runs/`, which is not tracked in git.

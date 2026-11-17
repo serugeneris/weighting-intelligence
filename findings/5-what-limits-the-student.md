@@ -211,7 +211,7 @@ What this says:
 
 > **Question.** Does the student hold up outside the test distribution?  
 > **Result.** Yes over two turns and on checkable questions (16/16 correct), but it keeps reflecting under a system prompt that asks for brief, literal answers.  
-> **Status.** The judge here did not see the system prompt (AF). A retrained student can switch the habit off in a pilot (AH).  
+> **Status.** The judge here did not see the system prompt (AF). A retrained student can switch the habit off in a pilot (AH). Three of the 16 two-turn openers repeat a confirmation, training or contrast prompt ([AK](6-can-we-trust-the-scores.md#exp-ak)).  
 > 2026-11-05 · [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html#c34)
 
 Every earlier evaluation is a single-turn everyday request. Here the two best prompt-free students (the 128-answer student at ×1.5, [exp. O](#exp-o), and the 384-answer student at ×1.0, [exp. P](#exp-p)), the woven prompt and the baseline face three situations they weren't built for (`data/ood_prompts.json`, 16 items each, 160 new tokens):

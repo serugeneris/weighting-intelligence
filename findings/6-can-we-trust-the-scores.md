@@ -2,7 +2,7 @@
 
 [← Findings overview](../FINDINGS.md) · [Explainer, part 6](https://www.contrasentido.ar/weighting-intelligence/explainer.html#p6)
 
-**Short answer.** A non-Claude judge confirms the main contrasts, and a harness fix explains the apparent breakage at high gain. The helpfulness lead depends on the token budget, and format and consistency scores depend on what the judge can see. On the skill pilots, a second reviewer agreed with 141/144 author judgments.
+**Short answer.** Mostly, with qualifications. A non-Claude judge confirms the main contrasts, and the answers that seemed to break at high gain were a harness artefact. But much of the student's helpfulness lead at 120 tokens comes from finishing early, and a judge that sees only the last turn cannot score format or consistency. On the skill pilots, a second model (Codex, partially blind, same rubric) agreed with the author on 69 of the 72 revision and transfer labels (κ 0.77–0.88); no human has regraded them.
 
 | ID | Question | Result |
 |---|---|---|
@@ -10,7 +10,7 @@
 | [Correction 1](#correction-1) | Why did answers break at high LoRA gain? | They didn't break; they didn't stop. The wrong end token let 206 answers run on into an invented next turn. Cut at the turn end, 0/48 are broken. The frontier conclusions of P stand; the "fragile gain" claim does not. |
 | [AE](#exp-ae) | Is the student's helpfulness lead an effect of the 120-token cap? | In good part. The student's lead over the woven prompt in practical coverage falls from 2.25 to 0.50 checklist items per task when the budget grows from 120 to 512 tokens. |
 | [AF](#exp-af) | Can a judge shown only the last turn score format and consistency? | No. With the full chat it was right on 8/8 format pairs and 8/8 prior-reply pairs; with only the last user message, 1/8 and 0/8. |
-| [AK](#exp-ak) | Do the pilot grades hold up under a second reviewer? | Codex matched 24/24 objection keys and 141/144 author judgments. Two revision comparisons became ties. |
+| [AK](#exp-ak) | Do the pilot grades hold up under a second reviewer? | Codex, a second model, matched 24/24 objection keys and 141/144 author judgments; on the 72 revision and transfer labels, where grades vary, 69 (κ 0.77–0.88). Two revision comparisons became ties. |
 
 ## Experiments
 
@@ -163,7 +163,7 @@ What this says:
 ### AK · Pilot regrade
 
 > **Question.** Do the pilot grades hold up under a second reviewer?\
-> **Result.** Codex matched 24/24 objection keys and 141/144 author judgments. Two revision comparisons became ties.\
+> **Result.** Codex, a second model, matched 24/24 objection keys and 141/144 author judgments; on the 72 revision and transfer labels, where grades vary, 69 (κ 0.77–0.88). Two revision comparisons became ties.\
 > **Status.** Qualifies the revision and transfer scores in [AC](7-register-versus-skill.md#exp-ac).\
 > 2026-11-16 · [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html#c47)
 
@@ -181,12 +181,14 @@ The data audit called for checking the pilot labels with a reviewer who did not 
 | Ethics holds the decision under direct pressure | 1/12 | 1/12 | 12/12 |
 | Ethics accounts for changed facts | 12/12 | 12/12 | 12/12 |
 
+**Reading the agreement.** The 141/144 total is inflated by criteria with no variation: every response passed the original objection explanations (48/48) and the ethics changed-facts check (12/12), so those 60 labels agree automatically, and the 12 ethics-pressure labels have a single pass. On the 72 revision and transfer labels the two graders agree on 69. Cohen's κ is 0.88 for targeted questions, 0.85 for relevant updates and 0.77 for transfer; it is undefined for the two unanimous criteria.
+
 Codex matched **24/24 objection keys**. On the harder items, both keys give base 7/8, woven 6/8 and student 8/8. Codex also scored 23/24 of the harder explanations as identifying the central issue. Only the original set had author grades for explanations.
 
 - **Two revision comparisons become ties.** Codex judged the student's workshop question too indirect about whether eligible people could attend, bringing the student from 4/6 to 3/6 and tying base. Codex credited the woven prompt for recognizing that permission to list donors privately did not cover publication, bringing it from 3/6 to 4/6 and tying base on relevant updates.
 - **Transfer and pressure retain the same pattern.** Base drops from 6/6 to 5/6 on transfer because the volunteer roster reply switches its distinction. The woven prompt stays at 6/6 and the student at 4/6. Both reviewers found that 11/12 decisions reversed under direct pressure and all 12 replies in the evidence branch accounted for the changed facts.
 - **Agreement is specific to these cases and criteria.** The project wrote both the cases and the rubric. The review used a second model and had no independent human grades.
 
-The accompanying audit check found three of 16 two-turn opening prompts in [X](5-what-limits-the-student.md#exp-x) reused from confirmation, training or contrast data. The archived runs and PhilPapers files were unavailable in the checkout used for this review.
+The accompanying audit check found three of 16 two-turn opening prompts in [X](5-what-limits-the-student.md#exp-x) reused from confirmation, training or contrast data. That is now noted on X and in the [caveats](../FINDINGS.md#caveats). The archived runs and PhilPapers files were unavailable in the checkout used for this review, so the audit's run-integrity and PhilPapers checks are unverified and listed under [open questions](../FINDINGS.md#open-questions).
 
 [Review method and audit comparison](../docs/reviews/2026-11-16/codex-regrade/README.md) · [Paired grades](../docs/reviews/2026-11-16/codex-regrade/grades.jsonl)
