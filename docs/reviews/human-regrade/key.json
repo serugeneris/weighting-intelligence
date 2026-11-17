@@ -1,0 +1,182 @@
+{
+ "R01": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 1
+ },
+ "R02": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 5
+ },
+ "R03": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 2
+ },
+ "R04": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 6
+ },
+ "R05": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 3
+ },
+ "R06": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 4
+ },
+ "R07": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 3
+ },
+ "R08": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 5
+ },
+ "R09": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 4
+ },
+ "R10": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 1
+ },
+ "R11": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 2
+ },
+ "R12": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 6
+ },
+ "R13": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 6
+ },
+ "R14": {
+  "set": "revision",
+  "configuration": "student",
+  "case": 3
+ },
+ "R15": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 4
+ },
+ "R16": {
+  "set": "revision",
+  "configuration": "woven",
+  "case": 2
+ },
+ "R17": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 1
+ },
+ "R18": {
+  "set": "revision",
+  "configuration": "base",
+  "case": 5
+ },
+ "T01": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 6
+ },
+ "T02": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 1
+ },
+ "T03": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 3
+ },
+ "T04": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 6
+ },
+ "T05": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 1
+ },
+ "T06": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 2
+ },
+ "T07": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 6
+ },
+ "T08": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 4
+ },
+ "T09": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 4
+ },
+ "T10": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 3
+ },
+ "T11": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 5
+ },
+ "T12": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 5
+ },
+ "T13": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 2
+ },
+ "T14": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 3
+ },
+ "T15": {
+  "set": "transfer",
+  "configuration": "woven",
+  "case": 2
+ },
+ "T16": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 1
+ },
+ "T17": {
+  "set": "transfer",
+  "configuration": "student",
+  "case": 5
+ },
+ "T18": {
+  "set": "transfer",
+  "configuration": "base",
+  "case": 4
+ }
+}

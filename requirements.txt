@@ -1,0 +1,11 @@
+# Runtime dependencies of wi/ and scripts/ (main environment, .venv).
+# Versions are not pinned here: record the ones the results were produced with by running
+#   .venv/bin/pip freeze > requirements.lock
+# on the machine that ran the experiments.
+torch
+transformers
+accelerate
+huggingface_hub
+safetensors
+PyYAML
+# The MLX experiments (V part 2, AI2) use a second environment, .venv-mlx, with only: mlx-lm
