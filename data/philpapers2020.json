@@ -1,0 +1,2724 @@
+{
+ "source": "https://survey2020.philpeople.org/survey/results/all",
+ "retrieved": "2026-11-15",
+ "view": "all respondents, all regions, excluding skipped and insufficiently familiar answers",
+ "percentages": "accept_inclusive counts multiple-answer endorsements; accept_exclusive does not (the survey's 'X% (Y%)'). 'other' is the share giving any non-substantive answer.",
+ "paraphrases": "author-written for Experiment AI, one per single-choice question, same options",
+ "meta_options": [
+  "Accept a combination of views",
+  "Accept an alternative view",
+  "The question is too unclear to answer",
+  "There is no fact of the matter",
+  "Agnostic/undecided"
+ ],
+ "questions": [
+  {
+   "id": 0,
+   "topic": "A priori knowledge",
+   "section": "main",
+   "question": "A priori knowledge: yes or no?",
+   "kind": "single_choice",
+   "n": 1749,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 72.84,
+     "accept_exclusive": 72.67
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 18.47,
+     "accept_exclusive": 18.3
+    }
+   ],
+   "other": 9.03,
+   "paraphrase": "Is any knowledge justified independently of experience?"
+  },
+  {
+   "id": 1,
+   "topic": "Abstract objects",
+   "section": "main",
+   "question": "Abstract objects: Platonism or nominalism?",
+   "kind": "single_choice",
+   "n": 1639,
+   "options": [
+    {
+     "label": "Platonism",
+     "accept_inclusive": 38.38,
+     "accept_exclusive": 37.83
+    },
+    {
+     "label": "nominalism",
+     "accept_inclusive": 41.85,
+     "accept_exclusive": 41.37
+    }
+   ],
+   "other": 20.81,
+   "paraphrase": "Do abstract objects such as numbers exist (Platonism), or do only concrete particulars exist (nominalism)?"
+  },
+  {
+   "id": 2,
+   "topic": "Aesthetic value",
+   "section": "main",
+   "question": "Aesthetic value: objective or subjective?",
+   "kind": "single_choice",
+   "n": 1700,
+   "options": [
+    {
+     "label": "objective",
+     "accept_inclusive": 43.53,
+     "accept_exclusive": 40.18
+    },
+    {
+     "label": "subjective",
+     "accept_inclusive": 40.59,
+     "accept_exclusive": 37.18
+    }
+   ],
+   "other": 22.65,
+   "paraphrase": "Is aesthetic value an objective feature of things, or does it depend on the subject who appreciates them?"
+  },
+  {
+   "id": 3,
+   "topic": "Aim of philosophy",
+   "section": "main",
+   "question": "Aim of philosophy (which is most important?): truth/knowledge, understanding, wisdom, happiness, or goodness/justice?",
+   "kind": "single_choice",
+   "n": 1771,
+   "options": [
+    {
+     "label": "truth/knowledge",
+     "accept_inclusive": 42.18,
+     "accept_exclusive": 17.67
+    },
+    {
+     "label": "understanding",
+     "accept_inclusive": 55.79,
+     "accept_exclusive": 29.59
+    },
+    {
+     "label": "wisdom",
+     "accept_inclusive": 31.17,
+     "accept_exclusive": 10.05
+    },
+    {
+     "label": "happiness",
+     "accept_inclusive": 12.65,
+     "accept_exclusive": 1.36
+    },
+    {
+     "label": "goodness/justice",
+     "accept_inclusive": 22.7,
+     "accept_exclusive": 3.11
+    }
+   ],
+   "other": 38.23,
+   "paraphrase": "Which is the most important goal of philosophy: truth/knowledge, understanding, wisdom, happiness, or goodness/justice?"
+  },
+  {
+   "id": 4,
+   "topic": "Analytic-synthetic distinction",
+   "section": "main",
+   "question": "Analytic-synthetic distinction: yes or no?",
+   "kind": "single_choice",
+   "n": 1703,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 62.48,
+     "accept_exclusive": 62.01
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 25.78,
+     "accept_exclusive": 25.48
+    }
+   ],
+   "other": 12.51,
+   "paraphrase": "Is there a genuine distinction between statements true in virtue of meaning and statements true in virtue of the facts?"
+  },
+  {
+   "id": 5,
+   "topic": "Eating animals and animal products",
+   "section": "main",
+   "question": "Eating animals and animal products (is it permissible to eat animals and/or animal products in ordinary circumstances?): omnivorism (yes and yes), vegetarianism (no and yes), or veganism (no and no)?",
+   "kind": "single_choice",
+   "n": 1764,
+   "options": [
+    {
+     "label": "omnivorism (yes and yes)",
+     "accept_inclusive": 48.02,
+     "accept_exclusive": 47.05
+    },
+    {
+     "label": "vegetarianism (no and yes)",
+     "accept_inclusive": 26.47,
+     "accept_exclusive": 23.92
+    },
+    {
+     "label": "veganism (no and no)",
+     "accept_inclusive": 18.37,
+     "accept_exclusive": 16.5
+    }
+   ],
+   "other": 12.53,
+   "paraphrase": "In ordinary circumstances, is it permissible to eat animals and to eat animal products: both (omnivorism), only animal products (vegetarianism), or neither (veganism)?"
+  },
+  {
+   "id": 6,
+   "topic": "Epistemic justification",
+   "section": "main",
+   "question": "Epistemic justification: internalism or externalism?",
+   "kind": "single_choice",
+   "n": 1621,
+   "options": [
+    {
+     "label": "internalism",
+     "accept_inclusive": 35.72,
+     "accept_exclusive": 30.41
+    },
+    {
+     "label": "externalism",
+     "accept_inclusive": 50.52,
+     "accept_exclusive": 45.34
+    }
+   ],
+   "other": 24.24,
+   "paraphrase": "Does what justifies a belief depend only on factors internal to the believer's mind (internalism), or can it depend on external factors (externalism)?"
+  },
+  {
+   "id": 7,
+   "topic": "Experience machine",
+   "section": "main",
+   "question": "Experience machine (would you enter?): yes or no?",
+   "kind": "single_choice",
+   "n": 1642,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 13.34,
+     "accept_exclusive": 13.34
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 76.86,
+     "accept_exclusive": 76.86
+    }
+   ],
+   "other": 9.81,
+   "paraphrase": "Would you plug into a machine that gives you any experiences you want for the rest of your life?"
+  },
+  {
+   "id": 8,
+   "topic": "External world",
+   "section": "main",
+   "question": "External world: idealism, skepticism, or non-skeptical realism?",
+   "kind": "single_choice",
+   "n": 1764,
+   "options": [
+    {
+     "label": "idealism",
+     "accept_inclusive": 6.63,
+     "accept_exclusive": 5.44
+    },
+    {
+     "label": "skepticism",
+     "accept_inclusive": 5.44,
+     "accept_exclusive": 4.76
+    },
+    {
+     "label": "non-skeptical realism",
+     "accept_inclusive": 79.54,
+     "accept_exclusive": 78.17
+    }
+   ],
+   "other": 11.62,
+   "paraphrase": "What is the right view of the external world: idealism, skepticism, or non-skeptical realism?"
+  },
+  {
+   "id": 9,
+   "topic": "Footbridge",
+   "section": "main",
+   "question": "Footbridge (pushing man off bridge will save five on track below, what ought one do?): push or don't push?",
+   "kind": "single_choice",
+   "n": 1740,
+   "options": [
+    {
+     "label": "push",
+     "accept_inclusive": 21.95,
+     "accept_exclusive": 21.55
+    },
+    {
+     "label": "don't push",
+     "accept_inclusive": 56.03,
+     "accept_exclusive": 55.8
+    }
+   ],
+   "other": 22.64,
+   "paraphrase": "Pushing a man off a footbridge will stop a trolley and save five people on the track below. What ought one to do: push or not push?"
+  },
+  {
+   "id": 10,
+   "topic": "Free will",
+   "section": "main",
+   "question": "Free will: compatibilism, libertarianism, or no free will?",
+   "kind": "single_choice",
+   "n": 1758,
+   "options": [
+    {
+     "label": "compatibilism",
+     "accept_inclusive": 59.16,
+     "accept_exclusive": 57.68
+    },
+    {
+     "label": "libertarianism",
+     "accept_inclusive": 18.83,
+     "accept_exclusive": 18.2
+    },
+    {
+     "label": "no free will",
+     "accept_inclusive": 11.21,
+     "accept_exclusive": 10.58
+    }
+   ],
+   "other": 13.54,
+   "paraphrase": "Which view of free will is correct: compatibilism, libertarianism, or the view that there is no free will?"
+  },
+  {
+   "id": 11,
+   "topic": "Gender",
+   "section": "main",
+   "question": "Gender: biological, psychological, social, or unreal?",
+   "kind": "single_choice",
+   "n": 1653,
+   "options": [
+    {
+     "label": "biological",
+     "accept_inclusive": 29.04,
+     "accept_exclusive": 15.12
+    },
+    {
+     "label": "psychological",
+     "accept_inclusive": 21.54,
+     "accept_exclusive": 4.3
+    },
+    {
+     "label": "social",
+     "accept_inclusive": 63.1,
+     "accept_exclusive": 43.01
+    },
+    {
+     "label": "unreal",
+     "accept_inclusive": 4.23,
+     "accept_exclusive": 1.63
+    }
+   ],
+   "other": 35.93,
+   "paraphrase": "What is gender, most fundamentally: biological, psychological, social, or unreal?"
+  },
+  {
+   "id": 12,
+   "topic": "God",
+   "section": "main",
+   "question": "God: theism or atheism?",
+   "kind": "single_choice",
+   "n": 1770,
+   "options": [
+    {
+     "label": "theism",
+     "accept_inclusive": 18.93,
+     "accept_exclusive": 18.64
+    },
+    {
+     "label": "atheism",
+     "accept_inclusive": 66.95,
+     "accept_exclusive": 66.72
+    }
+   ],
+   "other": 14.63,
+   "paraphrase": "Does God exist (theism), or not (atheism)?"
+  },
+  {
+   "id": 13,
+   "topic": "Knowledge",
+   "section": "main",
+   "question": "Knowledge: empiricism or rationalism?",
+   "kind": "single_choice",
+   "n": 1722,
+   "options": [
+    {
+     "label": "empiricism",
+     "accept_inclusive": 43.9,
+     "accept_exclusive": 37.28
+    },
+    {
+     "label": "rationalism",
+     "accept_inclusive": 33.51,
+     "accept_exclusive": 26.77
+    }
+   ],
+   "other": 35.95,
+   "paraphrase": "Does knowledge come fundamentally from experience (empiricism) or from reason (rationalism)?"
+  },
+  {
+   "id": 14,
+   "topic": "Knowledge claims",
+   "section": "main",
+   "question": "Knowledge claims: contextualism, relativism, or invariantism?",
+   "kind": "single_choice",
+   "n": 1474,
+   "options": [
+    {
+     "label": "contextualism",
+     "accept_inclusive": 54.61,
+     "accept_exclusive": 52.17
+    },
+    {
+     "label": "relativism",
+     "accept_inclusive": 5.43,
+     "accept_exclusive": 4
+    },
+    {
+     "label": "invariantism",
+     "accept_inclusive": 25.51,
+     "accept_exclusive": 24.29
+    }
+   ],
+   "other": 19.54,
+   "paraphrase": "How do the truth conditions of knowledge claims work: do they vary with the speaker's context (contextualism), with the assessor (relativism), or not at all (invariantism)?"
+  },
+  {
+   "id": 15,
+   "topic": "Laws of nature",
+   "section": "main",
+   "question": "Laws of nature: Humean or non-Humean?",
+   "kind": "single_choice",
+   "n": 1554,
+   "options": [
+    {
+     "label": "Humean",
+     "accept_inclusive": 31.27,
+     "accept_exclusive": 30.82
+    },
+    {
+     "label": "non-Humean",
+     "accept_inclusive": 54.31,
+     "accept_exclusive": 53.73
+    }
+   ],
+   "other": 15.44,
+   "paraphrase": "Are laws of nature just summaries of regularities (Humean), or something more that governs them (non-Humean)?"
+  },
+  {
+   "id": 16,
+   "topic": "Logic",
+   "section": "main",
+   "question": "Logic: classical or non-classical?",
+   "kind": "single_choice",
+   "n": 1415,
+   "options": [
+    {
+     "label": "classical",
+     "accept_inclusive": 53.64,
+     "accept_exclusive": 48.69
+    },
+    {
+     "label": "non-classical",
+     "accept_inclusive": 26.43,
+     "accept_exclusive": 21.77
+    }
+   ],
+   "other": 29.54,
+   "paraphrase": "Is classical logic the correct logic, or is some non-classical logic correct?"
+  },
+  {
+   "id": 17,
+   "topic": "Meaning of life",
+   "section": "main",
+   "question": "Meaning of life: subjective, objective, or nonexistent?",
+   "kind": "single_choice",
+   "n": 1725,
+   "options": [
+    {
+     "label": "subjective",
+     "accept_inclusive": 33.04,
+     "accept_exclusive": 28.35
+    },
+    {
+     "label": "objective",
+     "accept_inclusive": 32.06,
+     "accept_exclusive": 27.59
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 16.12,
+     "accept_exclusive": 14.9
+    }
+   ],
+   "other": 29.16,
+   "paraphrase": "Is the meaning of life subjective, objective, or nonexistent?"
+  },
+  {
+   "id": 18,
+   "topic": "Mental content",
+   "section": "main",
+   "question": "Mental content: internalism or externalism?",
+   "kind": "single_choice",
+   "n": 1514,
+   "options": [
+    {
+     "label": "internalism",
+     "accept_inclusive": 26.35,
+     "accept_exclusive": 21.93
+    },
+    {
+     "label": "externalism",
+     "accept_inclusive": 58.12,
+     "accept_exclusive": 53.83
+    }
+   ],
+   "other": 24.24,
+   "paraphrase": "Is the content of our thoughts fixed only by what is inside the head (internalism), or partly by the environment (externalism)?"
+  },
+  {
+   "id": 19,
+   "topic": "Meta-ethics",
+   "section": "main",
+   "question": "Meta-ethics: moral realism or moral anti-realism?",
+   "kind": "single_choice",
+   "n": 1719,
+   "options": [
+    {
+     "label": "moral realism",
+     "accept_inclusive": 62.07,
+     "accept_exclusive": 61.55
+    },
+    {
+     "label": "moral anti-realism",
+     "accept_inclusive": 26.12,
+     "accept_exclusive": 25.77
+    }
+   ],
+   "other": 12.68,
+   "paraphrase": "Are there objective moral facts (moral realism), or not (moral anti-realism)?"
+  },
+  {
+   "id": 20,
+   "topic": "Metaphilosophy",
+   "section": "main",
+   "question": "Metaphilosophy: naturalism or non-naturalism?",
+   "kind": "single_choice",
+   "n": 1549,
+   "options": [
+    {
+     "label": "naturalism",
+     "accept_inclusive": 50.16,
+     "accept_exclusive": 49.39
+    },
+    {
+     "label": "non-naturalism",
+     "accept_inclusive": 31.12,
+     "accept_exclusive": 30.34
+    }
+   ],
+   "other": 20.27,
+   "paraphrase": "Should philosophy be continuous with the natural sciences (naturalism), or not (non-naturalism)?"
+  },
+  {
+   "id": 21,
+   "topic": "Mind",
+   "section": "main",
+   "question": "Mind: physicalism or non-physicalism?",
+   "kind": "single_choice",
+   "n": 1733,
+   "options": [
+    {
+     "label": "physicalism",
+     "accept_inclusive": 51.93,
+     "accept_exclusive": 51.59
+    },
+    {
+     "label": "non-physicalism",
+     "accept_inclusive": 32.08,
+     "accept_exclusive": 31.85
+    }
+   ],
+   "other": 16.56,
+   "paraphrase": "Is the mind entirely physical (physicalism), or not (non-physicalism)?"
+  },
+  {
+   "id": 22,
+   "topic": "Moral judgment",
+   "section": "main",
+   "question": "Moral judgment: cognitivism or non-cognitivism?",
+   "kind": "single_choice",
+   "n": 1636,
+   "options": [
+    {
+     "label": "cognitivism",
+     "accept_inclusive": 69.25,
+     "accept_exclusive": 68.15
+    },
+    {
+     "label": "non-cognitivism",
+     "accept_inclusive": 20.72,
+     "accept_exclusive": 19.87
+    }
+   ],
+   "other": 11.98,
+   "paraphrase": "Do moral judgments express beliefs that can be true or false (cognitivism), or non-cognitive attitudes (non-cognitivism)?"
+  },
+  {
+   "id": 23,
+   "topic": "Moral motivation",
+   "section": "main",
+   "question": "Moral motivation: internalism or externalism?",
+   "kind": "single_choice",
+   "n": 1429,
+   "options": [
+    {
+     "label": "internalism",
+     "accept_inclusive": 41.01,
+     "accept_exclusive": 38.14
+    },
+    {
+     "label": "externalism",
+     "accept_inclusive": 39.33,
+     "accept_exclusive": 36.6
+    }
+   ],
+   "other": 25.26,
+   "paraphrase": "Does sincerely judging that something is right necessarily motivate one to do it (internalism), or not (externalism)?"
+  },
+  {
+   "id": 24,
+   "topic": "Newcomb's problem",
+   "section": "main",
+   "question": "Newcomb's problem: one box or two boxes?",
+   "kind": "single_choice",
+   "n": 1071,
+   "options": [
+    {
+     "label": "one box",
+     "accept_inclusive": 31.19,
+     "accept_exclusive": 30.72
+    },
+    {
+     "label": "two boxes",
+     "accept_inclusive": 39.03,
+     "accept_exclusive": 38.47
+    }
+   ],
+   "other": 30.81,
+   "paraphrase": "In Newcomb's problem, should you take only the opaque box or both boxes?"
+  },
+  {
+   "id": 25,
+   "topic": "Normative ethics",
+   "section": "main",
+   "question": "Normative ethics: deontology, consequentialism, or virtue ethics?",
+   "kind": "single_choice",
+   "n": 1741,
+   "options": [
+    {
+     "label": "deontology",
+     "accept_inclusive": 32.05,
+     "accept_exclusive": 19.7
+    },
+    {
+     "label": "consequentialism",
+     "accept_inclusive": 30.56,
+     "accept_exclusive": 21.42
+    },
+    {
+     "label": "virtue ethics",
+     "accept_inclusive": 36.99,
+     "accept_exclusive": 25.04
+    }
+   ],
+   "other": 33.83,
+   "paraphrase": "Which approach to normative ethics is correct: deontology, consequentialism, or virtue ethics?"
+  },
+  {
+   "id": 26,
+   "topic": "Perceptual experience",
+   "section": "main",
+   "question": "Perceptual experience: disjunctivism, qualia theory, representationalism, or sense-datum theory?",
+   "kind": "single_choice",
+   "n": 1323,
+   "options": [
+    {
+     "label": "disjunctivism",
+     "accept_inclusive": 15.65,
+     "accept_exclusive": 13.83
+    },
+    {
+     "label": "qualia theory",
+     "accept_inclusive": 15.12,
+     "accept_exclusive": 13.3
+    },
+    {
+     "label": "representationalism",
+     "accept_inclusive": 39.3,
+     "accept_exclusive": 36.13
+    },
+    {
+     "label": "sense-datum theory",
+     "accept_inclusive": 4.99,
+     "accept_exclusive": 3.85
+    }
+   ],
+   "other": 32.88,
+   "paraphrase": "Which theory of perceptual experience is correct: disjunctivism, qualia theory, representationalism, or sense-datum theory?"
+  },
+  {
+   "id": 27,
+   "topic": "Personal identity",
+   "section": "main",
+   "question": "Personal identity: biological view, psychological view, or further-fact view?",
+   "kind": "single_choice",
+   "n": 1615,
+   "options": [
+    {
+     "label": "biological view",
+     "accept_inclusive": 19.07,
+     "accept_exclusive": 15.6
+    },
+    {
+     "label": "psychological view",
+     "accept_inclusive": 43.65,
+     "accept_exclusive": 39.44
+    },
+    {
+     "label": "further-fact view",
+     "accept_inclusive": 14.86,
+     "accept_exclusive": 13.37
+    }
+   ],
+   "other": 31.58,
+   "paraphrase": "What makes a person the same person over time: biological continuity, psychological continuity, or a further fact?"
+  },
+  {
+   "id": 28,
+   "topic": "Philosophical methods",
+   "section": "main",
+   "question": "Philosophical methods (which methods are the most useful/important?)",
+   "kind": "accept_reject",
+   "n": 1733,
+   "options": [
+    {
+     "label": "conceptual analysis",
+     "accept_inclusive": 70.92,
+     "accept_exclusive": null
+    },
+    {
+     "label": "conceptual engineering",
+     "accept_inclusive": 39.47,
+     "accept_exclusive": null
+    },
+    {
+     "label": "empirical philosophy",
+     "accept_inclusive": 60.01,
+     "accept_exclusive": null
+    },
+    {
+     "label": "experimental philosophy",
+     "accept_inclusive": 32.6,
+     "accept_exclusive": null
+    },
+    {
+     "label": "formal philosophy",
+     "accept_inclusive": 55.51,
+     "accept_exclusive": null
+    },
+    {
+     "label": "intuition-based philosophy",
+     "accept_inclusive": 49.45,
+     "accept_exclusive": null
+    },
+    {
+     "label": "linguistic philosophy",
+     "accept_inclusive": 46.16,
+     "accept_exclusive": null
+    }
+   ],
+   "rejects": [
+    {
+     "label": "conceptual analysis",
+     "share": 11.6
+    },
+    {
+     "label": "conceptual engineering",
+     "share": 20.6
+    },
+    {
+     "label": "empirical philosophy",
+     "share": 14.48
+    },
+    {
+     "label": "experimental philosophy",
+     "share": 35.95
+    },
+    {
+     "label": "formal philosophy",
+     "share": 12.87
+    },
+    {
+     "label": "intuition-based philosophy",
+     "share": 29.02
+    },
+    {
+     "label": "linguistic philosophy",
+     "share": 21.52
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "topic": "Philosophical progress",
+   "section": "main",
+   "question": "Philosophical progress (is there any?): none, a little, or a lot?",
+   "kind": "single_choice",
+   "n": 1775,
+   "options": [
+    {
+     "label": "none",
+     "accept_inclusive": 3.83,
+     "accept_exclusive": 3.77
+    },
+    {
+     "label": "a little",
+     "accept_inclusive": 46.59,
+     "accept_exclusive": 45.8
+    },
+    {
+     "label": "a lot",
+     "accept_inclusive": 41.69,
+     "accept_exclusive": 41.24
+    }
+   ],
+   "other": 9.18,
+   "paraphrase": "How much progress has philosophy made: none, a little, or a lot?"
+  },
+  {
+   "id": 30,
+   "topic": "Political philosophy",
+   "section": "main",
+   "question": "Political philosophy: communitarianism, egalitarianism, or libertarianism?",
+   "kind": "single_choice",
+   "n": 1537,
+   "options": [
+    {
+     "label": "communitarianism",
+     "accept_inclusive": 27.26,
+     "accept_exclusive": 22.06
+    },
+    {
+     "label": "egalitarianism",
+     "accept_inclusive": 44.05,
+     "accept_exclusive": 38.26
+    },
+    {
+     "label": "libertarianism",
+     "accept_inclusive": 13.4,
+     "accept_exclusive": 10.28
+    }
+   ],
+   "other": 29.41,
+   "paraphrase": "Which political philosophy is correct: communitarianism, egalitarianism, or libertarianism?"
+  },
+  {
+   "id": 31,
+   "topic": "Proper names",
+   "section": "main",
+   "question": "Proper names: Fregean or Millian?",
+   "kind": "single_choice",
+   "n": 1269,
+   "options": [
+    {
+     "label": "Fregean",
+     "accept_inclusive": 36.09,
+     "accept_exclusive": 34.75
+    },
+    {
+     "label": "Millian",
+     "accept_inclusive": 38.69,
+     "accept_exclusive": 37.51
+    }
+   ],
+   "other": 27.74,
+   "paraphrase": "Does a proper name contribute a sense or mode of presentation to meaning (Fregean), or only its referent (Millian)?"
+  },
+  {
+   "id": 32,
+   "topic": "Race",
+   "section": "main",
+   "question": "Race: biological, social, or unreal?",
+   "kind": "single_choice",
+   "n": 1649,
+   "options": [
+    {
+     "label": "biological",
+     "accept_inclusive": 18.68,
+     "accept_exclusive": 11.46
+    },
+    {
+     "label": "social",
+     "accept_inclusive": 63.43,
+     "accept_exclusive": 52.82
+    },
+    {
+     "label": "unreal",
+     "accept_inclusive": 15.04,
+     "accept_exclusive": 11.4
+    }
+   ],
+   "other": 24.32,
+   "paraphrase": "What is race, most fundamentally: biological, social, or unreal?"
+  },
+  {
+   "id": 33,
+   "topic": "Science",
+   "section": "main",
+   "question": "Science: scientific realism or scientific anti-realism?",
+   "kind": "single_choice",
+   "n": 1689,
+   "options": [
+    {
+     "label": "scientific realism",
+     "accept_inclusive": 72.35,
+     "accept_exclusive": 71.52
+    },
+    {
+     "label": "scientific anti-realism",
+     "accept_inclusive": 15.04,
+     "accept_exclusive": 14.27
+    }
+   ],
+   "other": 14.21,
+   "paraphrase": "Do our best scientific theories describe an unobservable reality approximately truly (scientific realism), or not (scientific anti-realism)?"
+  },
+  {
+   "id": 34,
+   "topic": "Teletransporter",
+   "section": "main",
+   "question": "Teletransporter (new matter): survival or death?",
+   "kind": "single_choice",
+   "n": 1575,
+   "options": [
+    {
+     "label": "survival",
+     "accept_inclusive": 35.24,
+     "accept_exclusive": 34.79
+    },
+    {
+     "label": "death",
+     "accept_inclusive": 40.06,
+     "accept_exclusive": 39.68
+    }
+   ],
+   "other": 25.52,
+   "paraphrase": "If a teletransporter destroys you and builds an exact copy from new matter elsewhere, have you survived or died?"
+  },
+  {
+   "id": 35,
+   "topic": "Time",
+   "section": "main",
+   "question": "Time: A-theory or B-theory?",
+   "kind": "single_choice",
+   "n": 1123,
+   "options": [
+    {
+     "label": "A-theory",
+     "accept_inclusive": 27.25,
+     "accept_exclusive": 24.84
+    },
+    {
+     "label": "B-theory",
+     "accept_inclusive": 38.2,
+     "accept_exclusive": 35.71
+    }
+   ],
+   "other": 39.45,
+   "paraphrase": "Is there an objective present and passage of time (A-theory), or only relations of earlier and later (B-theory)?"
+  },
+  {
+   "id": 36,
+   "topic": "Trolley problem",
+   "section": "main",
+   "question": "Trolley problem (five straight ahead, one on side track, turn requires switching, what ought one do?): switch or don't switch?",
+   "kind": "single_choice",
+   "n": 1736,
+   "options": [
+    {
+     "label": "switch",
+     "accept_inclusive": 63.42,
+     "accept_exclusive": 62.5
+    },
+    {
+     "label": "don't switch",
+     "accept_inclusive": 13.31,
+     "accept_exclusive": 12.62
+    }
+   ],
+   "other": 24.88,
+   "paraphrase": "A trolley will kill five people unless you switch it onto a side track where it will kill one. What ought one to do: switch or not switch?"
+  },
+  {
+   "id": 37,
+   "topic": "Truth",
+   "section": "main",
+   "question": "Truth: correspondence, deflationary, or epistemic?",
+   "kind": "single_choice",
+   "n": 1643,
+   "options": [
+    {
+     "label": "correspondence",
+     "accept_inclusive": 51.37,
+     "accept_exclusive": 48.33
+    },
+    {
+     "label": "deflationary",
+     "accept_inclusive": 24.53,
+     "accept_exclusive": 22.22
+    },
+    {
+     "label": "epistemic",
+     "accept_inclusive": 10.16,
+     "accept_exclusive": 8.76
+    }
+   ],
+   "other": 20.69,
+   "paraphrase": "Which theory of truth is correct: correspondence, deflationary, or epistemic?"
+  },
+  {
+   "id": 38,
+   "topic": "Vagueness",
+   "section": "main",
+   "question": "Vagueness: epistemic, metaphysical, or semantic?",
+   "kind": "single_choice",
+   "n": 1431,
+   "options": [
+    {
+     "label": "epistemic",
+     "accept_inclusive": 24.18,
+     "accept_exclusive": 16.28
+    },
+    {
+     "label": "metaphysical",
+     "accept_inclusive": 20.82,
+     "accept_exclusive": 15.16
+    },
+    {
+     "label": "semantic",
+     "accept_inclusive": 52.13,
+     "accept_exclusive": 42.56
+    }
+   ],
+   "other": 26,
+   "paraphrase": "Is vagueness a matter of our ignorance (epistemic), of the world itself (metaphysical), or of language (semantic)?"
+  },
+  {
+   "id": 39,
+   "topic": "Zombies",
+   "section": "main",
+   "question": "Zombies: inconceivable, conceivable but not metaphysically possible, or metaphysically possible?",
+   "kind": "single_choice",
+   "n": 1610,
+   "options": [
+    {
+     "label": "inconceivable",
+     "accept_inclusive": 16.4,
+     "accept_exclusive": 15.84
+    },
+    {
+     "label": "conceivable but not metaphysically possible",
+     "accept_inclusive": 36.52,
+     "accept_exclusive": 35.78
+    },
+    {
+     "label": "metaphysically possible",
+     "accept_inclusive": 24.41,
+     "accept_exclusive": 24.22
+    }
+   ],
+   "other": 24.16,
+   "paraphrase": "Are philosophical zombies (physical duplicates of us without consciousness) inconceivable, conceivable but not metaphysically possible, or metaphysically possible?"
+  },
+  {
+   "id": 40,
+   "topic": "Abortion",
+   "section": "additional",
+   "question": "Abortion (first trimester, no special circumstances): permissible or impermissible?",
+   "kind": "single_choice",
+   "n": 1122,
+   "options": [
+    {
+     "label": "permissible",
+     "accept_inclusive": 81.73,
+     "accept_exclusive": 81.37
+    },
+    {
+     "label": "impermissible",
+     "accept_inclusive": 13.1,
+     "accept_exclusive": 12.83
+    }
+   ],
+   "other": 5.79,
+   "paraphrase": "Is abortion in the first trimester, with no special circumstances, permissible or impermissible?"
+  },
+  {
+   "id": 41,
+   "topic": "Aesthetic experience",
+   "section": "additional",
+   "question": "Aesthetic experience: perception, pleasure, or sui generis?",
+   "kind": "single_choice",
+   "n": 685,
+   "options": [
+    {
+     "label": "perception",
+     "accept_inclusive": 28.18,
+     "accept_exclusive": 24.96
+    },
+    {
+     "label": "pleasure",
+     "accept_inclusive": 14.16,
+     "accept_exclusive": 11.09
+    },
+    {
+     "label": "sui generis",
+     "accept_inclusive": 37.23,
+     "accept_exclusive": 35.77
+    }
+   ],
+   "other": 28.18,
+   "paraphrase": "Is aesthetic experience best understood as a kind of perception, a kind of pleasure, or something sui generis?"
+  },
+  {
+   "id": 42,
+   "topic": "Analysis of knowledge",
+   "section": "additional",
+   "question": "Analysis of knowledge: justified true belief, other analysis, or no analysis?",
+   "kind": "single_choice",
+   "n": 1025,
+   "options": [
+    {
+     "label": "justified true belief",
+     "accept_inclusive": 23.61,
+     "accept_exclusive": 23.12
+    },
+    {
+     "label": "other analysis",
+     "accept_inclusive": 32.2,
+     "accept_exclusive": 31.61
+    },
+    {
+     "label": "no analysis",
+     "accept_inclusive": 30.63,
+     "accept_exclusive": 30.44
+    }
+   ],
+   "other": 14.83,
+   "paraphrase": "Is knowledge justified true belief, does it have some other analysis, or does it have no analysis?"
+  },
+  {
+   "id": 43,
+   "topic": "Arguments for theism",
+   "section": "additional",
+   "question": "Arguments for theism (which argument is strongest?): cosmological, design, ontological, pragmatic, or moral?",
+   "kind": "single_choice",
+   "n": 1025,
+   "options": [
+    {
+     "label": "cosmological",
+     "accept_inclusive": 20.88,
+     "accept_exclusive": 16.59
+    },
+    {
+     "label": "design",
+     "accept_inclusive": 17.66,
+     "accept_exclusive": 13.85
+    },
+    {
+     "label": "ontological",
+     "accept_inclusive": 8.88,
+     "accept_exclusive": 6.83
+    },
+    {
+     "label": "pragmatic",
+     "accept_inclusive": 14.24,
+     "accept_exclusive": 11.61
+    },
+    {
+     "label": "moral",
+     "accept_inclusive": 9.37,
+     "accept_exclusive": 6.34
+    }
+   ],
+   "other": 44.78,
+   "paraphrase": "Which argument for the existence of God is strongest: cosmological, design, ontological, pragmatic, or moral?"
+  },
+  {
+   "id": 44,
+   "topic": "Belief or credence",
+   "section": "additional",
+   "question": "Belief or credence (which is more fundamental?): belief, credence, or neither?",
+   "kind": "single_choice",
+   "n": 774,
+   "options": [
+    {
+     "label": "belief",
+     "accept_inclusive": 30.62,
+     "accept_exclusive": 29.97
+    },
+    {
+     "label": "credence",
+     "accept_inclusive": 31.27,
+     "accept_exclusive": 30.75
+    },
+    {
+     "label": "neither",
+     "accept_inclusive": 19.51,
+     "accept_exclusive": 19.38
+    }
+   ],
+   "other": 19.9,
+   "paraphrase": "Which is more fundamental, all-or-nothing belief or degrees of credence, or neither?"
+  },
+  {
+   "id": 45,
+   "topic": "Capital punishment",
+   "section": "additional",
+   "question": "Capital punishment: permissible or impermissible?",
+   "kind": "single_choice",
+   "n": 1122,
+   "options": [
+    {
+     "label": "permissible",
+     "accept_inclusive": 17.74,
+     "accept_exclusive": 17.74
+    },
+    {
+     "label": "impermissible",
+     "accept_inclusive": 75.13,
+     "accept_exclusive": 75.04
+    }
+   ],
+   "other": 7.22,
+   "paraphrase": "Is capital punishment permissible or impermissible?"
+  },
+  {
+   "id": 46,
+   "topic": "Causation",
+   "section": "additional",
+   "question": "Causation: counterfactual/difference-making, process/production, primitive, or nonexistent?",
+   "kind": "single_choice",
+   "n": 892,
+   "options": [
+    {
+     "label": "counterfactual/difference-making",
+     "accept_inclusive": 37.22,
+     "accept_exclusive": 33.41
+    },
+    {
+     "label": "process/production",
+     "accept_inclusive": 22.53,
+     "accept_exclusive": 18.72
+    },
+    {
+     "label": "primitive",
+     "accept_inclusive": 20.52,
+     "accept_exclusive": 18.95
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 4.15,
+     "accept_exclusive": 3.81
+    }
+   ],
+   "other": 25.11,
+   "paraphrase": "What is causation: counterfactual dependence or difference-making, a process of production, something primitive, or nothing at all?"
+  },
+  {
+   "id": 47,
+   "topic": "Chinese room",
+   "section": "additional",
+   "question": "Chinese room: understands or doesn't understand?",
+   "kind": "single_choice",
+   "n": 1031,
+   "options": [
+    {
+     "label": "understands",
+     "accept_inclusive": 17.85,
+     "accept_exclusive": 17.75
+    },
+    {
+     "label": "doesn't understand",
+     "accept_inclusive": 67.12,
+     "accept_exclusive": 67.12
+    }
+   ],
+   "other": 15.13,
+   "paraphrase": "Does the system in Searle's Chinese room understand Chinese, or not?"
+  },
+  {
+   "id": 48,
+   "topic": "Concepts",
+   "section": "additional",
+   "question": "Concepts: nativism or empiricism?",
+   "kind": "single_choice",
+   "n": 858,
+   "options": [
+    {
+     "label": "nativism",
+     "accept_inclusive": 28.09,
+     "accept_exclusive": 23.31
+    },
+    {
+     "label": "empiricism",
+     "accept_inclusive": 50.35,
+     "accept_exclusive": 45.1
+    }
+   ],
+   "other": 31.59,
+   "paraphrase": "Are many of our concepts innate (nativism), or are they all acquired from experience (empiricism)?"
+  },
+  {
+   "id": 49,
+   "topic": "Consciousness",
+   "section": "additional",
+   "question": "Consciousness: dualism, eliminativism, functionalism, identity theory, or panpsychism?",
+   "kind": "single_choice",
+   "n": 1020,
+   "options": [
+    {
+     "label": "dualism",
+     "accept_inclusive": 21.96,
+     "accept_exclusive": 20
+    },
+    {
+     "label": "eliminativism",
+     "accept_inclusive": 4.51,
+     "accept_exclusive": 3.82
+    },
+    {
+     "label": "functionalism",
+     "accept_inclusive": 33.04,
+     "accept_exclusive": 29.51
+    },
+    {
+     "label": "identity theory",
+     "accept_inclusive": 13.33,
+     "accept_exclusive": 11.47
+    },
+    {
+     "label": "panpsychism",
+     "accept_inclusive": 7.55,
+     "accept_exclusive": 6.08
+    }
+   ],
+   "other": 29.12,
+   "paraphrase": "Which theory of consciousness is correct: dualism, eliminativism, functionalism, identity theory, or panpsychism?"
+  },
+  {
+   "id": 50,
+   "topic": "Continuum hypothesis",
+   "section": "additional",
+   "question": "Continuum hypothesis (does it have a determinate truth-value?): determinate or indeterminate?",
+   "kind": "single_choice",
+   "n": 478,
+   "options": [
+    {
+     "label": "determinate",
+     "accept_inclusive": 37.66,
+     "accept_exclusive": 37.66
+    },
+    {
+     "label": "indeterminate",
+     "accept_inclusive": 28.66,
+     "accept_exclusive": 28.66
+    }
+   ],
+   "other": 33.68,
+   "paraphrase": "Does the continuum hypothesis have a determinate truth-value, or is it indeterminate?"
+  },
+  {
+   "id": 51,
+   "topic": "Cosmological fine-tuning",
+   "section": "additional",
+   "question": "Cosmological fine-tuning (what explains it?): design, multiverse, brute fact, or no fine-tuning?",
+   "kind": "single_choice",
+   "n": 807,
+   "options": [
+    {
+     "label": "design",
+     "accept_inclusive": 17.35,
+     "accept_exclusive": 15.61
+    },
+    {
+     "label": "multiverse",
+     "accept_inclusive": 15.12,
+     "accept_exclusive": 12.39
+    },
+    {
+     "label": "brute fact",
+     "accept_inclusive": 32.09,
+     "accept_exclusive": 29.12
+    },
+    {
+     "label": "no fine-tuning",
+     "accept_inclusive": 21.69,
+     "accept_exclusive": 19.45
+    }
+   ],
+   "other": 23.42,
+   "paraphrase": "What explains the apparent fine-tuning of the universe for life: design, a multiverse, brute fact, or is there no fine-tuning?"
+  },
+  {
+   "id": 52,
+   "topic": "Environmental ethics",
+   "section": "additional",
+   "question": "Environmental ethics: anthropocentric or non-anthropocentric?",
+   "kind": "single_choice",
+   "n": 890,
+   "options": [
+    {
+     "label": "anthropocentric",
+     "accept_inclusive": 42.25,
+     "accept_exclusive": 40.45
+    },
+    {
+     "label": "non-anthropocentric",
+     "accept_inclusive": 50.67,
+     "accept_exclusive": 48.76
+    }
+   ],
+   "other": 10.79,
+   "paraphrase": "Does the environment matter morally only because of its relation to humans (anthropocentric), or also in its own right (non-anthropocentric)?"
+  },
+  {
+   "id": 53,
+   "topic": "Extended mind",
+   "section": "additional",
+   "question": "Extended mind: yes or no?",
+   "kind": "single_choice",
+   "n": 952,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 51.26,
+     "accept_exclusive": 50.95
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 37.08,
+     "accept_exclusive": 36.97
+    }
+   ],
+   "other": 12.08,
+   "paraphrase": "Can the mind extend beyond the brain and body into tools such as notebooks?"
+  },
+  {
+   "id": 54,
+   "topic": "Foundations of mathematics",
+   "section": "additional",
+   "question": "Foundations of mathematics: constructivism/intuitionism, formalism, logicism, structuralism, or set-theoretic?",
+   "kind": "single_choice",
+   "n": 600,
+   "options": [
+    {
+     "label": "constructivism/intuitionism",
+     "accept_inclusive": 15.33,
+     "accept_exclusive": 13.67
+    },
+    {
+     "label": "formalism",
+     "accept_inclusive": 6.17,
+     "accept_exclusive": 5.17
+    },
+    {
+     "label": "logicism",
+     "accept_inclusive": 11.83,
+     "accept_exclusive": 10.33
+    },
+    {
+     "label": "structuralism",
+     "accept_inclusive": 21.17,
+     "accept_exclusive": 17.83
+    },
+    {
+     "label": "set-theoretic",
+     "accept_inclusive": 15.33,
+     "accept_exclusive": 13
+    }
+   ],
+   "other": 40,
+   "paraphrase": "Which view of the foundations of mathematics is correct: constructivism/intuitionism, formalism, logicism, structuralism, or set-theoretic foundations?"
+  },
+  {
+   "id": 55,
+   "topic": "Gender categories",
+   "section": "additional",
+   "question": "Gender categories: preserve, revise, or eliminate?",
+   "kind": "single_choice",
+   "n": 983,
+   "options": [
+    {
+     "label": "preserve",
+     "accept_inclusive": 20.45,
+     "accept_exclusive": 18.92
+    },
+    {
+     "label": "revise",
+     "accept_inclusive": 50.86,
+     "accept_exclusive": 48.02
+    },
+    {
+     "label": "eliminate",
+     "accept_inclusive": 16.28,
+     "accept_exclusive": 14.55
+    }
+   ],
+   "other": 18.51,
+   "paraphrase": "Should we preserve, revise, or eliminate our gender categories?"
+  },
+  {
+   "id": 56,
+   "topic": "Grounds of intentionality",
+   "section": "additional",
+   "question": "Grounds of intentionality: causal/teleological, inferential, interpretational, phenomenal, or primitive?",
+   "kind": "single_choice",
+   "n": 717,
+   "options": [
+    {
+     "label": "causal/teleological",
+     "accept_inclusive": 34.73,
+     "accept_exclusive": 29.85
+    },
+    {
+     "label": "inferential",
+     "accept_inclusive": 9.48,
+     "accept_exclusive": 6.69
+    },
+    {
+     "label": "interpretational",
+     "accept_inclusive": 15.06,
+     "accept_exclusive": 12.13
+    },
+    {
+     "label": "phenomenal",
+     "accept_inclusive": 12.55,
+     "accept_exclusive": 10.04
+    },
+    {
+     "label": "primitive",
+     "accept_inclusive": 13.67,
+     "accept_exclusive": 12.41
+    }
+   ],
+   "other": 28.87,
+   "paraphrase": "What grounds the aboutness of mental states: causal/teleological relations, inferential role, interpretation, phenomenal character, or is it primitive?"
+  },
+  {
+   "id": 57,
+   "topic": "Hard problem of consciousness",
+   "section": "additional",
+   "question": "Hard problem of consciousness (is there one?): yes or no?",
+   "kind": "single_choice",
+   "n": 998,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 62.42,
+     "accept_exclusive": 62.32
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 29.76,
+     "accept_exclusive": 29.66
+    }
+   ],
+   "other": 8.02,
+   "paraphrase": "Is there a hard problem of consciousness, distinct from explaining the brain's functions?"
+  },
+  {
+   "id": 58,
+   "topic": "Human genetic engineering",
+   "section": "additional",
+   "question": "Human genetic engineering: permissible or impermissible?",
+   "kind": "single_choice",
+   "n": 1059,
+   "options": [
+    {
+     "label": "permissible",
+     "accept_inclusive": 64.21,
+     "accept_exclusive": 64.21
+    },
+    {
+     "label": "impermissible",
+     "accept_inclusive": 19.45,
+     "accept_exclusive": 19.45
+    }
+   ],
+   "other": 16.34,
+   "paraphrase": "Is human genetic engineering permissible or impermissible?"
+  },
+  {
+   "id": 59,
+   "topic": "Hume",
+   "section": "additional",
+   "question": "Hume (what is his view?): skeptic or naturalist?",
+   "kind": "single_choice",
+   "n": 872,
+   "options": [
+    {
+     "label": "skeptic",
+     "accept_inclusive": 36.47,
+     "accept_exclusive": 28.9
+    },
+    {
+     "label": "naturalist",
+     "accept_inclusive": 54.93,
+     "accept_exclusive": 47.36
+    }
+   ],
+   "other": 23.74,
+   "paraphrase": "Was Hume, in his considered view, a skeptic or a naturalist?"
+  },
+  {
+   "id": 60,
+   "topic": "Immortality",
+   "section": "additional",
+   "question": "Immortality (would you choose it?): yes or no?",
+   "kind": "single_choice",
+   "n": 1113,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 44.92,
+     "accept_exclusive": 44.92
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 41.33,
+     "accept_exclusive": 41.33
+    }
+   ],
+   "other": 13.75,
+   "paraphrase": "If you could choose to be immortal, would you?"
+  },
+  {
+   "id": 61,
+   "topic": "Interlevel metaphysics",
+   "section": "additional",
+   "question": "Interlevel metaphysics (which is the most useful?): grounding, identity, realization, or supervenience?",
+   "kind": "single_choice",
+   "n": 748,
+   "options": [
+    {
+     "label": "grounding",
+     "accept_inclusive": 29.14,
+     "accept_exclusive": 22.33
+    },
+    {
+     "label": "identity",
+     "accept_inclusive": 11.5,
+     "accept_exclusive": 6.82
+    },
+    {
+     "label": "realization",
+     "accept_inclusive": 20.99,
+     "accept_exclusive": 14.17
+    },
+    {
+     "label": "supervenience",
+     "accept_inclusive": 24.73,
+     "accept_exclusive": 18.45
+    }
+   ],
+   "other": 38.24,
+   "paraphrase": "Which relation is most useful for relating higher-level and lower-level facts: grounding, identity, realization, or supervenience?"
+  },
+  {
+   "id": 62,
+   "topic": "Justification",
+   "section": "additional",
+   "question": "Justification: coherentism, infinitism, nonreliabilist foundationalism, or reliabilism?",
+   "kind": "single_choice",
+   "n": 950,
+   "options": [
+    {
+     "label": "coherentism",
+     "accept_inclusive": 23.68,
+     "accept_exclusive": 19.16
+    },
+    {
+     "label": "infinitism",
+     "accept_inclusive": 2,
+     "accept_exclusive": 1.47
+    },
+    {
+     "label": "nonreliabilist foundationalism",
+     "accept_inclusive": 25.16,
+     "accept_exclusive": 21.79
+    },
+    {
+     "label": "reliabilism",
+     "accept_inclusive": 33.58,
+     "accept_exclusive": 28.84
+    }
+   ],
+   "other": 28.74,
+   "paraphrase": "Which theory of justification is correct: coherentism, infinitism, nonreliabilist foundationalism, or reliabilism?"
+  },
+  {
+   "id": 63,
+   "topic": "Kant",
+   "section": "additional",
+   "question": "Kant (what is his view?): one world or two worlds?",
+   "kind": "single_choice",
+   "n": 722,
+   "options": [
+    {
+     "label": "one world",
+     "accept_inclusive": 45.43,
+     "accept_exclusive": 45.01
+    },
+    {
+     "label": "two worlds",
+     "accept_inclusive": 34.9,
+     "accept_exclusive": 34.35
+    }
+   ],
+   "other": 20.64,
+   "paraphrase": "Do Kant's appearances and things in themselves form one world seen two ways, or two distinct worlds?"
+  },
+  {
+   "id": 64,
+   "topic": "Law",
+   "section": "additional",
+   "question": "Law: legal positivism or legal non-positivism?",
+   "kind": "single_choice",
+   "n": 618,
+   "options": [
+    {
+     "label": "legal positivism",
+     "accept_inclusive": 39.48,
+     "accept_exclusive": 38.83
+    },
+    {
+     "label": "legal non-positivism",
+     "accept_inclusive": 44.98,
+     "accept_exclusive": 44.17
+    }
+   ],
+   "other": 16.99,
+   "paraphrase": "Is what the law is determined only by social facts (legal positivism), or also by moral facts (legal non-positivism)?"
+  },
+  {
+   "id": 65,
+   "topic": "Material composition",
+   "section": "additional",
+   "question": "Material composition: nihilism, restrictivism, or universalism?",
+   "kind": "single_choice",
+   "n": 574,
+   "options": [
+    {
+     "label": "nihilism",
+     "accept_inclusive": 8.19,
+     "accept_exclusive": 7.67
+    },
+    {
+     "label": "restrictivism",
+     "accept_inclusive": 35.02,
+     "accept_exclusive": 34.67
+    },
+    {
+     "label": "universalism",
+     "accept_inclusive": 27.35,
+     "accept_exclusive": 26.31
+    }
+   ],
+   "other": 31.36,
+   "paraphrase": "When do several objects compose a further object: never (nihilism), only sometimes (restrictivism), or always (universalism)?"
+  },
+  {
+   "id": 66,
+   "topic": "Metaontology",
+   "section": "additional",
+   "question": "Metaontology: heavyweight realism, deflationary realism, or anti-realism?",
+   "kind": "single_choice",
+   "n": 704,
+   "options": [
+    {
+     "label": "heavyweight realism",
+     "accept_inclusive": 38.64,
+     "accept_exclusive": 37.64
+    },
+    {
+     "label": "deflationary realism",
+     "accept_inclusive": 28.13,
+     "accept_exclusive": 27.27
+    },
+    {
+     "label": "anti-realism",
+     "accept_inclusive": 11.93,
+     "accept_exclusive": 11.65
+    }
+   ],
+   "other": 23.44,
+   "paraphrase": "Are questions about what exists deep and substantive (heavyweight realism), answerable but shallow (deflationary realism), or without objective answers (anti-realism)?"
+  },
+  {
+   "id": 67,
+   "topic": "Method in history of philosophy",
+   "section": "additional",
+   "question": "Method in history of philosophy (which do you prefer?): analytic/rational reconstruction or contextual/historicist?",
+   "kind": "single_choice",
+   "n": 936,
+   "options": [
+    {
+     "label": "analytic/rational reconstruction",
+     "accept_inclusive": 60.79,
+     "accept_exclusive": 42.95
+    },
+    {
+     "label": "contextual/historicist",
+     "accept_inclusive": 44.44,
+     "accept_exclusive": 26.82
+    }
+   ],
+   "other": 30.24,
+   "paraphrase": "In the history of philosophy, which method do you prefer: analytic/rational reconstruction or a contextual/historicist approach?"
+  },
+  {
+   "id": 68,
+   "topic": "Method in political philosophy",
+   "section": "additional",
+   "question": "Method in political philosophy (which do you prefer?): ideal theory or non-ideal theory?",
+   "kind": "single_choice",
+   "n": 786,
+   "options": [
+    {
+     "label": "ideal theory",
+     "accept_inclusive": 32.44,
+     "accept_exclusive": 22.39
+    },
+    {
+     "label": "non-ideal theory",
+     "accept_inclusive": 58.02,
+     "accept_exclusive": 47.96
+    }
+   ],
+   "other": 29.64,
+   "paraphrase": "In political philosophy, which method do you prefer: ideal theory or non-ideal theory?"
+  },
+  {
+   "id": 69,
+   "topic": "Mind uploading",
+   "section": "additional",
+   "question": "Mind uploading (brain replaced by digital emulation): survival or death?",
+   "kind": "single_choice",
+   "n": 1016,
+   "options": [
+    {
+     "label": "survival",
+     "accept_inclusive": 27.46,
+     "accept_exclusive": 27.17
+    },
+    {
+     "label": "death",
+     "accept_inclusive": 54.23,
+     "accept_exclusive": 54.04
+    }
+   ],
+   "other": 18.8,
+   "paraphrase": "If your brain were gradually replaced by a digital emulation, would you survive or die?"
+  },
+  {
+   "id": 70,
+   "topic": "Moral principles",
+   "section": "additional",
+   "question": "Moral principles: moral generalism or moral particularism?",
+   "kind": "single_choice",
+   "n": 984,
+   "options": [
+    {
+     "label": "moral generalism",
+     "accept_inclusive": 54.57,
+     "accept_exclusive": 52.95
+    },
+    {
+     "label": "moral particularism",
+     "accept_inclusive": 33.74,
+     "accept_exclusive": 32.01
+    }
+   ],
+   "other": 15.04,
+   "paraphrase": "Does morality rest on general principles (moral generalism), or must moral judgments be made case by case (moral particularism)?"
+  },
+  {
+   "id": 71,
+   "topic": "Morality",
+   "section": "additional",
+   "question": "Morality: non-naturalism, naturalist realism, constructivism, expressivism, or error theory?",
+   "kind": "single_choice",
+   "n": 1024,
+   "options": [
+    {
+     "label": "non-naturalism",
+     "accept_inclusive": 26.56,
+     "accept_exclusive": 24.22
+    },
+    {
+     "label": "naturalist realism",
+     "accept_inclusive": 31.64,
+     "accept_exclusive": 28.13
+    },
+    {
+     "label": "constructivism",
+     "accept_inclusive": 20.8,
+     "accept_exclusive": 17.68
+    },
+    {
+     "label": "expressivism",
+     "accept_inclusive": 10.64,
+     "accept_exclusive": 8.2
+    },
+    {
+     "label": "error theory",
+     "accept_inclusive": 5.27,
+     "accept_exclusive": 3.91
+    }
+   ],
+   "other": 17.87,
+   "paraphrase": "Which metaethical view of morality is correct: non-naturalism, naturalist realism, constructivism, expressivism, or error theory?"
+  },
+  {
+   "id": 72,
+   "topic": "Normative concepts",
+   "section": "additional",
+   "question": "Normative concepts (which is most fundamental?): fit, ought, reasons, or value?",
+   "kind": "single_choice",
+   "n": 861,
+   "options": [
+    {
+     "label": "fit",
+     "accept_inclusive": 7.32,
+     "accept_exclusive": 4.99
+    },
+    {
+     "label": "ought",
+     "accept_inclusive": 14.17,
+     "accept_exclusive": 10.57
+    },
+    {
+     "label": "reasons",
+     "accept_inclusive": 25.44,
+     "accept_exclusive": 21.49
+    },
+    {
+     "label": "value",
+     "accept_inclusive": 37.4,
+     "accept_exclusive": 32.75
+    }
+   ],
+   "other": 30.2,
+   "paraphrase": "Which normative concept is most fundamental: fit, ought, reasons, or value?"
+  },
+  {
+   "id": 73,
+   "topic": "Other minds",
+   "section": "additional",
+   "question": "Other minds (for which groups are some members conscious?)",
+   "kind": "accept_reject",
+   "n": 1092,
+   "options": [
+    {
+     "label": "adult humans",
+     "accept_inclusive": 95.15,
+     "accept_exclusive": null
+    },
+    {
+     "label": "cats",
+     "accept_inclusive": 88.55,
+     "accept_exclusive": null
+    },
+    {
+     "label": "fish",
+     "accept_inclusive": 65.29,
+     "accept_exclusive": null
+    },
+    {
+     "label": "flies",
+     "accept_inclusive": 34.52,
+     "accept_exclusive": null
+    },
+    {
+     "label": "worms",
+     "accept_inclusive": 24.18,
+     "accept_exclusive": null
+    },
+    {
+     "label": "plants",
+     "accept_inclusive": 7.23,
+     "accept_exclusive": null
+    },
+    {
+     "label": "particles",
+     "accept_inclusive": 2.01,
+     "accept_exclusive": null
+    },
+    {
+     "label": "newborn babies",
+     "accept_inclusive": 84.34,
+     "accept_exclusive": null
+    },
+    {
+     "label": "current AI systems",
+     "accept_inclusive": 3.39,
+     "accept_exclusive": null
+    },
+    {
+     "label": "future AI systems",
+     "accept_inclusive": 39.19,
+     "accept_exclusive": null
+    }
+   ],
+   "rejects": [
+    {
+     "label": "adult humans",
+     "share": 0.18
+    },
+    {
+     "label": "cats",
+     "share": 3.94
+    },
+    {
+     "label": "fish",
+     "share": 14.74
+    },
+    {
+     "label": "flies",
+     "share": 38.37
+    },
+    {
+     "label": "worms",
+     "share": 46.61
+    },
+    {
+     "label": "plants",
+     "share": 79.67
+    },
+    {
+     "label": "particles",
+     "share": 89.1
+    },
+    {
+     "label": "newborn babies",
+     "share": 4.85
+    },
+    {
+     "label": "current AI systems",
+     "share": 82.42
+    },
+    {
+     "label": "future AI systems",
+     "share": 26.83
+    }
+   ]
+  },
+  {
+   "id": 74,
+   "topic": "Ought implies can",
+   "section": "additional",
+   "question": "Ought implies can: yes or no?",
+   "kind": "single_choice",
+   "n": 1085,
+   "options": [
+    {
+     "label": "yes",
+     "accept_inclusive": 62.86,
+     "accept_exclusive": 62.67
+    },
+    {
+     "label": "no",
+     "accept_inclusive": 28.29,
+     "accept_exclusive": 28.11
+    }
+   ],
+   "other": 9.22,
+   "paraphrase": "Does being obligated to do something imply being able to do it?"
+  },
+  {
+   "id": 75,
+   "topic": "Philosophical knowledge",
+   "section": "additional",
+   "question": "Philosophical knowledge (is there any?): none, a little, or a lot?",
+   "kind": "single_choice",
+   "n": 1110,
+   "options": [
+    {
+     "label": "none",
+     "accept_inclusive": 3.6,
+     "accept_exclusive": 3.6
+    },
+    {
+     "label": "a little",
+     "accept_inclusive": 32.52,
+     "accept_exclusive": 32.07
+    },
+    {
+     "label": "a lot",
+     "accept_inclusive": 56.22,
+     "accept_exclusive": 55.68
+    }
+   ],
+   "other": 8.65,
+   "paraphrase": "How much philosophical knowledge is there: none, a little, or a lot?"
+  },
+  {
+   "id": 76,
+   "topic": "Plato",
+   "section": "additional",
+   "question": "Plato (what is his view?): knowledge only of forms or knowledge also of concrete things?",
+   "kind": "single_choice",
+   "n": 634,
+   "options": [
+    {
+     "label": "knowledge only of forms",
+     "accept_inclusive": 52.84,
+     "accept_exclusive": 52.52
+    },
+    {
+     "label": "knowledge also of concrete things",
+     "accept_inclusive": 28.23,
+     "accept_exclusive": 27.92
+    }
+   ],
+   "other": 19.56,
+   "paraphrase": "On Plato's view, is there knowledge only of the forms, or also of concrete things?"
+  },
+  {
+   "id": 77,
+   "topic": "Politics",
+   "section": "additional",
+   "question": "Politics: capitalism or socialism?",
+   "kind": "single_choice",
+   "n": 1094,
+   "options": [
+    {
+     "label": "capitalism",
+     "accept_inclusive": 29.52,
+     "accept_exclusive": 26.14
+    },
+    {
+     "label": "socialism",
+     "accept_inclusive": 53.02,
+     "accept_exclusive": 48.63
+    }
+   ],
+   "other": 25.23,
+   "paraphrase": "Which economic system is better: capitalism or socialism?"
+  },
+  {
+   "id": 78,
+   "topic": "Possible worlds",
+   "section": "additional",
+   "question": "Possible worlds: abstract, concrete, or nonexistent?",
+   "kind": "single_choice",
+   "n": 1063,
+   "options": [
+    {
+     "label": "abstract",
+     "accept_inclusive": 54.84,
+     "accept_exclusive": 53.43
+    },
+    {
+     "label": "concrete",
+     "accept_inclusive": 4.61,
+     "accept_exclusive": 4.33
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 30.01,
+     "accept_exclusive": 28.97
+    }
+   ],
+   "other": 13.26,
+   "paraphrase": "Are possible worlds abstract objects, concrete objects, or nonexistent?"
+  },
+  {
+   "id": 79,
+   "topic": "Practical reason",
+   "section": "additional",
+   "question": "Practical reason: Aristotelian, Humean, or Kantian?",
+   "kind": "single_choice",
+   "n": 888,
+   "options": [
+    {
+     "label": "Aristotelian",
+     "accept_inclusive": 38.74,
+     "accept_exclusive": 34.35
+    },
+    {
+     "label": "Humean",
+     "accept_inclusive": 30.63,
+     "accept_exclusive": 28.27
+    },
+    {
+     "label": "Kantian",
+     "accept_inclusive": 18.92,
+     "accept_exclusive": 15.88
+    }
+   ],
+   "other": 21.51,
+   "paraphrase": "Which view of practical reason is correct: Aristotelian, Humean, or Kantian?"
+  },
+  {
+   "id": 80,
+   "topic": "Principle of sufficient reason",
+   "section": "additional",
+   "question": "Principle of sufficient reason: true or false?",
+   "kind": "single_choice",
+   "n": 936,
+   "options": [
+    {
+     "label": "true",
+     "accept_inclusive": 35.9,
+     "accept_exclusive": 35.47
+    },
+    {
+     "label": "false",
+     "accept_inclusive": 45.73,
+     "accept_exclusive": 45.62
+    }
+   ],
+   "other": 18.91,
+   "paraphrase": "Is it true or false that everything has a sufficient reason or explanation?"
+  },
+  {
+   "id": 81,
+   "topic": "Properties",
+   "section": "additional",
+   "question": "Properties: classes, immanent universals, transcendent universals, tropes, or nonexistent?",
+   "kind": "single_choice",
+   "n": 776,
+   "options": [
+    {
+     "label": "classes",
+     "accept_inclusive": 11.47,
+     "accept_exclusive": 10.82
+    },
+    {
+     "label": "immanent universals",
+     "accept_inclusive": 20.62,
+     "accept_exclusive": 17.91
+    },
+    {
+     "label": "transcendent universals",
+     "accept_inclusive": 19.85,
+     "accept_exclusive": 17.4
+    },
+    {
+     "label": "tropes",
+     "accept_inclusive": 15.34,
+     "accept_exclusive": 13.14
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 8.12,
+     "accept_exclusive": 7.86
+    }
+   ],
+   "other": 32.86,
+   "paraphrase": "What are properties: classes, immanent universals, transcendent universals, tropes, or nothing at all?"
+  },
+  {
+   "id": 82,
+   "topic": "Propositional attitudes",
+   "section": "additional",
+   "question": "Propositional attitudes: dispositional, phenomenal, representational, or nonexistent?",
+   "kind": "single_choice",
+   "n": 794,
+   "options": [
+    {
+     "label": "dispositional",
+     "accept_inclusive": 31.49,
+     "accept_exclusive": 25.82
+    },
+    {
+     "label": "phenomenal",
+     "accept_inclusive": 6.93,
+     "accept_exclusive": 4.41
+    },
+    {
+     "label": "representational",
+     "accept_inclusive": 46.47,
+     "accept_exclusive": 40.93
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 3.53,
+     "accept_exclusive": 3.27
+    }
+   ],
+   "other": 25.57,
+   "paraphrase": "What are propositional attitudes such as belief: dispositional states, phenomenal states, representational states, or nonexistent?"
+  },
+  {
+   "id": 83,
+   "topic": "Propositions",
+   "section": "additional",
+   "question": "Propositions: sets, structured entities, simple entities, acts, or nonexistent?",
+   "kind": "single_choice",
+   "n": 811,
+   "options": [
+    {
+     "label": "sets",
+     "accept_inclusive": 8.38,
+     "accept_exclusive": 7.64
+    },
+    {
+     "label": "structured entities",
+     "accept_inclusive": 38.35,
+     "accept_exclusive": 36.13
+    },
+    {
+     "label": "simple entities",
+     "accept_inclusive": 6.91,
+     "accept_exclusive": 5.67
+    },
+    {
+     "label": "acts",
+     "accept_inclusive": 8.14,
+     "accept_exclusive": 7.27
+    },
+    {
+     "label": "nonexistent",
+     "accept_inclusive": 15.41,
+     "accept_exclusive": 15.04
+    }
+   ],
+   "other": 28.24,
+   "paraphrase": "What are propositions: sets, structured entities, simple entities, acts, or nonexistent?"
+  },
+  {
+   "id": 84,
+   "topic": "Quantum mechanics",
+   "section": "additional",
+   "question": "Quantum mechanics: collapse, hidden-variables, many-worlds, or epistemic?",
+   "kind": "single_choice",
+   "n": 556,
+   "options": [
+    {
+     "label": "collapse",
+     "accept_inclusive": 17.09,
+     "accept_exclusive": 14.75
+    },
+    {
+     "label": "hidden-variables",
+     "accept_inclusive": 21.94,
+     "accept_exclusive": 18.71
+    },
+    {
+     "label": "many-worlds",
+     "accept_inclusive": 19.42,
+     "accept_exclusive": 17.09
+    },
+    {
+     "label": "epistemic",
+     "accept_inclusive": 12.77,
+     "accept_exclusive": 11.33
+    }
+   ],
+   "other": 38.13,
+   "paraphrase": "Which interpretation of quantum mechanics is correct: collapse, hidden variables, many worlds, or epistemic?"
+  },
+  {
+   "id": 85,
+   "topic": "Race categories",
+   "section": "additional",
+   "question": "Race categories: preserve, revise, or eliminate?",
+   "kind": "single_choice",
+   "n": 944,
+   "options": [
+    {
+     "label": "preserve",
+     "accept_inclusive": 8.16,
+     "accept_exclusive": 7.31
+    },
+    {
+     "label": "revise",
+     "accept_inclusive": 32.31,
+     "accept_exclusive": 30.4
+    },
+    {
+     "label": "eliminate",
+     "accept_inclusive": 40.36,
+     "accept_exclusive": 39.19
+    }
+   ],
+   "other": 23.09,
+   "paraphrase": "Should we preserve, revise, or eliminate our race categories?"
+  },
+  {
+   "id": 86,
+   "topic": "Rational disagreement",
+   "section": "additional",
+   "question": "Rational disagreement (can two people with the same evidence rationally disagree?): non-permissivism or permissivism?",
+   "kind": "single_choice",
+   "n": 995,
+   "options": [
+    {
+     "label": "non-permissivism",
+     "accept_inclusive": 19.4,
+     "accept_exclusive": 19.4
+    },
+    {
+     "label": "permissivism",
+     "accept_inclusive": 70.15,
+     "accept_exclusive": 70.15
+    }
+   ],
+   "other": 10.45,
+   "paraphrase": "Can two people with exactly the same evidence rationally disagree (permissivism), or not (non-permissivism)?"
+  },
+  {
+   "id": 87,
+   "topic": "Response to external-world skepticism",
+   "section": "additional",
+   "question": "Response to external-world skepticism (which is strongest?): abductive, contextualist, dogmatist, epistemic externalist, semantic externalist, or pragmatic?",
+   "kind": "single_choice",
+   "n": 931,
+   "options": [
+    {
+     "label": "abductive",
+     "accept_inclusive": 22.13,
+     "accept_exclusive": 17.19
+    },
+    {
+     "label": "contextualist",
+     "accept_inclusive": 10.74,
+     "accept_exclusive": 7.73
+    },
+    {
+     "label": "dogmatist",
+     "accept_inclusive": 13.43,
+     "accept_exclusive": 10.1
+    },
+    {
+     "label": "epistemic externalist",
+     "accept_inclusive": 18.9,
+     "accept_exclusive": 14.61
+    },
+    {
+     "label": "semantic externalist",
+     "accept_inclusive": 8.38,
+     "accept_exclusive": 5.37
+    },
+    {
+     "label": "pragmatic",
+     "accept_inclusive": 22.77,
+     "accept_exclusive": 18.26
+    }
+   ],
+   "other": 26.75,
+   "paraphrase": "Which response to external-world skepticism is strongest: abductive, contextualist, dogmatist, epistemic externalist, semantic externalist, or pragmatic?"
+  },
+  {
+   "id": 88,
+   "topic": "Semantic content",
+   "section": "additional",
+   "question": "Semantic content (which expressions are context-dependent?): minimalism (no more than a few), moderate contextualism (intermediate), or radical contextualism (most or all) ?",
+   "kind": "single_choice",
+   "n": 779,
+   "options": [
+    {
+     "label": "minimalism (no more than a few)",
+     "accept_inclusive": 9.37,
+     "accept_exclusive": 8.99
+    },
+    {
+     "label": "moderate contextualism (intermediate)",
+     "accept_inclusive": 52.5,
+     "accept_exclusive": 51.86
+    },
+    {
+     "label": "radical contextualism (most or all)",
+     "accept_inclusive": 25.55,
+     "accept_exclusive": 25.03
+    }
+   ],
+   "other": 14.12,
+   "paraphrase": "How many expressions are context-dependent: no more than a few (minimalism), an intermediate number (moderate contextualism), or most or all (radical contextualism)?"
+  },
+  {
+   "id": 89,
+   "topic": "Sleeping beauty",
+   "section": "additional",
+   "question": "Sleeping beauty (woken once if heads, woken twice if tails, credence in heads on waking?): one-third or one-half?",
+   "kind": "single_choice",
+   "n": 429,
+   "options": [
+    {
+     "label": "one-third",
+     "accept_inclusive": 27.74,
+     "accept_exclusive": 27.74
+    },
+    {
+     "label": "one-half",
+     "accept_inclusive": 18.65,
+     "accept_exclusive": 18.65
+    }
+   ],
+   "other": 53.61,
+   "paraphrase": "Sleeping Beauty is woken once if a fair coin lands heads and twice if tails, with no memory of earlier wakings. On waking, what should her credence in heads be: one-third or one-half?"
+  },
+  {
+   "id": 90,
+   "topic": "Spacetime",
+   "section": "additional",
+   "question": "Spacetime: relationism or substantivalism?",
+   "kind": "single_choice",
+   "n": 626,
+   "options": [
+    {
+     "label": "relationism",
+     "accept_inclusive": 45.37,
+     "accept_exclusive": 45.05
+    },
+    {
+     "label": "substantivalism",
+     "accept_inclusive": 27.48,
+     "accept_exclusive": 27.16
+    }
+   ],
+   "other": 27.8,
+   "paraphrase": "Is spacetime just a system of relations between things (relationism), or a substance in its own right (substantivalism)?"
+  },
+  {
+   "id": 91,
+   "topic": "Statue and lump",
+   "section": "additional",
+   "question": "Statue and lump: one thing or two things?",
+   "kind": "single_choice",
+   "n": 956,
+   "options": [
+    {
+     "label": "one thing",
+     "accept_inclusive": 30.13,
+     "accept_exclusive": 29.71
+    },
+    {
+     "label": "two things",
+     "accept_inclusive": 41.84,
+     "accept_exclusive": 41.32
+    }
+   ],
+   "other": 28.97,
+   "paraphrase": "Are a statue and the lump of clay it is made of one thing or two things?"
+  },
+  {
+   "id": 92,
+   "topic": "Temporal ontology",
+   "section": "additional",
+   "question": "Temporal ontology: presentism, eternalism, or growing block?",
+   "kind": "single_choice",
+   "n": 734,
+   "options": [
+    {
+     "label": "presentism",
+     "accept_inclusive": 18.39,
+     "accept_exclusive": 17.57
+    },
+    {
+     "label": "eternalism",
+     "accept_inclusive": 39.92,
+     "accept_exclusive": 38.69
+    },
+    {
+     "label": "growing block",
+     "accept_inclusive": 17.03,
+     "accept_exclusive": 16.76
+    }
+   ],
+   "other": 26.98,
+   "paraphrase": "What exists in time: only the present (presentism), past, present and future alike (eternalism), or the past and present only (growing block)?"
+  },
+  {
+   "id": 93,
+   "topic": "Theory of reference",
+   "section": "additional",
+   "question": "Theory of reference: causal, descriptive, or deflationary?",
+   "kind": "single_choice",
+   "n": 877,
+   "options": [
+    {
+     "label": "causal",
+     "accept_inclusive": 46.29,
+     "accept_exclusive": 41.05
+    },
+    {
+     "label": "descriptive",
+     "accept_inclusive": 22.12,
+     "accept_exclusive": 16.99
+    },
+    {
+     "label": "deflationary",
+     "accept_inclusive": 15.05,
+     "accept_exclusive": 14.03
+    }
+   ],
+   "other": 27.94,
+   "paraphrase": "How do names refer: through causal chains, through associated descriptions, or in a deflationary way?"
+  },
+  {
+   "id": 94,
+   "topic": "Time travel",
+   "section": "additional",
+   "question": "Time travel: metaphysically possible or metaphysically impossible?",
+   "kind": "single_choice",
+   "n": 948,
+   "options": [
+    {
+     "label": "metaphysically possible",
+     "accept_inclusive": 42.3,
+     "accept_exclusive": 42.3
+    },
+    {
+     "label": "metaphysically impossible",
+     "accept_inclusive": 41.03,
+     "accept_exclusive": 41.03
+    }
+   ],
+   "other": 16.67,
+   "paraphrase": "Is time travel metaphysically possible or metaphysically impossible?"
+  },
+  {
+   "id": 95,
+   "topic": "True contradictions",
+   "section": "additional",
+   "question": "True contradictions: impossible, possible but non-actual, or actual?",
+   "kind": "single_choice",
+   "n": 925,
+   "options": [
+    {
+     "label": "impossible",
+     "accept_inclusive": 71.35,
+     "accept_exclusive": 71.03
+    },
+    {
+     "label": "possible but non-actual",
+     "accept_inclusive": 4.76,
+     "accept_exclusive": 4.65
+    },
+    {
+     "label": "actual",
+     "accept_inclusive": 12.43,
+     "accept_exclusive": 12.22
+    }
+   ],
+   "other": 12.11,
+   "paraphrase": "Are true contradictions impossible, possible but not actual, or actual?"
+  },
+  {
+   "id": 96,
+   "topic": "Units of selection",
+   "section": "additional",
+   "question": "Units of selection: genes or organisms?",
+   "kind": "single_choice",
+   "n": 682,
+   "options": [
+    {
+     "label": "genes",
+     "accept_inclusive": 43.55,
+     "accept_exclusive": 32.99
+    },
+    {
+     "label": "organisms",
+     "accept_inclusive": 43.11,
+     "accept_exclusive": 32.7
+    }
+   ],
+   "other": 34.31,
+   "paraphrase": "Does natural selection act primarily on genes or on organisms?"
+  },
+  {
+   "id": 97,
+   "topic": "Values in science",
+   "section": "additional",
+   "question": "Values in science (is ideal scientific reasoning necessarily sensitive or insensitive to non-epistemic values?): necessarily value-free, necessarily value-laden, or can be either?",
+   "kind": "single_choice",
+   "n": 961,
+   "options": [
+    {
+     "label": "necessarily value-free",
+     "accept_inclusive": 17.69,
+     "accept_exclusive": 17.59
+    },
+    {
+     "label": "necessarily value-laden",
+     "accept_inclusive": 44.02,
+     "accept_exclusive": 43.91
+    },
+    {
+     "label": "can be either",
+     "accept_inclusive": 31.11,
+     "accept_exclusive": 30.7
+    }
+   ],
+   "other": 7.8,
+   "paraphrase": "Is ideal scientific reasoning necessarily free of non-epistemic values, necessarily laden with them, or can it be either?"
+  },
+  {
+   "id": 98,
+   "topic": "Well-being",
+   "section": "additional",
+   "question": "Well-being: hedonism/experientialism, desire satisfaction, or objective list?",
+   "kind": "single_choice",
+   "n": 967,
+   "options": [
+    {
+     "label": "hedonism/experientialism",
+     "accept_inclusive": 12.72,
+     "accept_exclusive": 10.13
+    },
+    {
+     "label": "desire satisfaction",
+     "accept_inclusive": 18.61,
+     "accept_exclusive": 15.1
+    },
+    {
+     "label": "objective list",
+     "accept_inclusive": 53.15,
+     "accept_exclusive": 49.95
+    }
+   ],
+   "other": 24.82,
+   "paraphrase": "What makes a life go well: pleasant experiences (hedonism/experientialism), satisfied desires (desire satisfaction), or an objective list of goods?"
+  },
+  {
+   "id": 99,
+   "topic": "Wittgenstein",
+   "section": "additional",
+   "question": "Wittgenstein (which do you prefer?): early or late?",
+   "kind": "single_choice",
+   "n": 963,
+   "options": [
+    {
+     "label": "early",
+     "accept_inclusive": 24.61,
+     "accept_exclusive": 20.77
+    },
+    {
+     "label": "late",
+     "accept_inclusive": 57.53,
+     "accept_exclusive": 53.48
+    }
+   ],
+   "other": 25.75,
+   "paraphrase": "Which Wittgenstein do you prefer: the early or the late?"
+  }
+ ]
+}

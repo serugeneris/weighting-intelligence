@@ -107,7 +107,7 @@ def batches(s, data, bs, rng):
     for i in range(0, len(idx), bs):
         texts, starts = [], []
         for j in idx[i:i + bs]:
-            prompt = s.chat(data[j]["q"])
+            prompt = s.chat(data[j]["q"], system=data[j].get("system"))
             texts.append(prompt + data[j]["target"] + s.tok.eos_token)
             starts.append(len(s.tok(prompt)["input_ids"]))
         s.tok.padding_side = "right"
@@ -119,11 +119,14 @@ def batches(s, data, bs, rng):
         yield enc, labels
 
 
-def train(s, data, name, cfg, bs=1, accum=4, max_steps=None):
+def train(s, data, name, cfg, bs=1, accum=4, max_steps=None, *, added=None):
     for p in s.model.parameters():
         p.requires_grad_(False)
-    added = attach(s, cfg)
+    if added is None:
+        added = attach(s, cfg)
     params = [p for *_, lo in added for p in (lo.A, lo.B)]
+    for param in params:
+        param.requires_grad_(True)
     opt = torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=0.0)
     n_params = sum(p.numel() for p in params)
     print(f"{name}: {len(added)} adapters, {n_params:,} trainable parameters", flush=True)
