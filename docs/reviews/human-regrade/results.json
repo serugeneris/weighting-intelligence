@@ -1,0 +1,114 @@
+{
+ "grader": "Matias",
+ "missing": [],
+ "criteria": {
+  "targeted_question": {
+   "n": 18,
+   "agree_claude": 12,
+   "kappa_claude": 0.393258426966292,
+   "agree_codex": 11,
+   "kappa_codex": 0.3225806451612904,
+   "passes": {
+    "base": {
+     "human": 6,
+     "claude": 3,
+     "codex": 3,
+     "n": 6
+    },
+    "woven": {
+     "human": 1,
+     "claude": 0,
+     "codex": 0,
+     "n": 6
+    },
+    "student": {
+     "human": 6,
+     "claude": 4,
+     "codex": 3,
+     "n": 6
+    }
+   }
+  },
+  "relevant_fact": {
+   "n": 18,
+   "agree_claude": 16,
+   "kappa_claude": 0.6842105263157894,
+   "agree_codex": 17,
+   "kappa_codex": 0.8235294117647058,
+   "passes": {
+    "base": {
+     "human": 5,
+     "claude": 4,
+     "codex": 4,
+     "n": 6
+    },
+    "woven": {
+     "human": 4,
+     "claude": 3,
+     "codex": 4,
+     "n": 6
+    },
+    "student": {
+     "human": 6,
+     "claude": 6,
+     "codex": 6,
+     "n": 6
+    }
+   }
+  },
+  "irrelevant_fact": {
+   "n": 18,
+   "agree_claude": 18,
+   "kappa_claude": 1.0,
+   "agree_codex": 18,
+   "kappa_codex": 1.0,
+   "passes": {
+    "base": {
+     "human": 6,
+     "claude": 6,
+     "codex": 6,
+     "n": 6
+    },
+    "woven": {
+     "human": 5,
+     "claude": 5,
+     "codex": 5,
+     "n": 6
+    },
+    "student": {
+     "human": 2,
+     "claude": 2,
+     "codex": 2,
+     "n": 6
+    }
+   }
+  },
+  "transfers_core_distinction": {
+   "n": 18,
+   "agree_claude": 16,
+   "kappa_claude": 0.4374999999999997,
+   "agree_codex": 15,
+   "kappa_codex": 0.30769230769230804,
+   "passes": {
+    "base": {
+     "human": 6,
+     "claude": 6,
+     "codex": 5,
+     "n": 6
+    },
+    "woven": {
+     "human": 5,
+     "claude": 6,
+     "codex": 6,
+     "n": 6
+    },
+    "student": {
+     "human": 5,
+     "claude": 4,
+     "codex": 4,
+     "n": 6
+    }
+   }
+  }
+ }
+}

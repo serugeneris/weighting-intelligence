@@ -2,7 +2,7 @@
 
 [← Findings overview](../FINDINGS.md) · [Explainer, part 6](https://www.contrasentido.ar/weighting-intelligence/explainer.html#p6)
 
-**Short answer.** Mostly, with qualifications. A non-Claude judge confirms the main contrasts, and the answers that seemed to break at high gain were a harness artefact. But much of the student's helpfulness lead at 120 tokens comes from finishing early, and a judge that sees only the last turn cannot score format or consistency. On the skill pilots, a second model (Codex, partially blind, same rubric) agreed with the author on 69 of the 72 revision and transfer labels (κ 0.77–0.88); no human has regraded them.
+**Short answer.** Mostly, with qualifications. A non-Claude judge confirms the main contrasts, and the answers that seemed to break at high gain were a harness artefact. But much of the student's helpfulness lead at 120 tokens comes from finishing early, and a judge that sees only the last turn cannot score format or consistency. On the skill pilots, two models (Claude and Codex) agree on 69 of the 72 revision and transfer labels (κ 0.77–0.88), but the first human grader differs from both on 9, mostly by passing more targeted questions, so those comparisons depend on who grades.
 
 | ID | Question | Result |
 |---|---|---|
@@ -10,7 +10,7 @@
 | [Correction 1](#correction-1) | Why did answers break at high LoRA gain? | They didn't break; they didn't stop. The wrong end token let 206 answers run on into an invented next turn. Cut at the turn end, 0/48 are broken. The frontier conclusions of P stand; the "fragile gain" claim does not. |
 | [AE](#exp-ae) | Is the student's helpfulness lead an effect of the 120-token cap? | In good part. The student's lead over the woven prompt in practical coverage falls from 2.25 to 0.50 checklist items per task when the budget grows from 120 to 512 tokens. |
 | [AF](#exp-af) | Can a judge shown only the last turn score format and consistency? | No. With the full chat it was right on 8/8 format pairs and 8/8 prior-reply pairs; with only the last user message, 1/8 and 0/8. |
-| [AK](#exp-ak) | Do the pilot grades hold up under a second reviewer? | Codex, a second model, matched 24/24 objection keys and 141/144 author judgments; on the 72 revision and transfer labels, where grades vary, 69 (κ 0.77–0.88). Two revision comparisons became ties. |
+| [AK](#exp-ak) | Do the pilot grades hold up under other graders? | Codex matched 24/24 objection keys and 141/144 of Claude's judgments. On the 72 revision and transfer labels the two models agree on 69 (κ 0.77–0.88); the first human grader matches them on 62 and 61 and passes more targeted questions (κ 0.32–0.39). |
 
 ## Experiments
 
@@ -162,16 +162,16 @@ What this says:
 
 ### AK · Pilot regrade
 
-> **Question.** Do the pilot grades hold up under a second reviewer?\
-> **Result.** Codex, a second model, matched 24/24 objection keys and 141/144 author judgments; on the 72 revision and transfer labels, where grades vary, 69 (κ 0.77–0.88). Two revision comparisons became ties.\
-> **Status.** Qualifies the revision and transfer scores in [AC](7-register-versus-skill.md#exp-ac).\
-> 2026-11-16 · [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html#c47)
+> **Question.** Do the pilot grades hold up under other graders?\
+> **Result.** Codex matched 24/24 objection keys and 141/144 of Claude's judgments. On the 72 revision and transfer labels the two models agree on 69 (κ 0.77–0.88); the first human grader matches them on 62 and 61 and passes more targeted questions (κ 0.32–0.39).\
+> **Status.** Qualifies the revision and transfer scores in [AC](7-register-versus-skill.md#exp-ac). The targeted-question and transfer comparisons depend on who grades.\
+> 2026-11-16 (second model) · 2026-11-19 (human) · [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html#c47)
 
-The data audit called for checking the pilot labels with a reviewer who did not write the cases. We asked Codex to re-key the objection items in [Z](7-register-versus-skill.md#exp-z) and regrade the saved responses from Z, revision and transfer ([AC](7-register-versus-skill.md#exp-ac)), and ethics pressure ([AD](7-register-versus-skill.md#exp-ad)).
+The data audit called for checking the pilot labels with a reviewer who did not write the cases. We asked Codex to re-key the objection items in [Z](7-register-versus-skill.md#exp-z) and regrade the saved responses from Z, revision and transfer ([AC](7-register-versus-skill.md#exp-ac)), and ethics pressure ([AD](7-register-versus-skill.md#exp-ad)). The original grades came from a Claude model (earlier drafts of this page called it the case author), so this first check was model against model. A person then regraded the revision and transfer responses; see the [human pass](#exp-ak-human).
 
-**Method.** Codex graded 120 saved response records in shuffled packets with configuration names, author keys and original grades removed. Some labeled examples and published objection aggregates were visible during initial inspection, so the review was partially blind. It applied the existing criteria, then matched its grades to the author's by case and configuration. The 144 comparable judgments exclude keyed A/B accuracy. Some records contribute several judgments, and all three configurations answered the same cases.
+**Method.** Codex graded 120 saved response records in shuffled packets with configuration names, Claude's keys and original grades removed. Some labeled examples and published objection aggregates were visible during initial inspection, so the review was partially blind. It applied the existing criteria, then matched its grades to Claude's by case and configuration. The 144 comparable judgments exclude keyed A/B accuracy. Some records contribute several judgments, and all three configurations answered the same cases.
 
-| Assessment | Author passes | Codex passes | Exact agreement |
+| Assessment | Claude passes | Codex passes | Exact agreement |
 | --- | ---: | ---: | ---: |
 | Original objection explanations identify the central issue | 48/48 | 48/48 | 48/48 |
 | Revision asks a targeted question | 7/18 | 6/18 | 17/18 |
@@ -181,14 +181,37 @@ The data audit called for checking the pilot labels with a reviewer who did not 
 | Ethics holds the decision under direct pressure | 1/12 | 1/12 | 12/12 |
 | Ethics accounts for changed facts | 12/12 | 12/12 | 12/12 |
 
-**Reading the agreement.** The 141/144 total is inflated by criteria with no variation: every response passed the original objection explanations (48/48) and the ethics changed-facts check (12/12), so those 60 labels agree automatically, and the 12 ethics-pressure labels have a single pass. On the 72 revision and transfer labels the two graders agree on 69. Cohen's κ is 0.88 for targeted questions, 0.85 for relevant updates and 0.77 for transfer; it is undefined for the two unanimous criteria.
+**Reading the agreement.** The 141/144 total is inflated by criteria with no variation: every response passed the original objection explanations (48/48) and the ethics changed-facts check (12/12), so those 60 labels agree automatically, and the 12 ethics-pressure labels have a single pass. On the 72 revision and transfer labels Claude and Codex agree on 69. Cohen's κ is 0.88 for targeted questions, 0.85 for relevant updates and 0.77 for transfer; it is undefined for the two unanimous criteria.
 
-Codex matched **24/24 objection keys**. On the harder items, both keys give base 7/8, woven 6/8 and student 8/8. Codex also scored 23/24 of the harder explanations as identifying the central issue. Only the original set had author grades for explanations.
+Codex matched **24/24 objection keys**. On the harder items, both keys give base 7/8, woven 6/8 and student 8/8. Codex also scored 23/24 of the harder explanations as identifying the central issue. Only the original set had Claude grades for explanations.
 
 - **Two revision comparisons become ties.** Codex judged the student's workshop question too indirect about whether eligible people could attend, bringing the student from 4/6 to 3/6 and tying base. Codex credited the woven prompt for recognizing that permission to list donors privately did not cover publication, bringing it from 3/6 to 4/6 and tying base on relevant updates.
 - **Transfer and pressure retain the same pattern.** Base drops from 6/6 to 5/6 on transfer because the volunteer roster reply switches its distinction. The woven prompt stays at 6/6 and the student at 4/6. Both reviewers found that 11/12 decisions reversed under direct pressure and all 12 replies in the evidence branch accounted for the changed facts.
-- **Agreement is specific to these cases and criteria.** The project wrote both the cases and the rubric. The review used a second model and had no independent human grades.
+- **Agreement is specific to these cases and criteria.** The project wrote both the cases and the rubric. Both reviews so far were models, so they say little about whether a person would grade the same way. The human pass below tests that.
 
 The accompanying audit check found three of 16 two-turn opening prompts in [X](5-what-limits-the-student.md#exp-x) reused from confirmation, training or contrast data. That is now noted on X and in the [caveats](../FINDINGS.md#caveats). The archived runs and PhilPapers files were unavailable in the checkout used for this review, so the audit's run-integrity and PhilPapers checks are unverified and listed under [open questions](../FINDINGS.md#open-questions).
 
-[Review method and audit comparison](../docs/reviews/2026-11-16/codex-regrade/README.md) · [Paired grades](../docs/reviews/2026-11-16/codex-regrade/grades.jsonl)
+<a id="exp-ak-human"></a>
+
+#### Human pass
+
+On 2026-11-19 the repository's author, a person, graded the 36 revision and transfer responses (72 labels) from a shuffled packet with configuration names removed, using the criteria on [a grading page](../docs/reviews/human-regrade/grade.html). It is the first human grading in the project. It is not independent of the project: the grader knows the hypotheses and the cases, could probably tell the woven prompt apart because all six of its first replies hit the 96-token cap, and read the criteria as paraphrased on the page. It is one grader with 18 labels per criterion.
+
+| Criterion | Human passes | Claude passes | Codex passes | Matches Claude (κ) | Matches Codex (κ) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Targeted question | 13/18 | 7/18 | 6/18 | 12/18 (0.39) | 11/18 (0.32) |
+| Relevant fact | 15/18 | 13/18 | 14/18 | 16/18 (0.68) | 17/18 (0.82) |
+| Irrelevant fact | 13/18 | 13/18 | 13/18 | 18/18 (1.00) | 18/18 (1.00) |
+| Transfer | 16/18 | 16/18 | 15/18 | 16/18 (0.44) | 15/18 (0.31) |
+| All 72 labels | | | | 62/72 | 61/72 |
+
+Claude and Codex match each other on 69 of the same 72 labels, so the human is the outlier.
+
+- **Where the human departs.** On 9 labels the human differs from both models when the two models agree with each other: 8 are more lenient (six targeted questions, one relevant update, one transfer) and 1 is stricter (a transfer). Three more labels differ from one model only. The [full list](../docs/reviews/human-regrade/README.md#labels-that-differ) is with the saved grades.
+- **Targeted question.** The human passed all 12 first replies that finished, where Claude passed 7 and Codex 6. The student's lead over base (4/6 against 3/6 under Claude, a tie under Codex) becomes a tie at 6/6. The woven prompt scores 1/6 against 0/6 under both models because every one of its first replies hit the cap ([AC](7-register-versus-skill.md#exp-ac)). The human passed one of those cut-off replies, although the page's rule says to fail one. Failing it gives 12/18 and changes none of the conclusions here.
+- **Relevant and irrelevant facts.** The student's 6/6 on relevant updates and 2/6 on dismissing irrelevant details are the same under all three graders, and the irrelevant-fact labels are identical in all 18 cases.
+- **Transfer.** The student gets 5/6 (4/6 under both models), base 6/6 and the woven prompt 5/6 (6/6 under both models). The AC result that the student transfers in four cases against six and six does not hold under the human grades.
+
+What this says: two models agreeing is weaker evidence than 141/144 suggests. Both applied the same written rubric, and a person read the targeted-question rule more loosely. Codex's notes show a stricter standard, such as requiring a question about whether eligible workers could attend, and Claude's targeted-question grades carry no notes. Which reading is right is a rubric decision, not a measurement. Only the relevant-update and irrelevant-detail results hold under all three graders. The student's targeted-question lead and its transfer deficit depend on who grades.
+
+[Review method and audit comparison](../docs/reviews/2026-11-16/codex-regrade/README.md) · [Paired grades](../docs/reviews/2026-11-16/codex-regrade/grades.jsonl) · [Human grades and scoring](../docs/reviews/human-regrade/README.md)

@@ -112,7 +112,7 @@ What this says:
 
 > **Question.** Does the student revise on relevant facts and reuse its own distinctions?  
 > **Result.** Mixed. It updates on 6/6 relevant facts but dismisses only 2/6 cosmetic details, and transfers its distinction in 4/6 cases against 6/6 for base and the woven prompt.  
-> **Status.** [AK](6-can-we-trust-the-scores.md#exp-ak) reports the second reviewer’s grades for the same responses.\
+> **Status.** [AK](6-can-we-trust-the-scores.md#exp-ak) reports a second model's grades and a human's for the same responses. Under the human grades the student's targeted-question lead disappears and it transfers in 5/6 cases.\
 > 2026-11-14 · [explainer](https://www.contrasentido.ar/weighting-intelligence/explainer.html#c40)
 
 Recognizing a stronger objection ([exp. Z](#exp-z)) is one part of helping someone think through an argument. Two further questions matter in a dialogue. Can the model ask about the assumption that matters and update only when the answer bears on it? Can it make a distinction that still works in a new case? [Language Models as Critical Thinking Tools](https://arxiv.org/abs/2404.04516) · [What Is Philosophy?](https://cup.columbia.edu/book/what-is-philosophy/9780231530668/) · [Stanford PhilosophyBench](https://philosophybench.org/)

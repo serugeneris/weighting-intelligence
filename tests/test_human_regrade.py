@@ -43,17 +43,17 @@ def test_scoring_codex_grades_reproduces_experiment_ak():
     res = hr.score(_grades_from("codex"))
     assert res["missing"] == []
     c = res["criteria"]
-    assert [c[k]["agree_author"] for k in ("targeted_question", "relevant_fact", "irrelevant_fact",
+    assert [c[k]["agree_claude"] for k in ("targeted_question", "relevant_fact", "irrelevant_fact",
                                            "transfers_core_distinction")] == [17, 17, 18, 17]
-    assert round(c["targeted_question"]["kappa_author"], 2) == 0.88
-    assert round(c["relevant_fact"]["kappa_author"], 2) == 0.85
-    assert round(c["transfers_core_distinction"]["kappa_author"], 2) == 0.77
+    assert round(c["targeted_question"]["kappa_claude"], 2) == 0.88
+    assert round(c["relevant_fact"]["kappa_claude"], 2) == 0.85
+    assert round(c["transfers_core_distinction"]["kappa_claude"], 2) == 0.77
     assert all(v["agree_codex"] == 18 for v in c.values())
-    assert c["targeted_question"]["passes"]["student"] == {"human": 3, "author": 4, "codex": 3, "n": 6}
+    assert c["targeted_question"]["passes"]["student"] == {"human": 3, "claude": 4, "codex": 3, "n": 6}
 
 
 def test_ungraded_labels_are_reported_not_counted():
-    grades = _grades_from("author")
+    grades = _grades_from("claude")
     grades["grades"]["R01"]["relevant_fact"] = None
     del grades["grades"]["T01"]
     res = hr.score(grades)
@@ -65,3 +65,17 @@ def test_ungraded_labels_are_reported_not_counted():
 def test_grades_for_another_packet_are_refused():
     with pytest.raises(ValueError):
         hr.score({"packet": "something-else", "grades": {}})
+
+
+def test_committed_human_grades_reproduce_the_documented_numbers():
+    res = hr.score(json.loads((hr.OUT / "grades-human-1.json").read_text()))
+    assert res["missing"] == []
+    c = res["criteria"]
+    assert {k: (v["agree_claude"], v["agree_codex"]) for k, v in c.items()} == {
+        "targeted_question": (12, 11), "relevant_fact": (16, 17),
+        "irrelevant_fact": (18, 18), "transfers_core_distinction": (16, 15)}
+    assert [round(c[k]["kappa_claude"], 2) for k in ("targeted_question", "relevant_fact", "transfers_core_distinction")] == [0.39, 0.68, 0.44]
+    assert [round(c[k]["kappa_codex"], 2) for k in ("targeted_question", "relevant_fact", "transfers_core_distinction")] == [0.32, 0.82, 0.31]
+    assert c["irrelevant_fact"]["kappa_claude"] == c["irrelevant_fact"]["kappa_codex"] == 1
+    assert c["targeted_question"]["passes"]["student"] == {"human": 6, "claude": 4, "codex": 3, "n": 6}
+    assert c["transfers_core_distinction"]["passes"]["student"] == {"human": 5, "claude": 4, "codex": 4, "n": 6}

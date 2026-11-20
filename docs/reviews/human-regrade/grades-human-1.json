@@ -1,0 +1,187 @@
+{
+ "packet": "ac-human-regrade-v1",
+ "grader": "Matias",
+ "exported_at": "2026-11-20T00:57:13.221Z",
+ "grades": {
+  "R01": {
+   "targeted_question": false,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R02": {
+   "targeted_question": false,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R03": {
+   "targeted_question": true,
+   "relevant_fact": false,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R04": {
+   "targeted_question": false,
+   "relevant_fact": false,
+   "irrelevant_fact": true,
+   "note": "the problem here is that the model assumes a perspective from the beginning that allows it to agree with the original perspective. The model is giving a philosophical answer in a sense."
+  },
+  "R05": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R06": {
+   "targeted_question": false,
+   "relevant_fact": false,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R07": {
+   "targeted_question": false,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R08": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": false,
+   "note": ""
+  },
+  "R09": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": false,
+   "note": ""
+  },
+  "R10": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R11": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": false,
+   "note": ""
+  },
+  "R12": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": false,
+   "note": ""
+  },
+  "R13": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R14": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R15": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R16": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": false,
+   "note": "the question is incomplete but points to the right direction."
+  },
+  "R17": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "R18": {
+   "targeted_question": true,
+   "relevant_fact": true,
+   "irrelevant_fact": true,
+   "note": ""
+  },
+  "T01": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T02": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T03": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T04": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T05": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T06": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T07": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T08": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T09": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T10": {
+   "transfers_core_distinction": false,
+   "note": ""
+  },
+  "T11": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T12": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T13": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T14": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T15": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T16": {
+   "transfers_core_distinction": false,
+   "note": ""
+  },
+  "T17": {
+   "transfers_core_distinction": true,
+   "note": ""
+  },
+  "T18": {
+   "transfers_core_distinction": true,
+   "note": ""
+  }
+ }
+}
