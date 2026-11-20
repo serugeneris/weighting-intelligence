@@ -1118,7 +1118,7 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
   <section class="part" id="p6">
     <div class="num">Part 6</div>
     <h2>Can we trust the measurements?</h2>
-    <p class="answer"><strong>Short answer.</strong> A non-Claude judge confirms the main contrasts, and a harness fix explains the apparent breakage at high gain. The helpfulness lead depends on the token budget, and format and consistency scores depend on what the judge can see. On the skill pilots, a second reviewer agreed with 141/144 author judgments.</p>
+    <p class="answer"><strong>Short answer.</strong> A non-Claude judge confirms the main contrasts, and a harness fix explains the apparent breakage at high gain. The helpfulness lead depends on the token budget, and format and consistency scores depend on what the judge can see. On the skill pilots, two models agree on 69 of 72 revision and transfer labels, but a human grader differs from both on 9, mostly on targeted questions.</p>
     <p class="note">5 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md">full method and tables</a></p>
   </section>
   <details class="exp">
@@ -1205,20 +1205,20 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
   </section>
   </details>
   <details class="exp">
-    <summary><span class="tag">AK</span><span class="st">Do the pilot grades hold up under a second reviewer?</span><span class="res">Codex, a second model, matched 24/24 objection keys and 141/144 author judgments; on the 72 revision and transfer labels, where grades vary, 69 (κ 0.77–0.88). Two revision comparisons became ties.</span></summary>
+    <summary><span class="tag">AK</span><span class="st">Do the pilot grades hold up under other graders?</span><span class="res">Codex matched 24/24 objection keys and 141/144 of Claude's judgments. On the 72 revision and transfer labels the two models agree on 69 (κ 0.77–0.88); the first human grader matches them on 62 and 61 and passes more targeted questions (κ 0.32–0.39).</span></summary>
   <section class="chapter" id="c47" aria-labelledby="pilot-regrade">
     <div>
       <div class="num">Experiment AK</div>
-      <h2 id="pilot-regrade">Do the pilot grades hold up under a second reviewer?</h2>
-      <p><strong>Why we tried it.</strong> The case author graded the pilots on <a href="#c37">objections</a>, <a href="#c40">revision and transfer</a>, and <a href="#c41">ethical consistency</a>. Codex reviewed 120 saved responses with configurations and grades hidden in shuffled packets. It had already seen some labeled examples and the published objection totals.</p>
-      <p><strong>What happened.</strong> Codex matched all 24 objection keys and agreed on 141 of 144 judgments (97.9%). Sixty of those are checks that every reply passed, so they agree automatically; on the 72 revision and transfer judgments, where grades vary, the two agreed on 69. Both reviewers found that 11 of 12 decisions reversed under direct pressure. Every reply in the evidence branch accounted for the changed facts.</p>
-      <p><strong>What it means.</strong> The two reviewers mostly agreed on these author-written cases. One grade change erased the student's lead on targeted questions, and another erased base's lead over the woven prompt on relevant updates. <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md#exp-ak">The findings, exp. AK</a> · <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-16/codex-regrade">Saved grades and audit comparison</a></p>
+      <h2 id="pilot-regrade">Do the pilot grades hold up under other graders?</h2>
+      <p><strong>Why we tried it.</strong> A Claude model had graded the pilots on <a href="#c37">objections</a>, <a href="#c40">revision and transfer</a>, and <a href="#c41">ethical consistency</a>. Codex reviewed 120 saved responses with configurations and grades hidden in shuffled packets. It had already seen some labeled examples and the published objection totals. A person then graded the 36 revision and transfer responses with configuration names removed.</p>
+      <p><strong>What happened.</strong> Codex matched all 24 objection keys and agreed with Claude on 141 of 144 judgments (97.9%). Sixty of those are checks that every reply passed, so they agree automatically; on the 72 revision and transfer judgments, where grades vary, the two models agreed on 69. The human grader matched Claude on 62 of those 72 and Codex on 61. The gap is almost all targeted questions: the human passed 13 of 18, Claude 7 and Codex 6. Both models found that 11 of 12 decisions reversed under direct pressure. Every reply in the evidence branch accounted for the changed facts.</p>
+      <p><strong>What it means.</strong> The two models mostly agreed on these cases, but agreement between models did not predict what a person would do. Under the human grades the student's lead on targeted questions disappears and its transfer rate rises to five of six. The student's six of six on relevant updates and two of six on irrelevant details held under all three graders. <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/6-can-we-trust-the-scores.md#exp-ak">The findings, exp. AK</a> · <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-16/codex-regrade">Saved grades and audit comparison</a> · <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/human-regrade">Human grades and scoring</a></p>
     </div>
     <div class="fig">
       <table>
-        <caption>Scores that changed under the second review</caption>
+        <caption>Scores that changed under the second model's review</caption>
         <thead>
-          <tr><th scope="col">Assessment</th><th scope="col">Author</th><th scope="col">Codex</th></tr>
+          <tr><th scope="col">Assessment</th><th scope="col">Claude</th><th scope="col">Codex</th></tr>
         </thead>
         <tbody>
           <tr><th scope="row">Targeted question, student</th><td>4/6</td><td>3/6</td></tr>
@@ -1232,6 +1232,26 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
           <p><strong>Workshop access.</strong> The student discussed practical barriers but asked about arrival order and fair outcomes. Codex required a question about whether eligible workers could attend. The student tied base at 3/6.</p>
           <p><strong>Public donor list.</strong> The woven prompt correctly explained that consent for a private directory did not cover public disclosure. Codex credited that follow-up, bringing the woven prompt level with base at 4/6.</p>
           <p><strong>Volunteer roster.</strong> Base identified the change of audience but moved from a distinction about consent and obligation to one about consent and expectations. Codex required it to use its original distinction in the new case.</p>
+        </div>
+      </details>
+      <table>
+        <caption>The human pass: passes out of 18</caption>
+        <thead>
+          <tr><th scope="col">Criterion</th><th scope="col">Claude</th><th scope="col">Codex</th><th scope="col">Human</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Targeted question</th><td>7</td><td>6</td><td>13</td></tr>
+          <tr><th scope="row">Relevant fact</th><td>13</td><td>14</td><td>15</td></tr>
+          <tr><th scope="row">Irrelevant fact</th><td>13</td><td>13</td><td>13</td></tr>
+          <tr><th scope="row">Transfer</th><td>16</td><td>15</td><td>16</td></tr>
+        </tbody>
+      </table>
+      <details>
+        <summary>Read what the human changed</summary>
+        <div class="ex">
+          <p><strong>Targeted questions.</strong> The human passed every first reply that finished, where the models failed about half of them. The student's lead over base became a tie at six of six. The woven prompt still scored almost nothing because every one of its first replies hit the token cap.</p>
+          <p><strong>Transfer.</strong> The student reached five of six, base six and the woven prompt five. The earlier four against six and six no longer holds.</p>
+          <p><strong>Limits.</strong> One grader, 18 labels per criterion, and a person who knew the project and could probably tell the woven prompt apart. Agreement was perfect on irrelevant details and strong on relevant updates.</p>
         </div>
       </details>
     </div>
@@ -1316,7 +1336,7 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
       <h2 id="c40-title">Can it revise and reuse a distinction?</h2>
       <p><strong>Why we tried it.</strong> We gave the model an argument with a hidden assumption, then supplied either a relevant fact or a cosmetic detail. We also asked it to draw a distinction and apply it in a fresh case.</p>
       <p><strong>What happened.</strong> The student updated correctly on all six relevant changes but dismissed only two of six cosmetic details. In the transfer rerun, every reply finished. The student transferred its distinction in four cases, and base and woven did so in all six.</p>
-      <p><strong>What it means.</strong> The student was more responsive to important changes on these cases. It also found significance in details that should have left the argument alone. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md#exp-ac">the findings, exp. AC</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/revision-transfer">saved run evidence</a>.</p>
+      <p><strong>What it means.</strong> The student was more responsive to important changes on these cases. It also found significance in details that should have left the argument alone. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md#exp-ac">the findings, exp. AC</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/2026-11-14/revision-transfer">saved run evidence</a>. A later regrade by a second model and a person changed some of these counts; see <a href="#c47">experiment AK</a>.</p>
     </div>
     <div class="fig">
       <h3>Revision and transfer outcomes</h3>

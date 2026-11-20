@@ -44,7 +44,7 @@ The work is organised around seven questions. Each has a file in `findings/` and
 | `scripts/` | One script per experiment; see [`scripts/README.md`](scripts/README.md) |
 | `data/` | Contrast pairs, training questions, evaluation prompts, and saved results for experiments AE–AH |
 | `docs/explainer.html` | The interactive explainer, served by GitHub Pages |
-| `docs/reviews/` | Saved outputs and review notes for experiments Z–AD, AI and AK, and the packet for a human regrade |
+| `docs/reviews/` | Saved outputs and review notes for experiments Z–AD, AI and AK, and the human regrade of AC |
 | `docs/plans/` | The plan written before experiment AI |
 | `tests/` | Smoke tests for the toolkit and the pure-Python scripts; they need no model download |
 

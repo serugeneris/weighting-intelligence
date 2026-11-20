@@ -1,7 +1,7 @@
 """Blind human regrade of the revision and transfer pilot (experiment AC).
 
   python3 scripts/human_regrade.py build                 -> docs/reviews/human-regrade/{packet.json,key.json,grade.html}
-  python3 scripts/human_regrade.py score GRADES.json     -> agreement with the author and Codex grades
+  python3 scripts/human_regrade.py score GRADES.json     -> agreement with Claude's original grades and Codex's
 
 `build` shuffles the 18 revision and 18 transfer records with a fixed seed and writes them without the
 configuration name. packet.json is what the grader sees; key.json maps each packet id back to configuration and
@@ -90,14 +90,14 @@ def write_packet():
 
 
 def paired_grades():
-    """{(set, configuration, case number): {"author": {...}, "codex": {...}}} from experiment AK."""
+    """{(set, configuration, case number): {"claude": {...}, "codex": {...}}} from experiment AK."""
     case_no = {r["argument"]: r["case"] for r in _rows("revision.jsonl")}
     out = {}
     for line in PAIRED.read_text().splitlines():
         g = json.loads(line)
         if g["set"] not in CRITERIA:
             continue
-        out[(g["set"], g["configuration"], g["source_line"])] = {"author": g["original"], "codex": g["codex"]}
+        out[(g["set"], g["configuration"], g["source_line"])] = {"claude": g["original"], "codex": g["codex"]}
     # source_line is the one-based line in the response file; turn it into the case number
     by_line = {}
     for set_name in CRITERIA:
@@ -113,12 +113,12 @@ def paired_grades():
 
 
 def score(grades, key=None, paired=None):
-    """Compare an exported grades file with the author and Codex labels. Returns a dict of results."""
+    """Compare an exported grades file with Claude's and Codex's labels. Returns a dict of results."""
     key = key or json.loads((OUT / "key.json").read_text())
     paired = paired or paired_grades()
     if grades.get("packet") != PACKET_ID:
         raise ValueError(f"grades are for packet {grades.get('packet')!r}, expected {PACKET_ID!r}")
-    labels = {}       # criterion -> list of (human, author, codex, configuration)
+    labels = {}       # criterion -> list of (human, claude, codex, configuration)
     missing = []
     for item_id, k in key.items():
         g = grades["grades"].get(item_id) or {}
@@ -127,18 +127,18 @@ def score(grades, key=None, paired=None):
             if not isinstance(g.get(c), bool):
                 missing.append(f"{item_id}.{c}")
                 continue
-            labels.setdefault(c, []).append((g[c], ref["author"][c], ref["codex"][c], k["configuration"]))
+            labels.setdefault(c, []).append((g[c], ref["claude"][c], ref["codex"][c], k["configuration"]))
     result = {"grader": grades.get("grader"), "missing": missing, "criteria": {}}
     for c, rows in labels.items():
         h, a, x = [r[0] for r in rows], [r[1] for r in rows], [r[2] for r in rows]
         passes = {}
         for cfg in ("base", "woven", "student"):
             sub = [r for r in rows if r[3] == cfg]
-            passes[cfg] = {"human": sum(r[0] for r in sub), "author": sum(r[1] for r in sub),
+            passes[cfg] = {"human": sum(r[0] for r in sub), "claude": sum(r[1] for r in sub),
                            "codex": sum(r[2] for r in sub), "n": len(sub)}
         result["criteria"][c] = {
             "n": len(rows),
-            "agree_author": sum(p == q for p, q in zip(h, a)), "kappa_author": kappa(h, a),
+            "agree_claude": sum(p == q for p, q in zip(h, a)), "kappa_claude": kappa(h, a),
             "agree_codex": sum(p == q for p, q in zip(h, x)), "kappa_codex": kappa(h, x),
             "passes": passes,
         }
@@ -157,13 +157,13 @@ def main(argv):
         print(f"grader: {res['grader'] or '(not given)'}")
         if res["missing"]:
             print(f"{len(res['missing'])} labels not graded: {', '.join(res['missing'])}")
-        print(f"{'criterion':28s} {'n':>3s}  {'= author':>8s} {'kappa':>5s}  {'= codex':>8s} {'kappa':>5s}")
+        print(f"{'criterion':28s} {'n':>3s}  {'= claude':>8s} {'kappa':>5s}  {'= codex':>8s} {'kappa':>5s}")
         for c, r in res["criteria"].items():
-            print(f"{c:28s} {r['n']:3d}  {r['agree_author']:5d}/{r['n']:<2d} {_fmt(r['kappa_author'])}"
+            print(f"{c:28s} {r['n']:3d}  {r['agree_claude']:5d}/{r['n']:<2d} {_fmt(r['kappa_claude'])}"
                   f"  {r['agree_codex']:5d}/{r['n']:<2d} {_fmt(r['kappa_codex'])}")
-        print("\npasses per configuration (human / author / codex)")
+        print("\npasses per configuration (human / claude / codex)")
         for c, r in res["criteria"].items():
-            cells = "   ".join(f"{cfg} {p['human']}/{p['author']}/{p['codex']} of {p['n']}"
+            cells = "   ".join(f"{cfg} {p['human']}/{p['claude']}/{p['codex']} of {p['n']}"
                                for cfg, p in r["passes"].items())
             print(f"{c:28s} {cells}")
     else:

@@ -2,6 +2,8 @@
 
 16 November 2026 · Codex
 
+*Note added 19 November 2026: below, "author" and the `original` fields in `grades.jsonl` mean the original grader, a Claude model, not a person. A human pass on the revision and transfer responses is in [`../../human-regrade/`](../../human-regrade/README.md). It differs from both models on 9 of the 72 labels, mostly on targeted questions.*
+
 A local data audit dated 15 November 2026 recommended an independent key and grading pass. This review covers all 120 saved response records from the three pilots with author-reviewed answers in this checkout. Codex agreed with **141 of 144 comparable judgment labels (97.9%)** and independently chose the same answer on **24 of 24 objection items**.
 
 ## Author and Codex grades
