@@ -63,6 +63,7 @@ Run outputs go to `runs/`, which is not tracked in git. Experiment IDs match the
 | `scripts/exp_philbench_mlx.py` | Experiment AI2: the same tasks on 4-bit MLX builds of Qwen3.5-4B and 9B |
 | (no script) | Experiment AK: a regrade of saved responses from Z, AC and AD by a second model, and of AC by a human; the grades are in [`docs/reviews/2026-11-16/codex-regrade/`](../docs/reviews/2026-11-16/codex-regrade/README.md) and [`docs/reviews/human-regrade/`](../docs/reviews/human-regrade/README.md) |
 | `scripts/human_regrade.py` | Builds the blind packet and grading page for a human regrade of AC, and scores an exported grades file against the Claude and Codex labels of AK; see [`docs/reviews/human-regrade/`](../docs/reviews/human-regrade/README.md) |
+| `scripts/exp_real_text.py`, `scripts/exp_real_text_mlx.py`, `scripts/real_text_packets.py` | Experiment AL: corrupted-argument validity and objection–reply matching on public-domain texts (`data/pilot-real-*.json`, `data/sources/`), plus the review and blind-baseline packets |
 | `scripts/philosophy_pilot.py` | Shared inference, review packets and residual hooks for experiments Z–AI |
 
 ## Reproduce
@@ -136,6 +137,9 @@ git clone https://github.com/benedictbrady/philosophy-bench external/philosophy-
 .venv/bin/python -m scripts.exp_philbench --model 2B --stage score pressure                       # [exp. AI2](../findings/7-register-versus-skill.md#exp-ai2)
 .venv-mlx/bin/python scripts/exp_philbench_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_philbench_mlx.py --model 9B
 .venv/bin/python -m scripts.exp_philbench --stage analyze                                         # -> runs/philbench/summary.{json,md}
+.venv/bin/python -m scripts.exp_real_text --stage data-check score && .venv/bin/python -m scripts.exp_real_text --model 2B --stage score   # [exp. AL](../findings/7-register-versus-skill.md#exp-al)
+.venv-mlx/bin/python scripts/exp_real_text_mlx.py --model 4B && .venv-mlx/bin/python scripts/exp_real_text_mlx.py --model 9B
+.venv/bin/python -m scripts.exp_real_text --stage analyze                                        # -> runs/real_text/summary.{json,md}
 .venv/bin/python scripts/distill_probe.py                         # size and direction of the rank-1 LoRA's push
 .venv/bin/python scripts/astra_edit.py && .venv/bin/python scripts/claude_judge.py --input astra.jsonl --output claude_judge_astra.jsonl
 ```

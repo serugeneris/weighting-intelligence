@@ -1,0 +1,125 @@
+{
+  "packet": "al-human-baseline-v1",
+  "items": {
+    "q01": {
+      "task": "objreply",
+      "item": "hobbes-10-innate",
+      "variant": "reply->obj|original",
+      "expected": "D"
+    },
+    "q02": {
+      "task": "objreply",
+      "item": "hobbes-5-idea-of-god",
+      "variant": "reply->obj|original",
+      "expected": "C"
+    },
+    "q03": {
+      "task": "corrupt",
+      "item": "descartes-divisibility",
+      "variant": "para-corr|first-B",
+      "expected": "B"
+    },
+    "q04": {
+      "task": "objreply",
+      "item": "ag-7-own-nonexistence",
+      "variant": "obj->reply|original",
+      "expected": "D"
+    },
+    "q05": {
+      "task": "corrupt",
+      "item": "vitoria-spiritual-power",
+      "variant": "para-corr|first-B",
+      "expected": "B"
+    },
+    "q06": {
+      "task": "objreply",
+      "item": "hobbes-final-dreams",
+      "variant": "reply->obj|original",
+      "expected": "C"
+    },
+    "q07": {
+      "task": "corrupt",
+      "item": "berkeley-water",
+      "variant": "para-corr|first-B",
+      "expected": "B"
+    },
+    "q08": {
+      "task": "objreply",
+      "item": "lc-3-3-parts",
+      "variant": "reply->obj|original",
+      "expected": "A"
+    },
+    "q09": {
+      "task": "corrupt",
+      "item": "anselm-monologium-1",
+      "variant": "orig-corr|first-B",
+      "expected": "B"
+    },
+    "q10": {
+      "task": "corrupt",
+      "item": "hume-design-analogy",
+      "variant": "para-corr|first-A",
+      "expected": "A"
+    },
+    "q11": {
+      "task": "corrupt",
+      "item": "berkeley-one-sensation",
+      "variant": "orig-corr|first-B",
+      "expected": "B"
+    },
+    "q12": {
+      "task": "objreply",
+      "item": "ag-6-island",
+      "variant": "reply->obj|original",
+      "expected": "D"
+    },
+    "q13": {
+      "task": "objreply",
+      "item": "hobbes-4-names",
+      "variant": "obj->reply|original",
+      "expected": "A"
+    },
+    "q14": {
+      "task": "corrupt",
+      "item": "galileo-void",
+      "variant": "orig-corr|first-B",
+      "expected": "B"
+    },
+    "q15": {
+      "task": "corrupt",
+      "item": "berkeley-heat-pain",
+      "variant": "para-corr|first-B",
+      "expected": "B"
+    },
+    "q16": {
+      "task": "corrupt",
+      "item": "vitoria-heresy-penalty",
+      "variant": "orig-corr|first-A",
+      "expected": "A"
+    },
+    "q17": {
+      "task": "objreply",
+      "item": "lc-3-4-relational",
+      "variant": "obj->reply|original",
+      "expected": "A"
+    },
+    "q18": {
+      "task": "corrupt",
+      "item": "descartes-bodies-exist",
+      "variant": "orig-corr|first-A",
+      "expected": "A"
+    },
+    "q19": {
+      "task": "objreply",
+      "item": "ag-4-notion",
+      "variant": "obj->reply|original",
+      "expected": "B"
+    },
+    "q20": {
+      "task": "objreply",
+      "item": "ag-3-painter",
+      "variant": "obj->reply|original",
+      "expected": "A"
+    }
+  }
+}

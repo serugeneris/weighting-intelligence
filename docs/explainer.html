@@ -1260,8 +1260,8 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
   <section class="part" id="p7">
     <div class="num">Part 7</div>
     <h2>Is the reflective register philosophical skill?</h2>
-    <p class="answer"><strong>Short answer.</strong> No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".</p>
-    <p class="note">7 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md">full method and tables</a></p>
+    <p class="answer"><strong>Short answer.</strong> No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead, clearly from 2B to 4B and little or not at all from 4B to 9B, including on arguments taken from historical texts. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".</p>
+    <p class="note">8 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md">full method and tables</a></p>
   </section>
   <details class="exp">
     <summary><span class="tag">Z</span><span class="st">Which objection matters?</span><span class="res">Inconclusive. All three configurations got 16/16 on the original set; on eight harder items the student got 8, base 7 and the woven prompt 6.</span></summary>
@@ -1402,7 +1402,7 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
       <div class="num">Experiments AI and AI2</div>
       <h2 id="c46-title">Is the reflective register philosophical skill?</h2>
       <p><strong>Why we tried it.</strong> Every earlier chapter measured philosophy as a judge's score for reflective sentences. Here we varied that register with every lever we had and measured skill on tasks with right answers or checkable consistency: survey questions asked two ways, logical constraints between answers, and objection and validity items.</p>
-      <p><strong>What happened.</strong> Prompts and trained students raised the register and kept skill at base level. Constant pushes raised the register just as much but lost up to 46 points, mostly by picking whichever option came first. Random pushes of the same size also lost points. On base models, where the register is zero, skill rose from 2B to 4B to 9B.</p>
+      <p><strong>What happened.</strong> Prompts and trained students raised the register and kept skill at base level. Constant pushes raised the register just as much but lost up to 46 points, mostly by picking whichever option came first. Random pushes of the same size also lost points. On base models, where the register is zero, skill rose from 2B to 4B to 9B. On arguments from historical texts, the step from 4B to 9B disappears (<a href="#c48">experiment AL</a>).</p>
       <p><strong>What it means.</strong> In this model, sounding philosophical and doing philosophy are separate things. The register can be added without cost to these skills, or with a cost that comes from disturbing the model, not from philosophy. Every 4B configuration gave up its answer when the user simply disagreed. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md#exp-ai">the findings, exp. AI</a>.</p>
     </div>
     <div class="fig">
@@ -1415,6 +1415,29 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
         <button type="button" aria-pressed="false" aria-controls="s46">Base models by size</button>
       </div>
       <p class="note">Register (judge philosophy score, 0–9): base 0.0, woven 2.8, Claude-taught student 2.0, B push 3.8, random push 0.0. "Base models by size" shows validity; the 9B is compared with the 4-bit 4B.</p>
+    </div>
+  </section>
+  </details>
+  <details class="exp">
+    <summary><span class="tag">AL</span><span class="st">Does the split hold on real philosophical texts?</span><span class="res">Yes for register, partly for scale. On arguments from eight historical sources, the 4B spots the corrupted version 82% of the time against 64% for the 2B; the 9B adds 1 point. Prompts and students stay at base; constant pushes lose 16–22 points.</span></summary>
+  <section class="chapter" id="c48" aria-labelledby="c48-title">
+    <div>
+      <div class="num">Experiment AL</div>
+      <h2 id="c48-title">Does the split hold on real philosophical texts?</h2>
+      <p><strong>Why we tried it.</strong> <a href="#c46">Experiments AI and AI2</a> used items we wrote or adapted. Here the arguments come from public-domain texts: Descartes and his objectors, Leibniz and Clarke, Hume, Berkeley, Anselm and Gaunilo, Vitoria and Galileo. We changed one sentence in each argument so its conclusion no longer follows (a dropped "not", "some" for "all", a premise removed) and asked the model, one passage at a time, whether the conclusion follows. We also asked it to match objections with their real replies.</p>
+      <p><strong>What happened.</strong> The 4B gave the intact argument a higher chance of following than its corrupted version on 82% of 87 pairs, against 64% for the 2B. The 9B scored about the same as the 4B. The woven prompt and both students stayed at base level; the constant pushes, register or random, lost 16–22 points. Blind Claude graders agreed with the answer keys on 151 of 152 items and the author on 19 of 20. The first format, two passages side by side, failed: the models answered by letter position, not content.</p>
+      <p><strong>What it means.</strong> The separation between sounding philosophical and doing philosophy holds on arguments we did not write. Size helps from 2B to 4B and then stalls, well below the graders' near-perfect scores. The 9B did better when the intact text was the original wording rather than a paraphrase, which suggests it recognises the classics. Claude wrote the corruptions and paraphrases, and the single-passage format was chosen after the first run. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md#exp-al">the findings, exp. AL</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/real-text-skill">saved results and grading packets</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>Intact argument rated above its corrupted version</h3>
+      <div id="s48" role="status" aria-live="polite"></div>
+      <div class="controls" id="s48-btns" role="group" aria-label="Real-text skill measure">
+        <button type="button" aria-pressed="true" aria-controls="s48" class="on">Validity, 4B levers</button>
+        <button type="button" aria-pressed="false" aria-controls="s48">Validity, base models by size</button>
+        <button type="button" aria-pressed="false" aria-controls="s48">Objection and reply</button>
+      </div>
+      <p class="note">Validity counts (argument, corruption) pairs where the original gets the higher probability of "follows", averaged over both answer orders; chance is half. Objection and reply counts correct picks out of four options from the same exchange, 80 items. The 9B is compared with the 4-bit 4B.</p>
+      <div class="ex"><p>Berkeley: "you perceive one simple, uniform sensation, and not two" becomes "a sensation that grows stronger as the hand comes closer". The conclusion that heat and pain are one idea loses its support.</p></div>
     </div>
   </section>
   </details>
@@ -2865,6 +2888,13 @@ experimentChart("s46", [
   [["Base", 48, 48, "var(--ink-3)"], ["Woven prompt", 46, 48, "var(--pos)"], ["Claude-taught student", 47, 48, "var(--s3)"], ["B push 0.8", 26, 48, "var(--neg)"], ["Random push, seed 0", 42, 48, "var(--ink-3)"]],
   [["Base", 64, 98, "var(--ink-3)"], ["Woven prompt", 77, 98, "var(--pos)"], ["Claude-taught student", 79, 98, "var(--s3)"], ["B push 0.8", 24, 98, "var(--neg)"], ["Random push, seed 0", 27, 98, "var(--ink-3)"]],
   [["2B", 57, 96, "var(--ink-3)"], ["4B (4-bit)", 83, 96, "var(--pos)"], ["9B (4-bit)", 90, 96, "var(--s3)"]]
+], experimentCountRow);
+
+/* ---------- 48: real-text skill (saved evidence: docs/reviews/real-text-skill/) ---------- */
+experimentChart("s48", [
+  [["Base", 71, 87, "var(--ink-3)"], ["Woven prompt", 70, 87, "var(--pos)"], ["Rank-1 student", 74, 87, "var(--pos)"], ["Claude-taught student", 71, 87, "var(--s3)"], ["Diff-means push 0.5", 57, 87, "var(--neg)"], ["B push 0.6", 57, 87, "var(--neg)"], ["Random push, seed 0", 52, 87, "var(--ink-3)"]],
+  [["2B", 56, 87, "var(--ink-3)"], ["4B", 71, 87, "var(--pos)"], ["4B (4-bit)", 69, 87, "var(--pos)"], ["9B (4-bit)", 70, 87, "var(--s3)"]],
+  [["2B base", 61, 80, "var(--ink-3)"], ["4B base", 73, 80, "var(--pos)"], ["9B base (4-bit)", 74, 80, "var(--s3)"], ["Claude-taught student", 72, 80, "var(--s3)"], ["B push 0.6", 52, 80, "var(--neg)"], ["Random push, seed 0", 60, 80, "var(--ink-3)"]]
 ], experimentCountRow);
 
 

@@ -1,0 +1,380 @@
+{
+  "description": "Pilot AL, extra corruptions for the single-passage (verdict) task: three more one-sentence corruptions per argument in data/pilot-real-corruption.json, added after the first run showed 22 arguments give too little power. Each entry replaces sentence `sentence` (1-based) of the original with `text`. Drafted by Claude; awaiting the author's check.",
+  "items": {
+    "galileo-falling-bodies": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "If we take two bodies whose natural speeds are different, it is clear that on uniting the two, neither will retard nor hasten the other, but each will keep its own natural speed."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "Hence every body, whatever its weight, falls through every medium at exactly the same speed."
+      },
+      {
+        "sentence": 2,
+        "type": "conditional_reversal",
+        "text": "If then a large stone moves with a speed of, say, eight while a smaller moves with a speed of four, when they are united the system will move with a speed greater than eight."
+      }
+    ],
+    "galileo-squares": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Every square has its own root, but a single root may belong to many squares, and some squares share their root with others."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "We must therefore say that there are as many squares as there are numbers, and as many numbers as there are points in a line."
+      },
+      {
+        "sentence": 3,
+        "type": "drop_premise",
+        "text": "Square numbers grow ever rarer as we pass to larger numbers, as anyone may verify by counting."
+      }
+    ],
+    "galileo-void": [
+      {
+        "sentence": 1,
+        "type": "drop_premise",
+        "text": "The speeds of one and the same body moving in different media have been measured by many careful observers."
+      },
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "The tenuity of a vacuum differs only slightly from that of the rarest media filled with matter."
+      },
+      {
+        "sentence": 5,
+        "type": "overreach",
+        "text": "It is therefore impossible that motion should take place through a vacuum, or that any vacuum should exist anywhere in nature."
+      }
+    ],
+    "hume-design-analogy": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "The curious adapting of means to ends, throughout all nature, bears no resemblance at all to the productions of human contrivance; of human design, thought, wisdom, and intelligence."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "And so the Author of Nature is in every respect a mind like that of man, with the same passions, the same limits, and the same form."
+      },
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "Since therefore the effects are both very admirable, we are led to wonder at the variety of nature and the ingenuity of men."
+      }
+    ],
+    "hume-cosmological": [
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "In mounting up from effects to causes, we need neither go on in tracing an infinite succession nor have recourse to some ultimate cause, for there are many other ways in which the series may be accounted for."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "We must, therefore, have recourse to a necessarily existent Being, who is perfectly wise, perfectly good, and the author of all revelation."
+      },
+      {
+        "sentence": 3,
+        "type": "negation",
+        "text": "But the second supposition is absurd, for no being can carry the reason of its existence in itself, and every cause must itself be caused."
+      }
+    ],
+    "hume-four-hypotheses": [
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "Mixed phenomena may well prove the two former unmixed principles."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "The fourth, therefore, is demonstrated with certainty, and no other hypothesis can be rationally entertained."
+      },
+      {
+        "sentence": 1,
+        "type": "drop_premise",
+        "text": "Many hypotheses have been framed concerning the first causes of the universe, and among them is the hypothesis that they have neither goodness nor malice."
+      }
+    ],
+    "berkeley-heat-pain": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "The most vehement and intense degree of heat is not a pain, but a quality quite distinct from any pain."
+      },
+      {
+        "sentence": 3,
+        "type": "drop_premise",
+        "text": "Material substance is extended, solid, and capable of motion."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "Therefore material substance cannot be the subject of any sensible quality whatever, not even of extension or figure."
+      }
+    ],
+    "berkeley-one-sensation": [
+      {
+        "sentence": 3,
+        "type": "negation",
+        "text": "The pain, by contrast, is not immediately perceived, but is inferred afterwards from the effects of the heat."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "It follows that every sensible quality whatever is one and the same idea as some pain or pleasure."
+      },
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "The fire is bright and gives off smoke."
+      }
+    ],
+    "berkeley-master": [
+      {
+        "sentence": 3,
+        "type": "negation",
+        "text": "And what is conceived need not be in the mind at all, but may exist wholly without it."
+      },
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "The tree or house which you think of is, you say, existing by itself and unperceived."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "Therefore the tree or house which you think of is in the mind, and no tree or house exists anywhere except in some mind."
+      }
+    ],
+    "berkeley-water": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "A doctrine may well be true even though it necessarily leads a man into an absurdity."
+      },
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "It is no absurdity to think that the same thing should be at the same time both cold and warm."
+      },
+      {
+        "sentence": 3,
+        "type": "drop_premise",
+        "text": "If one hand is hot and the other cold, and both are put at once into the same vessel of water, the water will soon bring both hands to the same warmth."
+      }
+    ],
+    "berkeley-other-mind": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "It is evident that sensible things can exist perfectly well without any mind or spirit."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "There must therefore be some other mind wherein they exist, and this mind must be infinite, omnipresent, and perfectly good."
+      },
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "And they depend entirely on my thought, and have no existence distinct from being perceived by me."
+      }
+    ],
+    "descartes-divisibility": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "When I consider the mind, that is to say, myself inasmuch as I am only a thinking thing, I find in myself many distinct parts, which I can easily separate from one another."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "This would be sufficient to teach me that the mind or soul of man is entirely different from the body, and that it will survive the body's death."
+      },
+      {
+        "sentence": 3,
+        "type": "drop_premise",
+        "text": "But corporeal or extended objects are perceived by the senses, and are known to me in a more confused way than my own mind."
+      }
+    ],
+    "descartes-causal-principle": [
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "And the cause can communicate this reality to the effect even though it does not possess it in itself."
+      },
+      {
+        "sentence": 1,
+        "type": "drop_premise",
+        "text": "The effect is commonly observed to follow its cause in time."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "And from this it follows that nothing can proceed from anything other than God Himself."
+      }
+    ],
+    "descartes-bodies-exist": [
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "This substance acts upon me often against my will, and its ideas are more vivid than those I frame myself.",
+        "drop": "Blind Claude judge (2026-11-20) said it follows: sentence 4 alone rules out non-corporeal causes, so removing the list of possible sources does not break the inference."
+      },
+      {
+        "sentence": 3,
+        "type": "negation",
+        "text": "God has given me a clear faculty to recognise that these ideas come from God or such a creature, and no inclination to believe that they are conveyed to me by corporeal objects."
+      },
+      {
+        "sentence": 5,
+        "type": "overreach",
+        "text": "Hence we must allow that corporeal things exist, and that they are exactly as our senses represent them."
+      }
+    ],
+    "anselm-proslogium-3": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "It is possible to conceive of a being which cannot be conceived not to exist; but this is in no way greater than one which can be conceived not to exist."
+      },
+      {
+        "sentence": 2,
+        "type": "conditional_reversal",
+        "text": "Hence, if that than which nothing greater can be conceived cannot be conceived not to exist, it is not that than which nothing greater can be conceived."
+      },
+      {
+        "sentence": 4,
+        "type": "overreach",
+        "text": "There is, then, so truly a being than which nothing greater can be conceived, that it cannot even be conceived not to exist; and it is three persons in one substance."
+      }
+    ],
+    "anselm-proslogium-2": [
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "Suppose it exists in the understanding alone: then it cannot be conceived to exist in reality, and existing in reality would in any case be no greater."
+      },
+      {
+        "sentence": 4,
+        "type": "negation",
+        "text": "And there is nothing impossible in this."
+      },
+      {
+        "sentence": 1,
+        "type": "drop_premise",
+        "text": "The fool hath said in his heart, there is no God, and many have followed him."
+      }
+    ],
+    "anselm-monologium-1": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Whatever things are said to possess an attribute in such a way that in mutual comparison they may be said to possess it in greater, or less, or equal degree, may possess it by virtue of quite different things in the different cases."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "Necessarily, then, they are all good by virtue of something which is the same in different goods, and this something is the highest of all beings and the creator of all things."
+      },
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "It is certain that goods are innumerable and of great diversity, as we experience by the bodily senses."
+      }
+    ],
+    "vitoria-unbelief-law": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Unbelief destroys both natural law and human law in the unbeliever."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "Therefore ownership and dominion are not destroyed by want of faith, nor by any crime whatsoever."
+      },
+      {
+        "sentence": 2,
+        "type": "conditional_reversal",
+        "text": "But natural and human law are themselves based on ownership and dominion."
+      }
+    ],
+    "vitoria-natural-dominion": [
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "And a sinner does lose natural dominion, for by his sin he forfeits even the right to defend his own life."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "Therefore a sinner does not lose civil dominion, nor can any penalty of human law ever deprive him of his property."
+      },
+      {
+        "sentence": 1,
+        "type": "drop_premise",
+        "text": "Natural dominion is a gift of God, and civil dominion seems an institute of human law."
+      }
+    ],
+    "vitoria-heresy-penalty": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Loss of property is not a penalty, but a mere consequence of the owner's condition."
+      },
+      {
+        "sentence": 2,
+        "type": "negation",
+        "text": "The divine law ordains many penalties for the condition of heresy."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "It is clear, therefore, that from the standpoint of the divine law heresy is not a sin."
+      }
+    ],
+    "vitoria-spiritual-power": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Spiritual power is lost by mortal sin, for a bad priest does not truly consecrate the Eucharist."
+      },
+      {
+        "sentence": 2,
+        "type": "conditional_reversal",
+        "text": "Civil power seems much more to be founded in grace than spiritual power is."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "Therefore no power of any kind, whether civil, spiritual, or paternal, is ever lost by any sin."
+      }
+    ],
+    "vitoria-kill-all-guilty": [
+      {
+        "sentence": 1,
+        "type": "negation",
+        "text": "Among citizens it would be quite lawful, where the wrong was done by the whole city or district, to kill all the delinquents."
+      },
+      {
+        "sentence": 3,
+        "type": "overreach",
+        "text": "Therefore it is not right to kill any of the guilty among the enemy, even in the heat of battle."
+      },
+      {
+        "sentence": 2,
+        "type": "drop_premise",
+        "text": "A prince at war must take counsel with wise men before he acts."
+      }
+    ]
+  }
+}
