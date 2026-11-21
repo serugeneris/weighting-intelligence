@@ -1,0 +1,343 @@
+{
+  "description": "Pilot AL, task 1 (corrupt): short arguments from public-domain philosophical texts. 'original' is the source text with OCR and spelling normalised and light trimming (noted per item); 'corrupted' changes exactly one sentence (corrupted_sentence, 1-based) so the conclusion no longer follows; 'paraphrase' keeps the original's meaning in different words. Claude drafted the corruptions and paraphrases; every item awaits the author's check (review.status).",
+  "question": "In which passage does the conclusion follow from what comes before?",
+  "corruption_types": {
+    "quantifier": "all <-> some swap in a premise the conclusion needs",
+    "drop_premise": "a needed premise replaced by a sentence that does not support the conclusion",
+    "conditional_reversal": "a conditional or ordering relation reversed (converse), so the inference no longer goes through",
+    "negation": "a needed premise negated or its claim flipped",
+    "overreach": "the conclusion claims more than the premises support"
+  },
+  "items": [
+    {
+      "id": "galileo-falling-bodies",
+      "source": "galileo-two-new-sciences",
+      "edition": "Galileo, Dialogues concerning Two New Sciences, trans. Crew & de Salvio (1914)",
+      "location": "First Day, pp. 62-63 (National Edition pp. 107-108); source line ~3690",
+      "adaptation": "Salviati's speeches joined; Simplicio's assent omitted.",
+      "original": "If we take two bodies whose natural speeds are different, it is clear that on uniting the two, the more rapid one will be partly retarded by the slower, and the slower will be somewhat hastened by the swifter. If then a large stone moves with a speed of, say, eight while a smaller moves with a speed of four, when they are united the system will move with a speed less than eight. But the two stones when tied together make a stone larger than that which before moved with a speed of eight. Hence the heavier body moves with less speed than the lighter.",
+      "corrupted": "If we take two bodies whose natural speeds are different, it is clear that on uniting the two, the more rapid one will be partly retarded by the slower, and the slower will be somewhat hastened by the swifter. If then a large stone moves with a speed of, say, eight while a smaller moves with a speed of four, when they are united the system will move with a speed less than eight. But the two stones when tied together make a stone no larger than that which before moved with a speed of eight. Hence the heavier body moves with less speed than the lighter.",
+      "corrupted_sentence": 3,
+      "corruption_type": "negation",
+      "paraphrase": "Take two bodies that have different natural speeds: if we join them, it is plain that the faster one will be held back somewhat by the slower, while the slower one is sped up somewhat by the faster. So if a big stone falls at a speed of, say, eight and a small one at a speed of four, the joined pair will fall at some speed below eight. Yet the two stones bound together form a stone bigger than the one that fell at eight. So the heavier body falls more slowly than the lighter one.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "galileo-squares",
+      "source": "galileo-two-new-sciences",
+      "edition": "Galileo, Dialogues concerning Two New Sciences, trans. Crew & de Salvio (1914)",
+      "location": "First Day, pp. 31-32 (National Edition p. 78); source line ~2160",
+      "adaptation": "Question-and-answer turned into statements; 'and every root is a number' made explicit.",
+      "original": "Every square has its own root and every root its own square, while no square has more than one root and no root more than one square. Hence there are as many squares as there are roots. Every number is the root of some square, and every root is a number. We must therefore say that there are as many squares as there are numbers.",
+      "corrupted": "Every square has its own root and every root its own square, while no square has more than one root and no root more than one square. Hence there are as many squares as there are roots. Some numbers are roots of squares, and every root is a number. We must therefore say that there are as many squares as there are numbers.",
+      "corrupted_sentence": 3,
+      "corruption_type": "quantifier",
+      "paraphrase": "Each square has exactly one root and each root exactly one square, with no square sharing a root and no root yielding two squares. So squares and roots are equal in number. Each number is the root of some square, and each root is itself a number. So we have to say that the squares are just as many as the numbers.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "galileo-void",
+      "source": "galileo-two-new-sciences",
+      "edition": "Galileo, Dialogues concerning Two New Sciences, trans. Crew & de Salvio (1914)",
+      "location": "First Day, pp. 61-62 (Simplicio reporting Aristotle); source line ~3620",
+      "adaptation": "Conclusion reworded from 'impossible that a vacuum should be produced by motion' to Salviati's gloss 'motion cannot take place in a vacuum'. Author: check this rewording.",
+      "original": "The speeds of one and the same body moving in different media are in inverse ratio to the densities of these media. The tenuity of a vacuum differs infinitely from that of any medium filled with matter, however rare. Hence any body which moves through a plenum through a certain space in a certain time ought to move through a vacuum instantaneously. But instantaneous motion is an impossibility. It is therefore impossible that motion should take place through a vacuum.",
+      "corrupted": "The speeds of one and the same body moving in different media are in inverse ratio to the densities of these media. The tenuity of a vacuum differs infinitely from that of any medium filled with matter, however rare. Hence any body which moves through a plenum through a certain space in a certain time ought to move through a vacuum instantaneously. But instantaneous motion is no impossibility. It is therefore impossible that motion should take place through a vacuum.",
+      "corrupted_sentence": 4,
+      "corruption_type": "negation",
+      "paraphrase": "A given body moves through different media at speeds that are inversely proportional to how dense those media are. A vacuum is infinitely thinner than any medium that contains matter, however thin that medium may be. So a body that crosses some distance in some time through a filled medium would have to cross a vacuum in no time at all. Yet motion that takes no time cannot happen. So motion through a vacuum cannot happen.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "hume-design-analogy",
+      "source": "hume-dialogues-1779",
+      "edition": "Hume, Dialogues concerning Natural Religion (London, 1779)",
+      "location": "Part II (Cleanthes); source line ~2080",
+      "adaptation": "Long s normalised; final clause split into its own sentence. An analogical argument: 'follows' here means the analogy licenses the conclusion.",
+      "original": "The curious adapting of means to ends, throughout all nature, resembles exactly, though it much exceeds, the productions of human contrivance; of human design, thought, wisdom, and intelligence. Since therefore the effects resemble each other, we are led to infer, by all the rules of analogy, that the causes also resemble. And so the Author of Nature is somewhat similar to the mind of man, though possessed of much larger faculties.",
+      "corrupted": "The curious adapting of means to ends, throughout all nature, resembles exactly, though it much exceeds, the productions of human contrivance; of human design, thought, wisdom, and intelligence. Since therefore the effects resemble each other, we are led to infer, by all the rules of analogy, that the causes may be wholly unlike. And so the Author of Nature is somewhat similar to the mind of man, though possessed of much larger faculties.",
+      "corrupted_sentence": 2,
+      "corruption_type": "negation",
+      "paraphrase": "Throughout nature, the intricate fitting of means to ends closely resembles, while far surpassing, what human ingenuity produces: the work of human planning, thought, wisdom and intelligence. Because the effects are alike, every rule of analogy leads us to conclude that their causes are alike as well. So the maker of nature is somewhat like a human mind, though with far greater powers.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "hume-cosmological",
+      "source": "hume-dialogues-1779",
+      "edition": "Hume, Dialogues concerning Natural Religion (London, 1779)",
+      "location": "Part IX (Demea); source line ~6555",
+      "adaptation": "Long s normalised; Demea's proof that the first supposition is absurd condensed into one sentence.",
+      "original": "Whatever exists must have a cause or reason of its existence, it being absolutely impossible for any thing to produce itself. In mounting up from effects to causes, we must either go on in tracing an infinite succession, without any ultimate cause at all, or must at last have recourse to some ultimate cause that is necessarily existent. But the first supposition is absurd, for the whole eternal chain, taken together, requires a cause or reason as much as any particular object, and yet nothing causes it. We must, therefore, have recourse to a necessarily existent Being.",
+      "corrupted": "Whatever exists must have a cause or reason of its existence, it being absolutely impossible for any thing to produce itself. In mounting up from effects to causes, we must either go on in tracing an infinite succession, without any ultimate cause at all, or must at last have recourse to some ultimate cause that is necessarily existent. Philosophers have long disputed which of these two suppositions is the more natural, and each has had able defenders. We must, therefore, have recourse to a necessarily existent Being.",
+      "corrupted_sentence": 3,
+      "corruption_type": "drop_premise",
+      "paraphrase": "Everything that exists must have some cause or reason for existing, since nothing can possibly bring itself into being. Tracing causes back from their effects, we must either follow an endless series with no final cause at all, or else arrive at some final cause that exists necessarily. The first option is absurd, because the eternal series taken as a whole needs a cause or reason just as much as any single thing does, and yet nothing supplies one. So we must accept a necessarily existing Being.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "hume-four-hypotheses",
+      "source": "hume-dialogues-1779",
+      "edition": "Hume, Dialogues concerning Natural Religion (London, 1779)",
+      "location": "Part XI (Philo); source line ~8955",
+      "adaptation": "Long s normalised; the last sentence ('The fourth, therefore, seems by far the most probable') is lost in the OCR and restored from the standard text. Author: confirm against a clean edition.",
+      "original": "There may four hypotheses be framed concerning the first causes of the universe: that they are endowed with perfect goodness; that they have perfect malice; that they are opposite, and have both goodness and malice; that they have neither goodness nor malice. Mixed phenomena can never prove the two former unmixed principles. And the uniformity and steadiness of general laws seem to oppose the third. The fourth, therefore, seems by far the most probable.",
+      "corrupted": "There may four hypotheses be framed concerning the first causes of the universe: that they are endowed with perfect goodness; that they have perfect malice; that they are opposite, and have both goodness and malice; that they have neither goodness nor malice. Mixed phenomena can never prove the two former unmixed principles. And the uniformity and steadiness of general laws seem quite consistent with the third. The fourth, therefore, seems by far the most probable.",
+      "corrupted_sentence": 3,
+      "corruption_type": "negation",
+      "paraphrase": "Four hypotheses can be formed about the first causes of the universe: they are perfectly good; they are perfectly malicious; they are two opposed causes, one good and one malicious; or they are neither good nor malicious. A world of mixed good and evil can never establish either of the first two, which are unmixed. And the regularity and constancy of general laws seem to count against the third. So the fourth is by far the most likely.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "berkeley-heat-pain",
+      "source": "berkeley-dialogues",
+      "edition": "Berkeley, Three Dialogues between Hylas and Philonous (Open Court, 1906)",
+      "location": "First Dialogue, pp. 14-15; source line ~767",
+      "adaptation": "Question-and-answer turned into statements.",
+      "original": "The most vehement and intense degree of heat is a very great pain. No unperceiving thing is capable of pain or pleasure. Material substance is a senseless being, not endowed with sense and perception. Therefore material substance cannot be the subject of the greatest heat perceived by sense.",
+      "corrupted": "The most vehement and intense degree of heat is a very great pain. Some unperceiving things are capable of pain or pleasure. Material substance is a senseless being, not endowed with sense and perception. Therefore material substance cannot be the subject of the greatest heat perceived by sense.",
+      "corrupted_sentence": 2,
+      "corruption_type": "quantifier",
+      "paraphrase": "Heat at its most violent and intense is a severe pain. Nothing that lacks perception can feel pain or pleasure. Material substance has no senses and no perception. So material substance cannot be what bears the strongest heat that the senses perceive.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "berkeley-one-sensation",
+      "source": "berkeley-dialogues",
+      "edition": "Berkeley, Three Dialogues between Hylas and Philonous (Open Court, 1906)",
+      "location": "First Dialogue, p. 15; source line ~805",
+      "adaptation": "Question-and-answer turned into statements; the premises are not restated in the conclusion.",
+      "original": "On putting your hand near the fire, you perceive one simple, uniform sensation, and not two distinct sensations. The heat is immediately perceived. The pain also is immediately perceived, and at the same time as the heat. It follows that the intense heat immediately perceived and the pain are one and the same simple idea.",
+      "corrupted": "On putting your hand near the fire, you perceive a sensation that grows stronger as the hand comes closer to it. The heat is immediately perceived. The pain also is immediately perceived, and at the same time as the heat. It follows that the intense heat immediately perceived and the pain are one and the same simple idea.",
+      "corrupted_sentence": 1,
+      "corruption_type": "drop_premise",
+      "paraphrase": "When you hold your hand close to a fire, you feel a single, uniform sensation rather than two separate ones. You perceive the heat directly. You perceive the pain directly as well, and at the same moment as the heat. So the intense heat you directly perceive and the pain are a single simple idea.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "berkeley-master",
+      "source": "berkeley-dialogues",
+      "edition": "Berkeley, Three Dialogues between Hylas and Philonous (Open Court, 1906)",
+      "location": "First Dialogue, p. 48; source line ~2380",
+      "adaptation": "Question-and-answer turned into statements.",
+      "original": "To conceive a thing which is at the same time unconceived is as great a contradiction as to see a thing which is at the same time unseen. The tree or house which you think of is therefore conceived by you. And whatever is conceived is surely in the mind. Therefore the tree or house which you think of is in the mind.",
+      "corrupted": "To conceive a thing which is at the same time unconceived is as great a contradiction as to see a thing which is at the same time unseen. The tree or house which you think of is therefore conceived by you. And some things that are conceived are surely in the mind. Therefore the tree or house which you think of is in the mind.",
+      "corrupted_sentence": 3,
+      "corruption_type": "quantifier",
+      "paraphrase": "Conceiving something that is at the same moment not conceived is just as contradictory as seeing something that is at the same moment not seen. So the tree or house you are thinking of is something you conceive. And everything conceived is certainly in the mind. So the tree or house you are thinking of is in the mind.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "berkeley-water",
+      "source": "berkeley-dialogues",
+      "edition": "Berkeley, Three Dialogues between Hylas and Philonous (Open Court, 1906)",
+      "location": "First Dialogue, p. 20; source line ~965",
+      "adaptation": "Question-and-answer turned into statements; the principle Hylas granted is stated in sentence 4.",
+      "original": "No doctrine can be true that necessarily leads a man into an absurdity. It is an absurdity to think that the same thing should be at the same time both cold and warm. If one hand is hot and the other cold, and both are put at once into the same vessel of water, the water will seem cold to one hand and warm to the other. By the principle that things have in them whatever degree of heat or cold we feel on applying them, we must then conclude that the water is really both cold and warm at the same time. Consequently that principle is false.",
+      "corrupted": "No doctrine can be true that necessarily leads a man into an absurdity. It is an absurdity to think that the same thing should be at the same time both cold and warm. If one hand is hot and the other cold, and both are put at once into the same vessel of water, the water will seem cold to one hand and warm to the other. By the principle that things have in them whatever degree of heat or cold we feel on applying them, we must then conclude that the water is really both cold and warm at the same time. Consequently every principle about heat and cold in bodies is false.",
+      "corrupted_sentence": 5,
+      "corruption_type": "overreach",
+      "paraphrase": "A doctrine that unavoidably leads to an absurdity cannot be true. It is absurd to suppose that one and the same thing is cold and warm at once. Suppose one hand is hot and the other cold, and both are dipped together into the same bowl of lukewarm water: the water will feel cold to one hand and warm to the other. By the principle that things contain whatever degree of heat or cold we feel when we touch them, we would have to say the water really is cold and warm at once. So that principle is false.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "berkeley-other-mind",
+      "source": "berkeley-dialogues",
+      "edition": "Berkeley, Three Dialogues between Hylas and Philonous (Open Court, 1906)",
+      "location": "Second Dialogue, p. 64; source line ~3095",
+      "adaptation": "Split into three sentences.",
+      "original": "It is evident that sensible things cannot exist otherwise than in a mind or spirit. Yet they depend not on my thought, and have an existence distinct from being perceived by me. There must therefore be some other mind wherein they exist.",
+      "corrupted": "It is evident that sensible things cannot exist otherwise than in a mind or spirit. Yet they often strike my senses with great force and vividness, more than any idea I frame myself. There must therefore be some other mind wherein they exist.",
+      "corrupted_sentence": 2,
+      "corruption_type": "drop_premise",
+      "paraphrase": "Plainly, sensible things can exist only in a mind or spirit. But they do not depend on my thinking, and they have an existence apart from my perceiving them. So there must be some other mind in which they exist.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "descartes-divisibility",
+      "source": "descartes-hr-vol1",
+      "edition": "Descartes, Philosophical Works, vol. I, trans. Haldane & Ross (1911)",
+      "location": "Meditation VI, p. 196; source line ~9666",
+      "adaptation": "The opening thesis sentence is omitted so that the argument does not state its conclusion as a premise; the remark on faculties is omitted.",
+      "original": "When I consider the mind, that is to say, myself inasmuch as I am only a thinking thing, I cannot distinguish in myself any parts, but apprehend myself to be clearly one and entire. Although the whole mind seems to be united to the whole body, yet if a foot, or an arm, or some other part, is separated from my body, I am aware that nothing has been taken away from my mind. But it is quite otherwise with corporeal or extended objects, for there is not one of these imaginable by me which my mind cannot easily divide into parts. This would be sufficient to teach me that the mind or soul of man is entirely different from the body.",
+      "corrupted": "When I consider the mind, that is to say, myself inasmuch as I am only a thinking thing, I cannot distinguish in myself any parts, but apprehend myself to be clearly one and entire. Although the whole mind seems to be united to the whole body, yet if a foot, or an arm, or some other part, is separated from my body, I am aware that nothing has been taken away from my mind. And it is in part so with corporeal or extended objects, for there are some of these imaginable by me which my mind can easily divide into parts. This would be sufficient to teach me that the mind or soul of man is entirely different from the body.",
+      "corrupted_sentence": 3,
+      "corruption_type": "quantifier",
+      "paraphrase": "When I consider my mind, that is, myself only insofar as I am a thinking thing, I can find no parts in myself, but grasp myself as plainly one and whole. Though the whole mind seems joined to the whole body, if a foot, an arm or some other part is cut off from my body, I know that nothing has been removed from my mind. Bodies, or extended things, are entirely different: I cannot imagine a single one that my mind could not readily divide into parts. That alone would show me that the human mind or soul is wholly distinct from the body.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "descartes-causal-principle",
+      "source": "descartes-hr-vol1",
+      "edition": "Descartes, Philosophical Works, vol. I, trans. Haldane & Ross (1911)",
+      "location": "Meditation III, p. 162; source line ~7959",
+      "adaptation": "The two rhetorical questions are turned into statements and placed before the principle they support.",
+      "original": "The effect can derive its reality from nowhere but its cause. And the cause cannot communicate this reality to the effect unless it possessed it in itself. Hence there must be at least as much reality in the efficient and total cause as in its effect. And from this it follows that what is more perfect, that is to say, what has more reality within itself, cannot proceed from the less perfect.",
+      "corrupted": "The effect can derive its reality from nowhere but its cause. And the cause cannot communicate this reality to the effect unless it possessed it in itself. Hence there must be at least as much reality in the efficient and total cause as in its effect. And from this it follows that what is less perfect, that is to say, what has less reality within itself, cannot proceed from the more perfect.",
+      "corrupted_sentence": 4,
+      "corruption_type": "conditional_reversal",
+      "paraphrase": "An effect can get its reality only from its cause. And a cause cannot pass this reality on to the effect unless it has it itself. So the efficient and total cause must contain at least as much reality as its effect. It follows that something more perfect, meaning something with more reality in it, cannot come from something less perfect.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "descartes-bodies-exist",
+      "source": "descartes-hr-vol1",
+      "edition": "Descartes, Philosophical Works, vol. I, trans. Haldane & Ross (1911)",
+      "location": "Meditation VI, p. 191; source line ~9435",
+      "adaptation": "Trimmed; the bracketed additions of the French version are omitted.",
+      "original": "The faculty that produces my ideas of sensible things resides in some substance different from me. This substance is either a body, or God Himself, or some other creature more noble than body. God has given me no faculty to recognise that these ideas come from God or such a creature, but a very great inclination to believe that they are conveyed to me by corporeal objects. Since God is no deceiver, He could not be defended from the accusation of deceit if these ideas were produced by causes other than corporeal objects. Hence we must allow that corporeal things exist.",
+      "corrupted": "The faculty that produces my ideas of sensible things resides in some substance different from me. This substance is either a body, or God Himself, or some other creature more noble than body. God has given me no faculty to recognise that these ideas come from God or such a creature, but a very great inclination to believe that they are conveyed to me by corporeal objects. Though God is no deceiver, He could be fully defended from the accusation of deceit even if these ideas were produced by causes other than corporeal objects. Hence we must allow that corporeal things exist.",
+      "corrupted_sentence": 4,
+      "corruption_type": "negation",
+      "paraphrase": "The power that produces my ideas of things perceived by the senses belongs to some substance other than me. That substance is a body, or God, or some created thing nobler than a body. God has given me no means of telling that these ideas come from Himself or from such a creature, but a strong inclination to believe that bodies send them to me. As God does not deceive, He could not be cleared of deceit if something other than bodies caused these ideas. So we must accept that bodies exist.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anselm-proslogium-3",
+      "source": "anselm-gaunilo-1903",
+      "edition": "St. Anselm, Proslogium etc., trans. S. N. Deane (Open Court, 1903)",
+      "location": "Proslogium, ch. III, p. 8; source line ~1996",
+      "adaptation": "None beyond OCR fixes.",
+      "original": "It is possible to conceive of a being which cannot be conceived not to exist; and this is greater than one which can be conceived not to exist. Hence, if that than which nothing greater can be conceived can be conceived not to exist, it is not that than which nothing greater can be conceived. But this is an irreconcilable contradiction. There is, then, so truly a being than which nothing greater can be conceived, that it cannot even be conceived not to exist.",
+      "corrupted": "It is possible to conceive of a being which cannot be conceived not to exist; and this is greater than one which can be conceived not to exist. Hence, if that than which nothing greater can be conceived can be conceived not to exist, it is not that than which nothing greater can be conceived. But this is no contradiction at all. There is, then, so truly a being than which nothing greater can be conceived, that it cannot even be conceived not to exist.",
+      "corrupted_sentence": 3,
+      "corruption_type": "negation",
+      "paraphrase": "We can conceive of a being that cannot be conceived as not existing, and such a being is greater than one that can be conceived as not existing. So if the being than which nothing greater can be conceived could be conceived as not existing, it would not be the being than which nothing greater can be conceived. But that is a flat contradiction. So the being than which nothing greater can be conceived exists so truly that it cannot even be conceived as not existing.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anselm-proslogium-2",
+      "source": "anselm-gaunilo-1903",
+      "edition": "St. Anselm, Proslogium etc., trans. S. N. Deane (Open Court, 1903)",
+      "location": "Proslogium, ch. II, pp. 7-8; source line ~1960",
+      "adaptation": "Painter illustration omitted; OCR gap in 'which is greater' restored. Validity of this argument is contested in the literature; as a reductio from its stated premises it goes through.",
+      "original": "Even the fool is convinced that something exists in the understanding, at least, than which nothing greater can be conceived; for when he hears of this, he understands it, and whatever is understood exists in the understanding. Suppose it exists in the understanding alone: then it can be conceived to exist in reality, which is greater. Therefore, if that than which nothing greater can be conceived exists in the understanding alone, the very being than which nothing greater can be conceived is one than which a greater can be conceived. But obviously this is impossible. Hence there exists a being than which nothing greater can be conceived, and it exists both in the understanding and in reality.",
+      "corrupted": "Even the fool is convinced that something exists in the understanding, at least, than which nothing greater can be conceived; for when he hears of this, he understands it, and whatever is understood exists in the understanding. Suppose it exists in the understanding alone: then it can be conceived to exist in reality, which is greater. Therefore, if that than which nothing greater can be conceived exists in the understanding alone, the very being than which nothing greater can be conceived is one than which a greater can be conceived. But obviously this is impossible. Hence there exists a being than which nothing greater can be conceived, and it exists in reality as the maker of every other thing.",
+      "corrupted_sentence": 5,
+      "corruption_type": "overreach",
+      "paraphrase": "Even the fool grants that something than which nothing greater can be conceived exists at least in the understanding, since he understands it when he hears of it, and whatever is understood is in the understanding. Suppose it is in the understanding only: then it can be conceived as existing in reality too, which is greater. So if that than which nothing greater can be conceived is in the understanding only, then that very being is one than which something greater can be conceived. But clearly this cannot be. So there exists a being than which nothing greater can be conceived, both in the understanding and in reality.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anselm-monologium-1",
+      "source": "anselm-gaunilo-1903",
+      "edition": "St. Anselm, Proslogium etc., trans. S. N. Deane (Open Court, 1903)",
+      "location": "Monologium, ch. I, pp. 38-39; source line ~3210",
+      "adaptation": "The justice illustration is omitted.",
+      "original": "Whatever things are said to possess an attribute in such a way that in mutual comparison they may be said to possess it in greater, or less, or equal degree, possess it by virtue of something which is the same in the different cases. It is certain that all goods, if mutually compared, would prove either equally or unequally good. Necessarily, then, they are all good by virtue of something which is conceived of as the same in different goods.",
+      "corrupted": "Whatever things are said to possess an attribute in such a way that in mutual comparison they may be said to possess it in greater, or less, or equal degree, possess it by virtue of something which is the same in the different cases. It is certain that some goods, if mutually compared, would prove either equally or unequally good. Necessarily, then, they are all good by virtue of something which is conceived of as the same in different goods.",
+      "corrupted_sentence": 2,
+      "corruption_type": "quantifier",
+      "paraphrase": "Whenever things can be compared with one another as having some attribute to a greater, a lesser or an equal degree, they have that attribute in virtue of something that is identical across all the cases. Certainly every good, if compared with the others, would turn out either equally good or more or less good. So every good is good in virtue of something that is understood to be the same in all of them.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "vitoria-unbelief-law",
+      "source": "vitoria-de-indis-1917",
+      "edition": "Vitoria, De Indis et De Jure Belli Relectiones, trans. J. P. Bate (Carnegie, 1917)",
+      "location": "De Indis, Sect. I, §7 (St. Thomas's reasoning), p. 123; source line ~6345",
+      "adaptation": "Set out as three sentences.",
+      "original": "Unbelief does not destroy either natural law or human law. But all ownership and dominion are based either on natural or on human law. Therefore ownership and dominion are not destroyed by want of faith.",
+      "corrupted": "Unbelief does not destroy either natural law or human law. But some ownership and dominion are based either on natural or on human law. Therefore ownership and dominion are not destroyed by want of faith.",
+      "corrupted_sentence": 2,
+      "corruption_type": "quantifier",
+      "paraphrase": "Lack of faith abolishes neither natural law nor human law. Every form of ownership and dominion rests on natural law or on human law. So lack of faith does not abolish ownership and dominion.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "vitoria-natural-dominion",
+      "source": "vitoria-de-indis-1917",
+      "edition": "Vitoria, De Indis et De Jure Belli Relectiones, trans. J. P. Bate (Carnegie, 1917)",
+      "location": "De Indis, Sect. I, §6, first proof, p. 122; source line ~6262",
+      "adaptation": "The proof of the consequence and the falsity of the consequent are each condensed into a 'for' clause.",
+      "original": "If a sinner has not civil dominion, he has not natural dominion either, for natural dominion is a gift of God just as civil dominion is, nay, more so. But a sinner does not lose natural dominion, for he does not lose dominion over his own acts and over his own limbs. Therefore a sinner does not lose civil dominion.",
+      "corrupted": "If a sinner has not natural dominion, he has not civil dominion either, for natural dominion is a gift of God just as civil dominion is, nay, more so. But a sinner does not lose natural dominion, for he does not lose dominion over his own acts and over his own limbs. Therefore a sinner does not lose civil dominion.",
+      "corrupted_sentence": 1,
+      "corruption_type": "conditional_reversal",
+      "paraphrase": "Were a sinner to lack civil dominion, he would lack natural dominion as well, since natural dominion is God's gift just as civil dominion is, and even more so. Yet a sinner keeps his natural dominion, since he keeps command over his own actions and his own limbs. So a sinner keeps his civil dominion.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "vitoria-heresy-penalty",
+      "source": "vitoria-de-indis-1917",
+      "edition": "Vitoria, De Indis et De Jure Belli Relectiones, trans. J. P. Bate (Carnegie, 1917)",
+      "location": "De Indis, Sect. I, §8, p. 123; source line ~6360",
+      "adaptation": "Set out as three sentences.",
+      "original": "Loss of property is a penalty. No penalty is ordained by the divine law for the condition of heresy. It is clear, therefore, that from the standpoint of the divine law property is not forfeited on the ground of heresy.",
+      "corrupted": "Loss of property is a penalty. No penalty is ordained by the divine law for the condition of heresy. It is clear, therefore, that property is not forfeited on the ground of heresy under any law, divine or human.",
+      "corrupted_sentence": 3,
+      "corruption_type": "overreach",
+      "paraphrase": "Losing one's property is a punishment. Divine law lays down no punishment for being a heretic. So, as far as divine law is concerned, heresy plainly does not cost a person their property.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "vitoria-spiritual-power",
+      "source": "vitoria-de-indis-1917",
+      "edition": "Vitoria, De Indis et De Jure Belli Relectiones, trans. J. P. Bate (Carnegie, 1917)",
+      "location": "De Indis, Sect. I, §6, sixth proof, p. 122; source line ~6290",
+      "adaptation": "Antecedent's proof moved into the first sentence; conclusion stated in full.",
+      "original": "Spiritual power is not lost by mortal sin, for a bad priest consecrates the Eucharist and a bad bishop consecrates a priest. Civil power seems much less to be founded in grace than spiritual power is. Therefore civil power is not lost by mortal sin either.",
+      "corrupted": "Spiritual power is not lost by mortal sin, for a bad priest consecrates the Eucharist and a bad bishop consecrates a priest. Civil power and spiritual power are exercised over quite different matters. Therefore civil power is not lost by mortal sin either.",
+      "corrupted_sentence": 2,
+      "corruption_type": "drop_premise",
+      "paraphrase": "Mortal sin does not take away spiritual power, since a wicked priest still consecrates the Eucharist and a wicked bishop still ordains a priest. Civil power appears to rest on grace far less than spiritual power does. So mortal sin does not take away civil power either.",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "vitoria-kill-all-guilty",
+      "source": "vitoria-de-indis-1917",
+      "edition": "Vitoria, De Indis et De Jure Belli Relectiones, trans. J. P. Bate (Carnegie, 1917)",
+      "location": "De Jure Belli, §47 (third proposition), with the premise on the prince's authority from §46, p. 182; source line ~10995",
+      "adaptation": "Premise 2 is taken from §46 ('a prince when at war has by right of war the same authority over the enemy as if he were their lawful judge'). Author: check that joining §46 and §47 is fair.",
+      "original": "Even among citizens it would not be lawful, not even where the wrong was done by the whole city or district, to kill all the delinquents. A prince at war has, by right of war, the same authority over the enemy as if he were their lawful judge and prince. Therefore it is not right to kill all the guilty among the enemy.",
+      "corrupted": "Even among citizens it would not be lawful, not even where the wrong was done by the whole city or district, to kill all the delinquents. A prince at war has, by right of war, far greater authority over the enemy than any lawful judge has over citizens. Therefore it is not right to kill all the guilty among the enemy.",
+      "corrupted_sentence": 2,
+      "corruption_type": "negation",
+      "paraphrase": "Even among a ruler's own citizens, it would be unlawful to execute every offender, even when a whole city or district committed the wrong. In war, a prince holds over the enemy the same authority he would have as their lawful judge and ruler. So it is wrong to kill every guilty person on the enemy's side.",
+      "review": {
+        "status": "pending"
+      }
+    }
+  ]
+}

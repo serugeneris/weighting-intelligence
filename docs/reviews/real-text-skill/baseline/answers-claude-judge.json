@@ -1,0 +1,22 @@
+{"packet": "al-human-baseline-v1", "grader": "claude-judge", "answers": {"q01": "D", "q02": "C", "q03": "B", "q04": "D", "q05": "B", "q06": "C", "q07": "B", "q08": "A", "q09": "B", "q10": "A", "q11": "B", "q12": "D", "q13": "A", "q14": "B", "q15": "B", "q16": "A", "q17": "A", "q18": "A", "q19": "B", "q20": "A"}, "notes": {
+"q01": "The reply denies that innate means always present, which answers D's dreamless-sleep argument directly.",
+"q02": "The reply rejects reading idea as corporeal image, which is the premise of C's Angel/God objection.",
+"q03": "A says only some bodies are divisible, which removes the contrast the conclusion needs; B says every body is divisible.",
+"q04": "D picks up 'inconceivable' and talks about conceiving one's own non-existence, both from the objection.",
+"q05": "B gives an a fortiori ground (civil power depends on grace less); A's 'different matters' gives no support.",
+"q06": "The reply about dreaming of past events and the Atheist's certainty answers C point for point.",
+"q07": "A jumps to 'every principle about heat and cold' being false; B concludes only that the stated principle is false.",
+"q08": "The reply rebuts the claim that space has parts, which is the closing premise of A.",
+"q09": "A's premise covers only 'some goods' but the conclusion is about 'all'; B's premise covers all goods.",
+"q10": "B says the causes may be wholly unlike, which contradicts its own conclusion; A infers like causes from like effects.",
+"q11": "B states there is one simple uniform sensation, which supports the identity; A's growing intensity does not.",
+"q12": "The reply offers to give back the 'lost island', so it answers D's island objection.",
+"q13": "A replies directly to the claim that reasoning only strings names together and so that mind is motion.",
+"q14": "B's premise that instantaneous motion is impossible completes the reductio; A says it is not impossible.",
+"q15": "A says some unperceiving things can feel pain, which undercuts its conclusion; B has the needed universal premise.",
+"q16": "The premise is about divine law only; B over-extends the conclusion to human law.",
+"q17": "A attacks the relational view of space and time as an order of coexistences and successions, which is the objection's position.",
+"q18": "A needs God to be indefensible if the ideas came from non-bodies for the conclusion to follow; B grants the opposite.",
+"q19": "B answers the claim that God cannot be conceived from any like reality by ascending from lesser goods to greater.",
+"q20": "A explicitly addresses the painter analogy being unnecessary."
+}}

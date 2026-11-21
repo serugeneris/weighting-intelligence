@@ -1,0 +1,794 @@
+{
+ "v001": {
+  "item": "vitoria-heresy-penalty",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "negation"
+ },
+ "v002": {
+  "item": "galileo-void",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "negation"
+ },
+ "v003": {
+  "item": "galileo-falling-bodies",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v004": {
+  "item": "anselm-proslogium-2",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v005": {
+  "item": "anselm-monologium-1",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v006": {
+  "item": "berkeley-one-sensation",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v007": {
+  "item": "berkeley-one-sensation",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v008": {
+  "item": "vitoria-heresy-penalty",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v009": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v010": {
+  "item": "hume-cosmological",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v011": {
+  "item": "anselm-proslogium-2",
+  "form": "corrupted",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v012": {
+  "item": "descartes-bodies-exist",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v013": {
+  "item": "berkeley-water",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v014": {
+  "item": "berkeley-master",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v015": {
+  "item": "galileo-falling-bodies",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v016": {
+  "item": "berkeley-other-mind",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v017": {
+  "item": "descartes-causal-principle",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v018": {
+  "item": "descartes-bodies-exist",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v019": {
+  "item": "galileo-void",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v020": {
+  "item": "descartes-divisibility",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v021": {
+  "item": "berkeley-water",
+  "form": "corrupted",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v022": {
+  "item": "berkeley-heat-pain",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v023": {
+  "item": "galileo-falling-bodies",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v024": {
+  "item": "berkeley-other-mind",
+  "form": "corrupted",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v025": {
+  "item": "hume-four-hypotheses",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v026": {
+  "item": "anselm-proslogium-3",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v027": {
+  "item": "descartes-divisibility",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v028": {
+  "item": "descartes-causal-principle",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v029": {
+  "item": "vitoria-natural-dominion",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v030": {
+  "item": "anselm-proslogium-3",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v031": {
+  "item": "berkeley-master",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v032": {
+  "item": "hume-cosmological",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "negation"
+ },
+ "v033": {
+  "item": "descartes-causal-principle",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v034": {
+  "item": "hume-design-analogy",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v035": {
+  "item": "berkeley-one-sensation",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v036": {
+  "item": "hume-design-analogy",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v037": {
+  "item": "hume-four-hypotheses",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v038": {
+  "item": "descartes-bodies-exist",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v039": {
+  "item": "galileo-falling-bodies",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v040": {
+  "item": "berkeley-other-mind",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v041": {
+  "item": "anselm-proslogium-2",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v042": {
+  "item": "galileo-squares",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v043": {
+  "item": "berkeley-master",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v044": {
+  "item": "galileo-squares",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v045": {
+  "item": "descartes-bodies-exist",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v046": {
+  "item": "hume-four-hypotheses",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v047": {
+  "item": "vitoria-unbelief-law",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v048": {
+  "item": "vitoria-heresy-penalty",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v049": {
+  "item": "vitoria-heresy-penalty",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v050": {
+  "item": "anselm-proslogium-3",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v051": {
+  "item": "anselm-proslogium-2",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v052": {
+  "item": "berkeley-other-mind",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "negation"
+ },
+ "v053": {
+  "item": "hume-design-analogy",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v054": {
+  "item": "anselm-proslogium-3",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v055": {
+  "item": "hume-four-hypotheses",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v056": {
+  "item": "hume-design-analogy",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v057": {
+  "item": "berkeley-heat-pain",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v058": {
+  "item": "anselm-proslogium-2",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "negation"
+ },
+ "v059": {
+  "item": "anselm-proslogium-3",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v060": {
+  "item": "berkeley-master",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v061": {
+  "item": "berkeley-one-sensation",
+  "form": "corrupted",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v062": {
+  "item": "vitoria-natural-dominion",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v063": {
+  "item": "anselm-monologium-1",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v064": {
+  "item": "hume-four-hypotheses",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v065": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v066": {
+  "item": "vitoria-spiritual-power",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v067": {
+  "item": "berkeley-water",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "negation"
+ },
+ "v068": {
+  "item": "berkeley-water",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v069": {
+  "item": "berkeley-heat-pain",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v070": {
+  "item": "vitoria-natural-dominion",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v071": {
+  "item": "vitoria-spiritual-power",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v072": {
+  "item": "berkeley-other-mind",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v073": {
+  "item": "hume-cosmological",
+  "form": "corrupted",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v074": {
+  "item": "anselm-monologium-1",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v075": {
+  "item": "vitoria-unbelief-law",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v076": {
+  "item": "vitoria-natural-dominion",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v077": {
+  "item": "vitoria-natural-dominion",
+  "form": "corrupted",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v078": {
+  "item": "vitoria-spiritual-power",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v079": {
+  "item": "berkeley-one-sensation",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v080": {
+  "item": "hume-cosmological",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v081": {
+  "item": "anselm-proslogium-3",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v082": {
+  "item": "anselm-monologium-1",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v083": {
+  "item": "galileo-void",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v084": {
+  "item": "hume-design-analogy",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v085": {
+  "item": "anselm-proslogium-2",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v086": {
+  "item": "berkeley-heat-pain",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v087": {
+  "item": "anselm-monologium-1",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v088": {
+  "item": "vitoria-unbelief-law",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v089": {
+  "item": "descartes-divisibility",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v090": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v091": {
+  "item": "vitoria-heresy-penalty",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v092": {
+  "item": "berkeley-heat-pain",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v093": {
+  "item": "galileo-void",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v094": {
+  "item": "descartes-divisibility",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v095": {
+  "item": "galileo-falling-bodies",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v096": {
+  "item": "vitoria-unbelief-law",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v097": {
+  "item": "galileo-squares",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v098": {
+  "item": "berkeley-master",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v099": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v100": {
+  "item": "descartes-causal-principle",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v101": {
+  "item": "vitoria-natural-dominion",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v102": {
+  "item": "vitoria-spiritual-power",
+  "form": "corrupted",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v103": {
+  "item": "vitoria-unbelief-law",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v104": {
+  "item": "descartes-bodies-exist",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v105": {
+  "item": "hume-cosmological",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v106": {
+  "item": "galileo-void",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v107": {
+  "item": "descartes-causal-principle",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v108": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v109": {
+  "item": "vitoria-spiritual-power",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v110": {
+  "item": "berkeley-water",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v111": {
+  "item": "descartes-divisibility",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v112": {
+  "item": "vitoria-spiritual-power",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v113": {
+  "item": "hume-four-hypotheses",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v114": {
+  "item": "galileo-squares",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v115": {
+  "item": "berkeley-master",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v116": {
+  "item": "berkeley-water",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v117": {
+  "item": "galileo-squares",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v118": {
+  "item": "galileo-falling-bodies",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v119": {
+  "item": "hume-cosmological",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v120": {
+  "item": "berkeley-other-mind",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v121": {
+  "item": "vitoria-heresy-penalty",
+  "form": "corrupted",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v122": {
+  "item": "galileo-squares",
+  "form": "paraphrase",
+  "follows": true,
+  "type": null
+ },
+ "v123": {
+  "item": "descartes-causal-principle",
+  "form": "corrupted",
+  "follows": false,
+  "type": "conditional_reversal"
+ },
+ "v124": {
+  "item": "berkeley-one-sensation",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "overreach"
+ },
+ "v125": {
+  "item": "vitoria-kill-all-guilty",
+  "form": "corrupted",
+  "follows": false,
+  "type": "negation"
+ },
+ "v126": {
+  "item": "descartes-divisibility",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v127": {
+  "item": "vitoria-unbelief-law",
+  "form": "corrupted2",
+  "follows": false,
+  "type": "negation"
+ },
+ "v128": {
+  "item": "hume-design-analogy",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v129": {
+  "item": "galileo-void",
+  "form": "original",
+  "follows": true,
+  "type": null
+ },
+ "v130": {
+  "item": "anselm-monologium-1",
+  "form": "corrupted4",
+  "follows": false,
+  "type": "drop_premise"
+ },
+ "v131": {
+  "item": "berkeley-heat-pain",
+  "form": "corrupted",
+  "follows": false,
+  "type": "quantifier"
+ },
+ "v132": {
+  "item": "descartes-bodies-exist",
+  "form": "corrupted3",
+  "follows": false,
+  "type": "negation"
+ }
+}

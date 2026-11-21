@@ -2,7 +2,7 @@
 
 [← Findings overview](../FINDINGS.md) · [Explainer, part 7](https://www.contrasentido.ar/weighting-intelligence/explainer.html#p7)
 
-**Short answer.** No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".
+**Short answer.** No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead, from 2B to 4B on every test and less or not at all from 4B to 9B. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".
 
 | ID | Question | Result |
 |---|---|---|
@@ -14,6 +14,7 @@
 | [AG](#exp-ag) | Does the student apply a rule to changed facts better than base? | No advantage. All three got 6/8 relevant pairs and 4/4 cosmetic pairs right, with identical choices on all 24 variants. |
 | [AI](#exp-ai) | Does skill on judge-free philosophy tasks rise with the register? | No. Moving the register from 0 to 3.8 predicts no skill measure. Prompts and students keep base-level skill; constant pushes lose up to 46 points, mostly to position bias. |
 | [AI2](#exp-ai2) | If the register is not the skill, where does skill come from? | From model size, on base models where the register is zero: validity 57 → 83 of 96 from 2B to 4B (z 5.2), and +7 from 4B to 9B (z 1.7). |
+| [AL](#exp-al) | Does the split hold on real philosophical texts? | Yes for register, partly for scale. On single-passage validity from eight historical sources, 2B → 4B gains 17 points (z 3.0) and 4B → 9B gains 1; prompts and students stay at base, constant pushes lose 16–22. |
 
 ## Experiments
 
@@ -290,3 +291,48 @@ What this says:
 - **The scale comparison is thin.** One model family, three sizes, base and prompt only for 4B and 9B. The 4-bit and bf16 4B disagree on a quarter of PhilPapers choices, which is why the 9B is never compared across stacks.
 
 [Saved outputs and review details](../docs/reviews/2026-11-15/philbench/README.md)
+
+<a id="exp-al"></a>
+<a id="real-text-skill"></a>
+
+### AL · Does the split hold on real philosophical texts?
+
+> **Question.** On tasks built from real philosophical texts and keyed without a grader, does skill grow with model size, and do the register levers leave it at base level?  
+> **Result.** Yes from 2B to 4B, not from 4B to 9B. On single-passage validity the 4B rates an intact argument above its corrupted version on 82% of 87 units, against 64% for the 2B (z 3.0); the 9B adds 1 point. Prompts and students stay at base; constant pushes lose 16–22 points (z −2.9 to −3.8).  
+> 2026-11-20 · [plan](../docs/plans/real-text-skill-pilot.md)
+
+[AI](#exp-ai) and [AI2](#exp-ai2) used items the project wrote or adapted (PhilPapers paraphrases, pilot arguments). Here the arguments come from public-domain texts, and the keys follow from how the items are built, so no grader decides what is correct. The sources were chosen to go beyond modern northern-European philosophy: Descartes with the Objections and Replies, Hobbes, Leibniz–Clarke, Hume's *Dialogues*, Berkeley's *Three Dialogues*, Anselm with Gaunilo, Vitoria's *De Indis* and Galileo's *Two New Sciences*. The predictions were written before any run: skill grows with size (P1), the register levers leave it at base and constant pushes lower it (P2), and original and paraphrased wording score alike (P3, no memorisation).
+
+**Method** (`scripts/exp_real_text.py`, `scripts/exp_real_text_mlx.py`, `scripts/philbench_items.py`, `scripts/real_text_packets.py`, `data/pilot-real-*.json`, `data/sources/`). Ten configurations, with AI's forced-choice scorer unchanged (`Answer:` prefill plus the bold path, both letter orders): base 2B (bf16), base 4B (bf16), base 4B and 9B (4-bit MLX); and on 4B bf16 the woven prompt, the rank-1 student ×1, the Claude-taught 384 student ×1.0, diff-means α 0.5, B 0.6·p50 and random 0.6·p50 (seed 0). Three tasks:
+
+- **`verdict`** (main measure): one passage, "does its conclusion follow?", A/B in both orders. 22 arguments, each as original, paraphrase and four corrupted versions (one sentence changed: negation, quantifier, dropped premise, overreach or reversed conditional). The score is the share of (argument, corruption) units where P(follows | original) > P(follows | corrupted), each averaged over both letter orders. A constant letter or yes/no preference cannot move it. 87 units after one bad item was dropped.
+- **`corrupt`** (as planned): two passages, which one's conclusion follows. Replaced as the main measure because it measured letter preference: the 4B bf16 picked A on 89% of keyed pairs and the 9B picked B on 81%.
+- **`objreply`**: 20 objection–reply pairs from four exchanges (Hobbes–Descartes, Leibniz–Clarke, Gaunilo–Anselm, Vitoria); pick the real reply out of four from the same exchange, and the reverse, in original and paraphrased wording.
+
+**Baseline.** Blind graders saw only the answer packets. Two fresh Claude instances scored 20/20 on the 20-item baseline packet and 131/132 on the single passages; the one miss was the bad item, now dropped. The author scored 19/20 on the baseline packet. The one disagreement, `berkeley-one-sensation`, rests on a step from simultaneity to identity that a reader can fairly dispute.
+
+| config | verdict: orig > corr | verdict: para > corr | gap orig (pts) | objreply |
+|---|---:|---:|---:|---:|
+| 2B base | 64.4 | 67.8 | 1.9 | 76.2 |
+| 4B base (bf16) | 81.6 | 81.6 | 12.2 | 91.2 |
+| 4B base (4-bit) | 79.3 | 75.9 | 10.7 | 91.2 |
+| 9B base (4-bit) | 80.5 | 65.5 | 12.1 | 92.5 |
+| woven prompt | 80.5 | 74.7 | 11.8 | 91.2 |
+| rank-1 ×1 | 85.1 | 79.3 | 10.7 | 91.2 |
+| Claude-taught 384 ×1.0 | 81.6 | 69.0 | 15.8 | 90.0 |
+| diff-means 0.5 | 65.5 | 73.6 | 3.4 | 67.5 |
+| B 0.6 | 65.5 | 65.5 | 2.3 | 65.0 |
+| random 0.6 | 59.8 | 79.3 | 3.6 | 75.0 |
+
+"orig > corr" is the percentage of units where the intact original gets the higher P(follows) (chance 50%); "gap" is the mean difference in P(follows).
+
+What this says:
+
+- **P1, scale, holds from 2B to 4B and stops there.** 2B → 4B: discrimination +17 (z 3.0), gap +10 points (z 6.8), objreply +15 (z 2.1). 4B → 9B, both 4-bit: discrimination +1 (z 0.2), objreply +1. The blind graders score 95–100%, so the 9B stops well short of what the tasks allow. AI2 found a small 4B → 9B step on validity (+7, z 1.7); on real texts there is none.
+- **P2 holds: register is not skill.** Against 4B base, the woven prompt (−1, z −0.4), the rank-1 student (+3.5, z 1.8) and the Claude-taught student (0) stay at base, and at 90–91% on objreply. The constant pushes lose 16 (diff-means, z −2.9), 16 (B, z −3.0) and 22 (random, z −3.8) points of discrimination, and 16–26 points on objreply. As in AI, a random push of the same size does as much damage as a register push.
+- **P3, memorisation, holds at 4B and possibly fails at 9B.** At 4B, discrimination is 81.6% whether the intact text is the original or the paraphrase. At 9B it is 80.5% with the original against 65.5% with the paraphrase, and originals get 6 points more "follows" (z 2.0), which is what familiarity with the classic texts would produce.
+- **Every configuration leans towards "follows".** The woven prompt and the Claude-taught student shift that lean most (−7 and −17 points, z −3.1 and −5.2) without changing discrimination: a change of threshold, not of skill.
+
+The limits: `verdict` and the extra corruptions were added after the first run, in response to the letter bias, so the predictions came first but the main measure did not. Claude wrote every corruption and paraphrase, and the author has checked only the 20-item packet, not the 132 single passages. The 87 units come from 22 arguments; treating the 22 as the units leaves every conclusion unchanged (2B → 4B +17, z 2.9; constant pushes −16 to −22, z −2.4 to −3.8). `objreply` is near ceiling at 4B, and a blind judge noted that keyword matching rules out many distractors. The 9B is 4-bit, so 4B → 9B is compared within the 4-bit stack.
+
+[Saved outputs, baseline packets and full write-up](../docs/reviews/real-text-skill/results.md)
