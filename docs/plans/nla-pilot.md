@@ -2,9 +2,11 @@
 
 > Not yet run. ID **AM** confirmed free (AL is the last ID on `main`, 7476237).
 >
-> **Status, 2026-11-23.** Plan only. Nothing downloaded, no code written. Stage 0 needs ~29.5 GB of downloads (below); ask the author before starting it.
+> **Status, 2026-11-23 (later).** Stage 0 passed. Round-trip FVE **0.799** (95% CI 0.779–0.816) on 128 held-out rows with the 4-bit AV and bf16 AR in MLX (card: 0.786). The smoke test on our chat format parses and stays in English, and the read positions need no change. Stages 1–2 not started. Details in [Stage 0 results](#stage-0-results-2026-11-23).
+>
+> **Status, 2026-11-23.** Plan written.
 
-Executor: Claude, on the M5 Pro checkout with `.venv-mlx`, the cached `Qwen/Qwen3.5-9B` (bf16) and `mlx-community/Qwen3.5-9B-4bit`, the AL items (`data/pilot-real-corruption*.json`) and the 48 held-out prompts (`data/heldout_prompts.json`).
+Executor: Claude, on the M5 Pro checkout with `.venv-mlx`, the cached `Qwen/Qwen3.5-9B` (bf16) and `mlx-community/Qwen3.5-9B-4bit`, the AL items (`data/pilot-real-corruption*.json`) and the 48 confirmation prompts from exp. I (`data/confirm_prompts.json`; `data/heldout_prompts.json` has only 8).
 
 ## Context
 
@@ -51,7 +53,7 @@ Part 7 found that **register is not skill.** Raising the reflective register lea
   - **P1a.** Agreement with the model's verdict exceeds the **tail-only** control: the judge sees the last 80 characters of the context in place of the explanation. It also exceeds the **shuffled-activation** control: the explanation of another item's activation.
   - **P1b, faithfulness to the model rather than the task.** On the items the 9B gets **wrong**, explanation-predicted verdicts agree more often with the model's (wrong) verdict than with the key. If they agree with the key, the AV is doing the task itself from quoted text ("excessive expressivity"), and Q1 cannot be read as the model's belief.
   - **P1c.** A logistic probe on the same activations (item-disjoint 5-fold CV, predicting the model's verdict) sets the ceiling for what is linearly present. The NLA is expected to sit below the probe. It is interesting only where it adds a *reason*, such as naming the swapped quantifier.
-- **Q2, does a push erase the task.** At the first assistant position of the 48 held-out prompts, under base, woven prompt and a 9B diff-means push:
+- **Q2, does a push erase the task.** At the first assistant position of the 48 confirmation prompts (`data/confirm_prompts.json`), under base, woven prompt and a 9B diff-means push:
   - **P2a.** A blind judge identifies which of 4 user requests the explanation came from (the true one and 3 random distractors). It does so at the same rate for base and woven prompt, and less often under the push.
   - **P2b.** "Reflective / philosophical" content appears more often under prompt and push than base. This measures the NLA's sensitivity, not a finding.
 - **Q3 (optional, run only if Q2's P2b holds).** **NLA-derived direction.** Write paired explanations (plain plan vs "answer, then connect it to a philosophical idea"), map both through the AR and use the mean difference as a steering vector at layer 21. Compare it with diff-means at layer 21 on the philosophy + helpfulness frontier (16 eval prompts, Sonnet judge, same rubric). Prior from E: in the 4B only layers 8–16 respond to modest pushes, and layer 21 of 32 may be too late for *any* direction. The layer-21 diff-means arm is the control for that.
@@ -75,12 +77,51 @@ Part 7 found that **register is not skill.** Raising the reflective register lea
 5. **Smoke on our format.** Run 8 AL items and 8 held-out prompts and read every explanation. Check that they parse as `<explanation>` and are not Chinese, and note how much is verbatim chat template (`<|im_start|>assistant`). If the AV mostly narrates the chat template, move the read position one token back and re-check.
 6. **Tests:** `tests/test_nla.py` covers marker location, the injection hook firing exactly once per sequence, and the AR output shape. Keep tests model-free, as the existing ones are.
 
+### Stage 0 results (2026-11-23)
+
+Code: [`wi/nla.py`](../../wi/nla.py) (MLX port of EasyNLA's conventions), [`scripts/exp_nla.py`](../../scripts/exp_nla.py) (phases `convert`, `acts`, `explain`, `score`, `smoke-acts`, `smoke-explain`), [`tests/test_nla.py`](../../tests/test_nla.py). Outputs in `runs/nla/`.
+
+**Checkpoints:** `therem/qwen3.5-9b-nla-L21-av-rl` at commit `c277b9e0`, `-ar-rl` at `3914c005`. Held-out rows: the first 128 of `corpus/av_val.parquet` from `ceselder/easynla-dsv4-warmstart-opus5` at commit `d934ad27`.
+
+**Port checks:**
+- Target. MLX block-21 outputs match a PyTorch forward of the same 22 blocks on 4 rows (80–2,130 tokens): cosine 0.9998–1.0000, same norms.
+- AV. The 4-bit conversion gives 4.50 bits per weight and 4.7 GB, at about 45 tok/s (3.6 s per explanation).
+- Injection. The hook fires exactly once per prompt with injection and never without (160/160).
+- **Prompt fix.** The AV prompt must use the chat template with **thinking off**. After the default `<think>\n` generation prompt, the AV gives the opening `<` log-prob −16.6 and writes untagged prose. The checkpoint's reference generations all open with `<explanation>`.
+
+**Round trip (128 rows, greedy AV):**
+
+| Condition | FVE |
+|---|---|
+| AV → AR | **0.799** [0.779, 0.816] |
+| AV → AR, spans of ≥5 tokens copied from the source removed | 0.515 |
+| Claude-written training explanation → AR | 0.700 |
+| Last 80 characters of the source → AR | 0.236 |
+| AV without injection → AR (32 rows; same rows with injection: 0.761) | −0.795 |
+| AV explanations shuffled across rows → AR | −0.951 |
+
+Other measures:
+- **Quoting.** Only 1.9% of explanation tokens are copied from the source, yet removing those spans costs 0.28 FVE.
+- **Tail baseline.** At 0.236, the tail alone is far below the card's 0.58. The card measured that baseline with the SFT AR, which reads raw text better.
+- **Format.** Mean length 176 tokens; 0/128 truncated, 0/128 unparsed.
+- **Chinese words.** 5/128 explanations slip a few Chinese words into English text (card: 1/128, from a Chinese source). The hook fired in all five, so this is likely a 4-bit cost, not a skipped injection.
+
+**Smoke test (24 activations, every explanation read):**
+- **Held-out prompts (assistant position).** The explanations name the task's domain and the planned register: "That's a great question!", "It depends—", a numbered plan. **Specifics drift:** bicycle gears became an internal-combustion engine, weather vs climate became "mass vs climate", and the 15% tip on $48 became "12 ÷ 3.5". For P2a, 4-way matching against random distractors looks feasible. Same-domain distractors would fail.
+- **AL verdict, passage position.** The explanations recover the topic and form (a syllogism, motion through a vacuum, Hume's design argument) with invented wording. Both intact and corrupted versions get called "erroneous", so there is no visible discrimination by eye.
+- **AL verdict, pre-answer position.** The explanations are generic and template-like ("Chinese/English logic exam … Mendelian … ozone"), the passage content is lost, but each states an expected letter. On the 8 prompts the explanation's letter matched the 9B's own argmax (from `runs/real_text/scores.jsonl`) on 6 of the 7 non-tied prompts, but the key on only 4 of 8. The 9B leans B on most of these items, and so do the explanations. This is the P1b pattern, on far too few items to read. Note that a constant-B judge would score the same here; Stage 1 must compare against a majority-letter baseline.
+
+**Decisions for Stage 1:**
+- Keep both read positions.
+- Add a **majority-letter baseline** next to tail-only and shuffled.
+- Treat the 5/128 Chinese-word rate as a 4-bit cost. Retry the AV at 8-bit only if Stage 1's real-vs-shuffled gap is small.
+
 ### Stage 1: Q1, validity at the pre-answer position
 
 - Items: the 87 AL `verdict` units, intact and corrupted versions each (174 prompts), formatted exactly as in `scripts/exp_real_text_mlx.py`, with the `Answer:` prefill.
 - Positions: (a) the last passage token and (b) the last token of the prefill. (b) is the main measure; (a) asks whether the flaw is there before the question is asked.
 - Per prompt: 1 greedy + 3 sampled explanations (T=1). The paper uses claims that recur across samples and adjacent tokens as a confabulation filter, so a claim counts only if it appears in ≥2 of 4 samples.
-- Controls per prompt: tail-only text (last 80 characters); the shuffled activation of a random other item; and the explanation with quoted spans (≥5-token overlap with the context) removed.
+- Controls per prompt: tail-only text (last 80 characters); the shuffled activation of a random other item; and the explanation with quoted spans (≥5-token overlap with the context) removed. Also a majority-letter baseline (the judge always says the model's most common verdict), since the 9B leans B on many items (Stage 0 smoke test).
 - Judge: blind `claude -p` (Sonnet). It sees one explanation and the question "Does this description suggest the passage's conclusion follows from its premises? Answer valid / invalid / no signal." It never sees the passage.
 - The model's own verdict comes from AL's existing 9B-4bit scores (`runs/real_text/scores.jsonl`). **Re-score the bf16 truncated-plus-head path on these items first**: if bf16 and 4-bit disagree on more than 5% of items, use the bf16 verdicts.
 - Probe (P1c): logistic regression on the 4096-d activations, item-disjoint CV, with the label being the model's verdict and, separately, the key.
@@ -88,7 +129,7 @@ Part 7 found that **register is not skill.** Raising the reflective register lea
 
 ### Stage 2: Q2, task retention under register levers
 
-- Prompts: the 48 held-out prompts, at the first assistant position (after `<|im_start|>assistant\n`).
+- Prompts: the 48 confirmation prompts (`data/confirm_prompts.json`), at the first assistant position (after `<|im_start|>assistant\n`).
 - Configurations, all on bf16 9B blocks 0–21:
   - base;
   - woven system prompt (the text from B);
