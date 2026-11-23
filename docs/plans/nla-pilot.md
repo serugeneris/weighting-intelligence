@@ -215,6 +215,49 @@ Paired differences from base in request matching: woven −0.12 [−0.20, −0.0
 
 Only if P2b holds. Write 16 paired explanations from the style of the Stage 2 base explanations, not invented from scratch, so they stay in the AR's distribution. Steer the 4-bit 9B at layer 21 with the AR difference and with layer-21 diff-means at matched norms (α 0.25, 0.5, 1 in the `sweep.py` sense). Generate on the 16 eval prompts at 120 tokens, cut at `<|im_end|>`, and judge with `scripts/claude_judge.py`.
 
+### Stage 3 results (2026-11-23)
+
+**Setup as run.** Script: `scripts/exp_nla_steer.py`; results: `runs/nla/s3_results.json`; generations: `runs/nla/s3_gen.jsonl`.
+- **Pairs.** The plain side is the 16 greedy base explanations from Stage 2. Sonnet rewrote each to add "then a reflection on habit, time or the self" and left everything else unchanged (`runs/nla/s3_pairs.json`).
+- **AR direction.** The mean AR(philo) − AR(plain) has norm 10.5 on the AR's normalized scale of 64. Per-pair cosine to the mean is 0.72 (median).
+- **Layer-21 diff-means.** Built from the 32 contrast pairs: |dm| = 23.8, p50 = 71.2.
+- **Generation.** 4-bit 9B, greedy, 120 tokens, 16 prompts (8 eval + 8 held-out). Judged blind and pooled by Sonnet with the `claude_judge.py` rubric.
+
+**Geometry** (cosine between directions):
+- AR vs layer-21 diff-means: 0.41.
+- AR vs the Stage 2 state shift (woven − base): 0.27; vs the push shift (push − base): 0.33.
+- AR vs random: 0.02.
+
+| Arm | philo | coherence | helpful | degenerate /16 |
+|---|---|---|---|---|
+| base | 0.00 | 9.00 | 8.94 | 0 |
+| AR @ 0.25 | 0.06 | 9.00 | 8.94 | 0 |
+| AR @ 0.5 | 0.12 | 8.75 | 8.62 | 0 |
+| AR @ 1.0 | 0.94 | 2.31 | 1.06 | 16 |
+| diff-means L21 @ 0.25 | 0.06 | 9.00 | 8.75 | 0 |
+| diff-means L21 @ 0.5 | 0.50 | 8.50 | 8.25 | 0 |
+| diff-means L21 @ 1.0 | 1.62 | 2.25 | 1.12 | 14 |
+| random L21 @ 1.0 | 0.00 | 7.50 | 7.19 | 0 |
+| diff-means L8 @ 0.5 (Stage 2 push, reference) | 3.25 | 5.12 | 2.06 | 6 |
+
+**Reading:**
+- **Q3: no usable steering at layer 21, from either direction.**
+  - Both arms stay at base up to α 0.5. They gain only a word of register: "a simple ritual" from AR, "a beautiful art form" from diff-means.
+  - Both collapse into loops at α 1 before any real philosophy appears.
+  - No arm puts a single answer at philo ≥ 5 with helpful ≥ 5 except one from the layer-8 reference.
+  - This repeats E's prior at 4B: by about two-thirds depth, register is too late to steer.
+- **The AR direction is a real direction, just weaker than diff-means.**
+  - At α 1 it breaks the model, while a random direction of the same norm leaves answers coherent (7.5).
+  - At each α it is slightly weaker than diff-means in philosophy.
+  - It points partly the same way as diff-means (cosine 0.41).
+  - So text can be mapped to a working steering direction through the AR, but at this layer that only yields a weaker diff-means.
+- **The layer-8 push is the only arm that moves register far.** It moves it at the cost of the task (helpful 2.1), as in Stage 2. Stage 2's NLA reading says this cost is not yet paid at the first assistant token.
+
+**Caveats:**
+- 16 prompts, one judge and greedy decoding only.
+- The α grid is coarse: there may be a narrow window between 0.5 and 1 for both arms.
+- p50 for scaling comes from bf16, and the steering runs on the 4-bit model.
+
 ## Outputs
 
 - `scripts/exp_nla.py` (`--stage 0|1|2|3`) → `runs/nla/` (`stage0.json`, `explanations.jsonl`, `judge.jsonl`, `probe.json`).
