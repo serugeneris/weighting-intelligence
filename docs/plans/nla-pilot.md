@@ -127,6 +127,42 @@ Other measures:
 - Probe (P1c): logistic regression on the 4096-d activations, item-disjoint CV, with the label being the model's verdict and, separately, the key.
 - Cost: 174 × 2 positions × 4 samples ≈ 1,400 explanations. At about 180 tokens each on the 4-bit AV, that is roughly 3–4 h. Run it in the background, alone, never alongside another model job.
 
+### Stage 1 results (2026-11-23)
+
+**Setup as run.** 218 AL verdict prompts: the 22 originals and 87 corrupted units, both answer orders, with paraphrases excluded. Three prompts where the 9B's two letters tie are dropped, leaving n = 215. The 9B's verdict is the argmax of the 4-bit base model's letter probabilities in `runs/real_text/scores.jsonl`, and it is correct on 56% of these prompts. Each activation got 4 explanations (1 greedy, 3 at T=1), 1,744 in all: 0 unparsed, and the hook fired once on each. The blind Sonnet judge read 3,924 items. Script: `scripts/exp_nla_validity.py`. Results: `runs/nla/s1_results.json`.
+
+**Agreement with the 9B's verdict** (all 215 prompts; "unclear" counts as a miss; 95% bootstrap CI):
+
+| Readout | Pre-answer (letter) | Passage end (follows / not) |
+|---|---|---|
+| Linear probe, 5-fold CV grouped by argument (P1c ceiling) | 0.833 | 0.777 |
+| Explanations, majority of 4 | **0.623** [0.558, 0.688] | **0.674** [0.609, 0.735] |
+| Explanations, greedy only | 0.651 | 0.493 (74 unclear) |
+| Explanations with quoted spans removed | 0.628 | 0.647 |
+| Explanation of another prompt's activation (shuffled) | 0.479 | 0.409 |
+| Always the 9B's most common verdict | 0.535 (B) | 0.544 (follows) |
+| Last 80 characters of the context | 0.000 (always unclear) | 0.079 (195 unclear) |
+
+**Agreement with the key** on decided items: 0.475 at the pre-answer position and 0.516 at the passage end, which is chance.
+
+**On the 94 prompts where the 9B is wrong** (decided items, explanation agrees with the model : with the key):
+
+| Readout | Pre-answer | Passage end |
+|---|---|---|
+| Explanations | **63 : 25** | **66 : 20** |
+| Shuffled | 43 : 45 | 44 : 44 |
+
+**Reading against the predictions:**
+- **P1a passes at both positions.** Explanations beat the tail, shuffled and majority controls. At the pre-answer position the margin over the majority is small: the CI's lower end, 0.558, sits just above 0.535. Removing quoted spans changes almost nothing, so the signal does not come from copied text.
+- **P1b passes.** When the 9B is wrong, the explanations side with its wrong verdict about 2.5 to 3 times as often as with the key. Shuffled explanations keep the same overall lean toward B and toward "follows", yet split 44:44, so the gap is not that lean. The explanations read the model's verdict, not the truth.
+- **P1c: the NLA sits well below the probe**, at 0.62–0.67 against 0.78–0.83. It is also below the probe on decided items (0.66 / 0.76). **No reasons were found.** In sampled passage-end explanations of corrupted items, the passage's form and topic are reconstructed with invented quotes. None of them names the swapped quantifier or the broken step; the verdict comes across only as a lean.
+- **The verdict is present before the question.** At the passage end, both the probe and the explanations recover "will the model say follows" well above the majority baseline. Neither recovers the truth: the key-follows probe scores 0.789, against 0.798 for always answering "does not follow".
+
+**Caveats:**
+- Activations come from the bf16 target, while the verdicts come from 4-bit runs. Cosine between the two is 0.968 on average (min 0.869), so a few verdicts may not match the state being read.
+- The original items repeat in both orders and across their corruptions, so the 215 prompts are not independent. The CIs above resample prompts, not arguments, and are too narrow. The probe CV is grouped by argument.
+- One judge model, one prompt; no human check of the judge's labels yet.
+
 ### Stage 2: Q2, task retention under register levers
 
 - Prompts: the 48 confirmation prompts (`data/confirm_prompts.json`), at the first assistant position (after `<|im_start|>assistant\n`).
