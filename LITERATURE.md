@@ -47,6 +47,7 @@ The first review focused on how to steer the model. Experiments Z–AD ask what 
 | Geometric account of steering, Aparin & Gaintseva (2026) | arxiv.org/pdf/2606.06735 | angle/norm decomposition | Mild norm increase beats strict preservation |
 | KV Cache Steering (2025) | arxiv.org/html/2507.08799v2 | one-time K/V shift after prefill | Works from 360M to 8B on reasoning-format tasks |
 | AxBench, Wu et al. (2025) | arxiv.org/abs/2501.17148 | steering/detection benchmark | Prompting best; SAEs weak |
+| Natural Language Autoencoders, Anthropic (2026) | transformer-circuits.pub/2026/nla | activation → text (AV) → activation (AR), SFT then GRPO on reconstruction | 0.6–0.8 FVE; confabulates on-theme specifics; released NLAs cover Llama-3.3-70B, Gemma-3-12B/27B, Qwen2.5-7B, none for Qwen3.5. Community Qwen3.5-9B L21 pair: huggingface.co/therem/qwen3.5-9b-nla-L21-av-rl (planned pilot AM) |
 | Steer Like the LLM, Heyman & Vandeputte (2026) | arxiv.org/abs/2605.03907 | per-token coefficients mimicking prompting (abs) | Prompting acts on a few tokens |
 | Subliminal Learning Is Steering Vector Distillation (2026) | arxiv.org/abs/2606.00995 | system prompt approximated by a vector (abs) | — |
 | Steered LLM Activations are Non-Surjective (2026) | arxiv.org/abs/2604.09839 | theory (abs) | Some steered states are unreachable by prompts |
