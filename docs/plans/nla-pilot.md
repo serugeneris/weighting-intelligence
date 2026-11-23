@@ -175,6 +175,42 @@ Other measures:
 - Judges: (i) 4-way request matching (P2a); (ii) "does this mention reflection, philosophy, meaning, or abstract ideas?" (P2b).
 - Cost: 48 × 4 configurations × 4 samples ≈ 770 explanations, about 2 h.
 
+### Stage 2 results (2026-11-23)
+
+**Setup as run.** Script: `scripts/exp_nla_retention.py`; results: `runs/nla/s2_results.json`.
+- **Direction.** Rebuilt at 9B layer 8 with the 4B recipe of `scripts/find_neurons.py`: the mean layer-8 output over answer tokens, philo minus plain, over the 32 pairs.
+  - |dm| = 3.39 and p50 = 22.85, so the push norm at α = 0.5 is 11.4.
+  - Per-pair cosine to the mean is 0.51 (median).
+- **Configurations.** The push is added to the layer-8 output at every prompt token. The random direction has the same norm.
+- **Explanations.** 48 prompts × 4 configurations × 4 samples = 768: 0 unparsed, and the hook fired once on each.
+- **Judging.** 2,304 judgments. One batch retried; one answer is null.
+
+**Does the push change behaviour?** Greedy 100-token answers from the 4-bit 9B on 8 prompts (`runs/nla/s2_gen.jsonl`):
+- The push displaces the task, as at 4B. Examples: "The credit score is a mathematical mirror of the self"; "To answer your question, we must first ask: What is the stain?"; a beach packing list that opens "A beach day is not merely about what you carry".
+- The woven prompt answers the request and adds reflection.
+- The random push answers like base.
+
+**Layer-21 state** (mean cosine to base): push 0.71, woven 0.80, random 0.92.
+
+| Configuration | Request matched, per sample (chance 0.25) | Quotes stripped | Reflective content |
+|---|---|---|---|
+| base | 0.99 [0.97, 1.00] | 0.995 | 0.00 |
+| woven prompt | **0.87** [0.80, 0.93] | 0.82 | **0.97** |
+| diff-means push, α 0.5 | **1.00** [1.00, 1.00] | 0.995 | **0.97** |
+| random push, same norm | 0.95 [0.92, 0.98] | 0.97 | 0.00 |
+
+Paired differences from base in request matching: woven −0.12 [−0.20, −0.06]; push +0.01 [0.00, 0.03]; random −0.04 [−0.07, −0.01].
+
+**Reading against the predictions:**
+- **P2a fails, and in the informative direction.** At the first assistant token, the pushed state still names the request. It also names the planned register, often the exact move the generation then makes. On the beach prompt it gives "You ask for a perfect packing list … but first, let us ponder". The push does not erase the task at layer 21 at the start of the answer. It adds a "philosophize first" plan alongside it. The displacement seen in generation therefore builds up during decoding, or is a choice about what to do with a task the model still holds.
+- **The woven prompt loses more specifics than the push.** Its explanations drift to neighbouring topics, for example the beach list becomes "rainy-day gardening philosophy". Yet its generations stay on task. Losing specifics in the NLA reading at this position does not predict losing the task in behaviour.
+- **P2b holds.** Reflective content appears in 97% of woven and push explanations, against 0% for base and random. The NLA reads the register lever cleanly, and the random push is a clean null. Stage 3 is therefore eligible.
+
+**Caveats:**
+- Random distractors make matching easy, and base sits at the ceiling (0.99). A partial loss of detail would need same-domain distractors to show. The push result, a perfect 1.00, is not a ceiling artefact in the direction that matters, but it cannot show a small gain.
+- This is one position, the first assistant token, before any steered tokens have been generated. Reading later positions in a steered generation would test the "builds up during decoding" reading directly.
+- Matching quote-stripped explanations scores the same, so the task is not carried by copied request text. The explanations paraphrase the request, they do not quote it.
+
 ### Stage 3 (optional): Q3, steering with an AR-derived direction
 
 Only if P2b holds. Write 16 paired explanations from the style of the Stage 2 base explanations, not invented from scratch, so they stay in the AR's distribution. Steer the 4-bit 9B at layer 21 with the AR difference and with layer-21 diff-means at matched norms (α 0.25, 0.5, 1 in the `sweep.py` sense). Generate on the 16 eval prompts at 120 tokens, cut at `<|im_end|>`, and judge with `scripts/claude_judge.py`.
