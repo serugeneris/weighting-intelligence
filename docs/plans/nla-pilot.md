@@ -1,6 +1,6 @@
 # Pilot AM: reading the 9B's layer-21 state with a natural-language autoencoder
 
-> Not yet run. ID **AM** confirmed free (AL is the last ID on `main`, 7476237).
+> **Status, 2026-11-23 (done).** All three stages run and written up as [exp. AM](../../findings/7-register-versus-skill.md#exp-am); saved outputs in [docs/reviews/nla-pilot/](../reviews/nla-pilot/README.md). Q1: the explanations carry the 9B's verdict, not the key (P1a, P1b hold; below the probe, no reasons). Q2: P2a fails, as the push leaves the request readable; P2b holds. Q3: no usable steering at layer 21.
 >
 > **Status, 2026-11-23 (later).** Stage 0 passed. Round-trip FVE **0.799** (95% CI 0.779–0.816) on 128 held-out rows with the 4-bit AV and bf16 AR in MLX (card: 0.786). The smoke test on our chat format parses and stays in English, and the read positions need no change. Stages 1–2 not started. Details in [Stage 0 results](#stage-0-results-2026-11-23).
 >

@@ -1,0 +1,49 @@
+{
+ "n_rows": 128,
+ "av_inject": {
+  "fve": 0.7991,
+  "n": 128,
+  "n_unparsed": 0,
+  "ci95": [
+   0.7791,
+   0.8164
+  ]
+ },
+ "av_inject_quotes_stripped": {
+  "fve": 0.515,
+  "n": 128,
+  "n_unparsed": 0
+ },
+ "av_noinject": {
+  "fve": -0.7953,
+  "n": 32,
+  "n_unparsed": 0
+ },
+ "av_inject_same_rows_as_noinject": {
+  "fve": 0.7605,
+  "n": 32,
+  "n_unparsed": 0
+ },
+ "tail80": {
+  "fve": 0.2356,
+  "n": 128,
+  "n_unparsed": 0
+ },
+ "gold_explanation": {
+  "fve": 0.6998,
+  "n": 128,
+  "n_unparsed": 0
+ },
+ "av_inject_shuffled": {
+  "fve": -0.9511,
+  "n": 128,
+  "n_unparsed": 0
+ },
+ "cjk": 5,
+ "fired_not_once": 0,
+ "noinj_fired": 0,
+ "truncated": 0,
+ "mean_tokens": 176.1,
+ "quoted_fraction": 0.019,
+ "gate_pass": true
+}

@@ -1,0 +1,193 @@
+{
+ "pre": {
+  "n": 215,
+  "majority_model_label": "B",
+  "majority_agree_model": 0.535,
+  "majority_agree_key": 0.498,
+  "model_correct": 0.563,
+  "expl_vote": {
+   "decided": 202,
+   "agree_model_of_decided": 0.663,
+   "agree_key_of_decided": 0.475,
+   "agree_model_all": 0.623,
+   "agree_model_all_ci95": [
+    0.558,
+    0.688
+   ],
+   "model_wrong_decided": 88,
+   "on_model_wrong_agree_model": 63,
+   "on_model_wrong_agree_key": 25,
+   "pred_counts": {
+    "B": 181,
+    "A": 21,
+    "None": 13
+   }
+  },
+  "expl_greedy": {
+   "decided": 215,
+   "agree_model_of_decided": 0.651,
+   "agree_key_of_decided": 0.484,
+   "agree_model_all": 0.651,
+   "agree_model_all_ci95": [
+    0.591,
+    0.716
+   ],
+   "model_wrong_decided": 94,
+   "on_model_wrong_agree_model": 65,
+   "on_model_wrong_agree_key": 29,
+   "pred_counts": {
+    "B": 188,
+    "A": 27
+   }
+  },
+  "stripped_vote": {
+   "decided": 204,
+   "agree_model_of_decided": 0.662,
+   "agree_key_of_decided": 0.485,
+   "agree_model_all": 0.628,
+   "agree_model_all_ci95": [
+    0.563,
+    0.693
+   ],
+   "model_wrong_decided": 90,
+   "on_model_wrong_agree_model": 63,
+   "on_model_wrong_agree_key": 27,
+   "pred_counts": {
+    "B": 182,
+    "A": 22,
+    "None": 11
+   }
+  },
+  "tail": {
+   "decided": 0,
+   "agree_model_of_decided": null,
+   "agree_key_of_decided": null,
+   "agree_model_all": 0.0,
+   "agree_model_all_ci95": [
+    0.0,
+    0.0
+   ],
+   "model_wrong_decided": 0,
+   "on_model_wrong_agree_model": 0,
+   "on_model_wrong_agree_key": 0,
+   "pred_counts": {
+    "None": 215
+   }
+  },
+  "shuffled_vote": {
+   "decided": 202,
+   "agree_model_of_decided": 0.51,
+   "agree_key_of_decided": 0.52,
+   "agree_model_all": 0.479,
+   "agree_model_all_ci95": [
+    0.409,
+    0.549
+   ],
+   "model_wrong_decided": 88,
+   "on_model_wrong_agree_model": 43,
+   "on_model_wrong_agree_key": 45,
+   "pred_counts": {
+    "A": 21,
+    "B": 181,
+    "None": 13
+   }
+  }
+ },
+ "passage": {
+  "n": 215,
+  "majority_model_label": "True",
+  "majority_agree_model": 0.544,
+  "majority_agree_key": 0.2,
+  "model_correct": 0.563,
+  "expl_vote": {
+   "decided": 192,
+   "agree_model_of_decided": 0.755,
+   "agree_key_of_decided": 0.516,
+   "agree_model_all": 0.674,
+   "agree_model_all_ci95": [
+    0.609,
+    0.735
+   ],
+   "model_wrong_decided": 86,
+   "on_model_wrong_agree_model": 66,
+   "on_model_wrong_agree_key": 20,
+   "pred_counts": {
+    "False": 92,
+    "True": 100,
+    "None": 23
+   }
+  },
+  "expl_greedy": {
+   "decided": 141,
+   "agree_model_of_decided": 0.752,
+   "agree_key_of_decided": 0.532,
+   "agree_model_all": 0.493,
+   "agree_model_all_ci95": [
+    0.423,
+    0.558
+   ],
+   "model_wrong_decided": 61,
+   "on_model_wrong_agree_model": 46,
+   "on_model_wrong_agree_key": 15,
+   "pred_counts": {
+    "False": 75,
+    "None": 74,
+    "True": 66
+   }
+  },
+  "stripped_vote": {
+   "decided": 184,
+   "agree_model_of_decided": 0.755,
+   "agree_key_of_decided": 0.538,
+   "agree_model_all": 0.647,
+   "agree_model_all_ci95": [
+    0.581,
+    0.707
+   ],
+   "model_wrong_decided": 78,
+   "on_model_wrong_agree_model": 59,
+   "on_model_wrong_agree_key": 19,
+   "pred_counts": {
+    "False": 88,
+    "None": 31,
+    "True": 96
+   }
+  },
+  "tail": {
+   "decided": 20,
+   "agree_model_of_decided": 0.85,
+   "agree_key_of_decided": 0.2,
+   "agree_model_all": 0.079,
+   "agree_model_all_ci95": [
+    0.047,
+    0.116
+   ],
+   "model_wrong_decided": 13,
+   "on_model_wrong_agree_model": 13,
+   "on_model_wrong_agree_key": 0,
+   "pred_counts": {
+    "None": 195,
+    "False": 1,
+    "True": 19
+   }
+  },
+  "shuffled_vote": {
+   "decided": 192,
+   "agree_model_of_decided": 0.458,
+   "agree_key_of_decided": 0.458,
+   "agree_model_all": 0.409,
+   "agree_model_all_ci95": [
+    0.34,
+    0.479
+   ],
+   "model_wrong_decided": 88,
+   "on_model_wrong_agree_model": 44,
+   "on_model_wrong_agree_key": 44,
+   "pred_counts": {
+    "True": 100,
+    "False": 92,
+    "None": 23
+   }
+  }
+ }
+}
