@@ -1,0 +1,935 @@
+{
+ "about": "Two-hop prompts with an unspoken single-token intermediate, for experiment AN (J-lens gate). Modelled on section 3.3 of arXiv 2607.15495. 'swap_to' is a same-category intermediate whose answer differs. Answers are scored by the first token of each accepted string, with a leading space.",
+ "items": [
+  {
+   "id": "capital-person-france",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Victor Hugo was born is",
+   "intermediate": "France",
+   "answers": [
+    "Paris"
+   ],
+   "swap_to": "Japan",
+   "swap_answers": [
+    "Tokyo"
+   ]
+  },
+  {
+   "id": "capital-person-germany",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Goethe was born is",
+   "intermediate": "Germany",
+   "answers": [
+    "Berlin"
+   ],
+   "swap_to": "China",
+   "swap_answers": [
+    "Beijing"
+   ]
+  },
+  {
+   "id": "capital-person-italy",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Dante was born is",
+   "intermediate": "Italy",
+   "answers": [
+    "Rome"
+   ],
+   "swap_to": "Egypt",
+   "swap_answers": [
+    "Cairo"
+   ]
+  },
+  {
+   "id": "capital-person-spain",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Cervantes was born is",
+   "intermediate": "Spain",
+   "answers": [
+    "Madrid"
+   ],
+   "swap_to": "Greece",
+   "swap_answers": [
+    "Athens"
+   ]
+  },
+  {
+   "id": "capital-person-russia",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Tolstoy was born is",
+   "intermediate": "Russia",
+   "answers": [
+    "Moscow"
+   ],
+   "swap_to": "India",
+   "swap_answers": [
+    "New Delhi",
+    "Delhi"
+   ]
+  },
+  {
+   "id": "capital-person-japan",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Hokusai was born is",
+   "intermediate": "Japan",
+   "answers": [
+    "Tokyo"
+   ],
+   "swap_to": "Poland",
+   "swap_answers": [
+    "Warsaw"
+   ]
+  },
+  {
+   "id": "capital-person-china",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Confucius was born is",
+   "intermediate": "China",
+   "answers": [
+    "Beijing"
+   ],
+   "swap_to": "Sweden",
+   "swap_answers": [
+    "Stockholm"
+   ]
+  },
+  {
+   "id": "capital-person-egypt",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Cleopatra was born is",
+   "intermediate": "Egypt",
+   "answers": [
+    "Cairo"
+   ],
+   "swap_to": "Netherlands",
+   "swap_answers": [
+    "Amsterdam"
+   ]
+  },
+  {
+   "id": "capital-person-greece",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Aristotle was born is",
+   "intermediate": "Greece",
+   "answers": [
+    "Athens"
+   ],
+   "swap_to": "Peru",
+   "swap_answers": [
+    "Lima"
+   ]
+  },
+  {
+   "id": "capital-person-india",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Gandhi was born is",
+   "intermediate": "India",
+   "answers": [
+    "New Delhi",
+    "Delhi"
+   ],
+   "swap_to": "Portugal",
+   "swap_answers": [
+    "Lisbon"
+   ]
+  },
+  {
+   "id": "capital-person-poland",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Chopin was born is",
+   "intermediate": "Poland",
+   "answers": [
+    "Warsaw"
+   ],
+   "swap_to": "Turkey",
+   "swap_answers": [
+    "Ankara"
+   ]
+  },
+  {
+   "id": "capital-person-sweden",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Alfred Nobel was born is",
+   "intermediate": "Sweden",
+   "answers": [
+    "Stockholm"
+   ],
+   "swap_to": "France",
+   "swap_answers": [
+    "Paris"
+   ]
+  },
+  {
+   "id": "capital-person-netherlands",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Rembrandt was born is",
+   "intermediate": "Netherlands",
+   "answers": [
+    "Amsterdam"
+   ],
+   "swap_to": "Germany",
+   "swap_answers": [
+    "Berlin"
+   ]
+  },
+  {
+   "id": "capital-person-peru",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Mario Vargas Llosa was born is",
+   "intermediate": "Peru",
+   "answers": [
+    "Lima"
+   ],
+   "swap_to": "Italy",
+   "swap_answers": [
+    "Rome"
+   ]
+  },
+  {
+   "id": "capital-person-portugal",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Vasco da Gama was born is",
+   "intermediate": "Portugal",
+   "answers": [
+    "Lisbon"
+   ],
+   "swap_to": "Spain",
+   "swap_answers": [
+    "Madrid"
+   ]
+  },
+  {
+   "id": "capital-person-turkey",
+   "template": "capital-person",
+   "prompt": "The capital city of the country where Atatürk was born is",
+   "intermediate": "Turkey",
+   "answers": [
+    "Ankara"
+   ],
+   "swap_to": "Russia",
+   "swap_answers": [
+    "Moscow"
+   ]
+  },
+  {
+   "id": "capital-landmark-france",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Eiffel Tower is",
+   "intermediate": "France",
+   "answers": [
+    "Paris"
+   ],
+   "swap_to": "Japan",
+   "swap_answers": [
+    "Tokyo"
+   ]
+  },
+  {
+   "id": "capital-landmark-germany",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Brandenburg Gate is",
+   "intermediate": "Germany",
+   "answers": [
+    "Berlin"
+   ],
+   "swap_to": "China",
+   "swap_answers": [
+    "Beijing"
+   ]
+  },
+  {
+   "id": "capital-landmark-italy",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Leaning Tower of Pisa is",
+   "intermediate": "Italy",
+   "answers": [
+    "Rome"
+   ],
+   "swap_to": "Egypt",
+   "swap_answers": [
+    "Cairo"
+   ]
+  },
+  {
+   "id": "capital-landmark-spain",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Sagrada Familia is",
+   "intermediate": "Spain",
+   "answers": [
+    "Madrid"
+   ],
+   "swap_to": "Greece",
+   "swap_answers": [
+    "Athens"
+   ]
+  },
+  {
+   "id": "capital-landmark-russia",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Lake Baikal is",
+   "intermediate": "Russia",
+   "answers": [
+    "Moscow"
+   ],
+   "swap_to": "India",
+   "swap_answers": [
+    "New Delhi",
+    "Delhi"
+   ]
+  },
+  {
+   "id": "capital-landmark-japan",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Mount Fuji is",
+   "intermediate": "Japan",
+   "answers": [
+    "Tokyo"
+   ],
+   "swap_to": "Poland",
+   "swap_answers": [
+    "Warsaw"
+   ]
+  },
+  {
+   "id": "capital-landmark-china",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Great Wall is",
+   "intermediate": "China",
+   "answers": [
+    "Beijing"
+   ],
+   "swap_to": "Sweden",
+   "swap_answers": [
+    "Stockholm"
+   ]
+  },
+  {
+   "id": "capital-landmark-egypt",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Valley of the Kings is",
+   "intermediate": "Egypt",
+   "answers": [
+    "Cairo"
+   ],
+   "swap_to": "Netherlands",
+   "swap_answers": [
+    "Amsterdam"
+   ]
+  },
+  {
+   "id": "capital-landmark-greece",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Mount Olympus is",
+   "intermediate": "Greece",
+   "answers": [
+    "Athens"
+   ],
+   "swap_to": "Peru",
+   "swap_answers": [
+    "Lima"
+   ]
+  },
+  {
+   "id": "capital-landmark-india",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Taj Mahal is",
+   "intermediate": "India",
+   "answers": [
+    "New Delhi",
+    "Delhi"
+   ],
+   "swap_to": "Portugal",
+   "swap_answers": [
+    "Lisbon"
+   ]
+  },
+  {
+   "id": "capital-landmark-poland",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Wawel Castle is",
+   "intermediate": "Poland",
+   "answers": [
+    "Warsaw"
+   ],
+   "swap_to": "Turkey",
+   "swap_answers": [
+    "Ankara"
+   ]
+  },
+  {
+   "id": "capital-landmark-sweden",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Vasa Museum is",
+   "intermediate": "Sweden",
+   "answers": [
+    "Stockholm"
+   ],
+   "swap_to": "France",
+   "swap_answers": [
+    "Paris"
+   ]
+  },
+  {
+   "id": "capital-landmark-netherlands",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Anne Frank House is",
+   "intermediate": "Netherlands",
+   "answers": [
+    "Amsterdam"
+   ],
+   "swap_to": "Germany",
+   "swap_answers": [
+    "Berlin"
+   ]
+  },
+  {
+   "id": "capital-landmark-peru",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Machu Picchu is",
+   "intermediate": "Peru",
+   "answers": [
+    "Lima"
+   ],
+   "swap_to": "Italy",
+   "swap_answers": [
+    "Rome"
+   ]
+  },
+  {
+   "id": "capital-landmark-portugal",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to the Tower of Belém is",
+   "intermediate": "Portugal",
+   "answers": [
+    "Lisbon"
+   ],
+   "swap_to": "Spain",
+   "swap_answers": [
+    "Madrid"
+   ]
+  },
+  {
+   "id": "capital-landmark-turkey",
+   "template": "capital-landmark",
+   "prompt": "The capital city of the country that is home to Cappadocia is",
+   "intermediate": "Turkey",
+   "answers": [
+    "Ankara"
+   ],
+   "swap_to": "Russia",
+   "swap_answers": [
+    "Moscow"
+   ]
+  },
+  {
+   "id": "language-person-france",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Victor Hugo was born is",
+   "intermediate": "France",
+   "answers": [
+    "French"
+   ],
+   "swap_to": "Japan",
+   "swap_answers": [
+    "Japanese"
+   ]
+  },
+  {
+   "id": "language-person-germany",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Goethe was born is",
+   "intermediate": "Germany",
+   "answers": [
+    "German"
+   ],
+   "swap_to": "China",
+   "swap_answers": [
+    "Chinese",
+    "Mandarin"
+   ]
+  },
+  {
+   "id": "language-person-italy",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Dante was born is",
+   "intermediate": "Italy",
+   "answers": [
+    "Italian"
+   ],
+   "swap_to": "Egypt",
+   "swap_answers": [
+    "Arabic"
+   ]
+  },
+  {
+   "id": "language-person-spain",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Cervantes was born is",
+   "intermediate": "Spain",
+   "answers": [
+    "Spanish"
+   ],
+   "swap_to": "Greece",
+   "swap_answers": [
+    "Greek"
+   ]
+  },
+  {
+   "id": "language-person-russia",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Tolstoy was born is",
+   "intermediate": "Russia",
+   "answers": [
+    "Russian"
+   ],
+   "swap_to": "India",
+   "swap_answers": [
+    "Hindi"
+   ]
+  },
+  {
+   "id": "language-person-japan",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Hokusai was born is",
+   "intermediate": "Japan",
+   "answers": [
+    "Japanese"
+   ],
+   "swap_to": "Poland",
+   "swap_answers": [
+    "Polish"
+   ]
+  },
+  {
+   "id": "language-person-china",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Confucius was born is",
+   "intermediate": "China",
+   "answers": [
+    "Chinese",
+    "Mandarin"
+   ],
+   "swap_to": "Sweden",
+   "swap_answers": [
+    "Swedish"
+   ]
+  },
+  {
+   "id": "language-person-egypt",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Cleopatra was born is",
+   "intermediate": "Egypt",
+   "answers": [
+    "Arabic"
+   ],
+   "swap_to": "Netherlands",
+   "swap_answers": [
+    "Dutch"
+   ]
+  },
+  {
+   "id": "language-person-greece",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Aristotle was born is",
+   "intermediate": "Greece",
+   "answers": [
+    "Greek"
+   ],
+   "swap_to": "Peru",
+   "swap_answers": [
+    "Spanish"
+   ]
+  },
+  {
+   "id": "language-person-india",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Gandhi was born is",
+   "intermediate": "India",
+   "answers": [
+    "Hindi"
+   ],
+   "swap_to": "Portugal",
+   "swap_answers": [
+    "Portuguese"
+   ]
+  },
+  {
+   "id": "language-person-poland",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Chopin was born is",
+   "intermediate": "Poland",
+   "answers": [
+    "Polish"
+   ],
+   "swap_to": "Turkey",
+   "swap_answers": [
+    "Turkish"
+   ]
+  },
+  {
+   "id": "language-person-sweden",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Alfred Nobel was born is",
+   "intermediate": "Sweden",
+   "answers": [
+    "Swedish"
+   ],
+   "swap_to": "France",
+   "swap_answers": [
+    "French"
+   ]
+  },
+  {
+   "id": "language-person-netherlands",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Rembrandt was born is",
+   "intermediate": "Netherlands",
+   "answers": [
+    "Dutch"
+   ],
+   "swap_to": "Germany",
+   "swap_answers": [
+    "German"
+   ]
+  },
+  {
+   "id": "language-person-peru",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Mario Vargas Llosa was born is",
+   "intermediate": "Peru",
+   "answers": [
+    "Spanish"
+   ],
+   "swap_to": "Italy",
+   "swap_answers": [
+    "Italian"
+   ]
+  },
+  {
+   "id": "language-person-portugal",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Vasco da Gama was born is",
+   "intermediate": "Portugal",
+   "answers": [
+    "Portuguese"
+   ],
+   "swap_to": "Spain",
+   "swap_answers": [
+    "Spanish"
+   ]
+  },
+  {
+   "id": "language-person-turkey",
+   "template": "language-person",
+   "prompt": "The main language spoken in the country where Atatürk was born is",
+   "intermediate": "Turkey",
+   "answers": [
+    "Turkish"
+   ],
+   "swap_to": "Russia",
+   "swap_answers": [
+    "Russian"
+   ]
+  },
+  {
+   "id": "language-landmark-france",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Eiffel Tower is",
+   "intermediate": "France",
+   "answers": [
+    "French"
+   ],
+   "swap_to": "Japan",
+   "swap_answers": [
+    "Japanese"
+   ]
+  },
+  {
+   "id": "language-landmark-germany",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Brandenburg Gate is",
+   "intermediate": "Germany",
+   "answers": [
+    "German"
+   ],
+   "swap_to": "China",
+   "swap_answers": [
+    "Chinese",
+    "Mandarin"
+   ]
+  },
+  {
+   "id": "language-landmark-italy",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Leaning Tower of Pisa is",
+   "intermediate": "Italy",
+   "answers": [
+    "Italian"
+   ],
+   "swap_to": "Egypt",
+   "swap_answers": [
+    "Arabic"
+   ]
+  },
+  {
+   "id": "language-landmark-spain",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Sagrada Familia is",
+   "intermediate": "Spain",
+   "answers": [
+    "Spanish"
+   ],
+   "swap_to": "Greece",
+   "swap_answers": [
+    "Greek"
+   ]
+  },
+  {
+   "id": "language-landmark-russia",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Lake Baikal is",
+   "intermediate": "Russia",
+   "answers": [
+    "Russian"
+   ],
+   "swap_to": "India",
+   "swap_answers": [
+    "Hindi"
+   ]
+  },
+  {
+   "id": "language-landmark-japan",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Mount Fuji is",
+   "intermediate": "Japan",
+   "answers": [
+    "Japanese"
+   ],
+   "swap_to": "Poland",
+   "swap_answers": [
+    "Polish"
+   ]
+  },
+  {
+   "id": "language-landmark-china",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Great Wall is",
+   "intermediate": "China",
+   "answers": [
+    "Chinese",
+    "Mandarin"
+   ],
+   "swap_to": "Sweden",
+   "swap_answers": [
+    "Swedish"
+   ]
+  },
+  {
+   "id": "language-landmark-egypt",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Valley of the Kings is",
+   "intermediate": "Egypt",
+   "answers": [
+    "Arabic"
+   ],
+   "swap_to": "Netherlands",
+   "swap_answers": [
+    "Dutch"
+   ]
+  },
+  {
+   "id": "language-landmark-greece",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Mount Olympus is",
+   "intermediate": "Greece",
+   "answers": [
+    "Greek"
+   ],
+   "swap_to": "Peru",
+   "swap_answers": [
+    "Spanish"
+   ]
+  },
+  {
+   "id": "language-landmark-india",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Taj Mahal is",
+   "intermediate": "India",
+   "answers": [
+    "Hindi"
+   ],
+   "swap_to": "Portugal",
+   "swap_answers": [
+    "Portuguese"
+   ]
+  },
+  {
+   "id": "language-landmark-poland",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Wawel Castle is",
+   "intermediate": "Poland",
+   "answers": [
+    "Polish"
+   ],
+   "swap_to": "Turkey",
+   "swap_answers": [
+    "Turkish"
+   ]
+  },
+  {
+   "id": "language-landmark-sweden",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Vasa Museum is",
+   "intermediate": "Sweden",
+   "answers": [
+    "Swedish"
+   ],
+   "swap_to": "France",
+   "swap_answers": [
+    "French"
+   ]
+  },
+  {
+   "id": "language-landmark-netherlands",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Anne Frank House is",
+   "intermediate": "Netherlands",
+   "answers": [
+    "Dutch"
+   ],
+   "swap_to": "Germany",
+   "swap_answers": [
+    "German"
+   ]
+  },
+  {
+   "id": "language-landmark-peru",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Machu Picchu is",
+   "intermediate": "Peru",
+   "answers": [
+    "Spanish"
+   ],
+   "swap_to": "Italy",
+   "swap_answers": [
+    "Italian"
+   ]
+  },
+  {
+   "id": "language-landmark-portugal",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to the Tower of Belém is",
+   "intermediate": "Portugal",
+   "answers": [
+    "Portuguese"
+   ],
+   "swap_to": "Spain",
+   "swap_answers": [
+    "Spanish"
+   ]
+  },
+  {
+   "id": "language-landmark-turkey",
+   "template": "language-landmark",
+   "prompt": "The main language spoken in the country that is home to Cappadocia is",
+   "intermediate": "Turkey",
+   "answers": [
+    "Turkish"
+   ],
+   "swap_to": "Russia",
+   "swap_answers": [
+    "Russian"
+   ]
+  },
+  {
+   "id": "legs-spider",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that spins webs is",
+   "intermediate": "spider",
+   "answers": [
+    "8",
+    "eight"
+   ],
+   "swap_to": "ant",
+   "swap_answers": [
+    "6",
+    "six"
+   ]
+  },
+  {
+   "id": "legs-ant",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that builds anthills is",
+   "intermediate": "ant",
+   "answers": [
+    "6",
+    "six"
+   ],
+   "swap_to": "dog",
+   "swap_answers": [
+    "4",
+    "four"
+   ]
+  },
+  {
+   "id": "legs-dog",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that barks at the mailman is",
+   "intermediate": "dog",
+   "answers": [
+    "4",
+    "four"
+   ],
+   "swap_to": "chicken",
+   "swap_answers": [
+    "2",
+    "two"
+   ]
+  },
+  {
+   "id": "legs-chicken",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that lays eggs and clucks is",
+   "intermediate": "chicken",
+   "answers": [
+    "2",
+    "two"
+   ],
+   "swap_to": "bee",
+   "swap_answers": [
+    "6",
+    "six"
+   ]
+  },
+  {
+   "id": "legs-bee",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that lives in a hive and makes honey is",
+   "intermediate": "bee",
+   "answers": [
+    "6",
+    "six"
+   ],
+   "swap_to": "cow",
+   "swap_answers": [
+    "4",
+    "four"
+   ]
+  },
+  {
+   "id": "legs-cow",
+   "template": "legs",
+   "prompt": "The number of legs on the animal that says moo and gives milk is",
+   "intermediate": "cow",
+   "answers": [
+    "4",
+    "four"
+   ],
+   "swap_to": "spider",
+   "swap_answers": [
+    "8",
+    "eight"
+   ]
+  }
+ ]
+}
