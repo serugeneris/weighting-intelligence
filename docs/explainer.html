@@ -1260,8 +1260,8 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
   <section class="part" id="p7">
     <div class="num">Part 7</div>
     <h2>Is the reflective register philosophical skill?</h2>
-    <p class="answer"><strong>Short answer.</strong> No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead, clearly from 2B to 4B and little or not at all from 4B to 9B, including on arguments taken from historical texts. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".</p>
-    <p class="note">8 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md">full method and tables</a></p>
+    <p class="answer"><strong>Short answer.</strong> No. Raising the register with any lever leaves judge-free measures of skill at base level, and constant pushes lower them. Skill grows with model size instead, clearly from 2B to 4B and little or not at all from 4B to 9B, including on arguments taken from historical texts. Read from inside the 9B, the state holds the model's own verdict, mistakes included. The student shows no reliable advantage on objections, revision or premise sensitivity, and no 4B configuration holds a position against a bare "I disagree".</p>
+    <p class="note">9 write-ups below · <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md">full method and tables</a></p>
   </section>
   <details class="exp">
     <summary><span class="tag">Z</span><span class="st">Which objection matters?</span><span class="res">Inconclusive. All three configurations got 16/16 on the original set; on eight harder items the student got 8, base 7 and the woven prompt 6.</span></summary>
@@ -1441,6 +1441,29 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
     </div>
   </section>
   </details>
+  <details class="exp">
+    <summary><span class="tag">AM</span><span class="st">What does the 9B's own state say?</span><span class="res">Read with a natural-language autoencoder: the model's verdict on an argument, mistakes included, not the right answer. A philosophy push keeps the request in the state and adds a plan to philosophize. Steering late in the model fails.</span></summary>
+  <section class="chapter" id="c49" aria-labelledby="c49-title">
+    <div>
+      <div class="num">Experiment AM</div>
+      <h2 id="c49-title">What does the 9B's own state say about validity and the task?</h2>
+      <p><strong>Why we tried it.</strong> Every test so far scored what the model wrote. A natural-language autoencoder, a method Anthropic published in 2026, reads the model's internal state instead. One copy of the model is trained to describe a hidden state in words. A second copy checks the description by rebuilding the state from it, and descriptions that rebuild it well score high. A community version exists for Qwen3.5-9B, reading layer 21 of 32. It rebuilt held-out states here as well as its model card promised: 80% of the variance explained.</p>
+      <p><strong>What happened.</strong> On the historical arguments from <a href="#c48">experiment AL</a>, a judge who saw only the descriptions could tell which verdict the 9B would give 67% of the time, against 54% for always guessing its usual answer. When the 9B was wrong, the descriptions sided with its wrong answer, not the right one, 66 times to 20. The verdict was already there at the end of the passage, before the question. Under the philosophy push from earlier chapters, the description at the first word of the answer still named the user's request every time, next to a plan: "but first, let us ponder". The answers themselves then left the task. Steering at layer 21, with a direction built from rewritten descriptions or the usual average direction, produced loops before it produced philosophy.</p>
+      <p><strong>What it means.</strong> The 9B decides whether an argument holds before it is asked, and the state holds its own judgment, errors and all. The descriptions give that judgment as a lean, never a reason, and recover less than a simple linear readout. The push does not wipe out the task at the start; the task is lost while the answer is written. The limits: one community decoder at one layer, run in 4 bits; one judge model; and for the request test, random alternatives that are easy to tell apart. Source: <a href="https://github.com/serugeneris/weighting-intelligence/blob/main/findings/7-register-versus-skill.md#exp-am">the findings, exp. AM</a>, <a href="https://github.com/serugeneris/weighting-intelligence/tree/main/docs/reviews/nla-pilot">saved explanations and judgments</a>.</p>
+    </div>
+    <div class="fig">
+      <h3>What a judge reads from the descriptions</h3>
+      <div id="s49" role="status" aria-live="polite"></div>
+      <div class="controls" id="s49-btns" role="group" aria-label="NLA readout">
+        <button type="button" aria-pressed="true" aria-controls="s49" class="on">Verdict at end of passage</button>
+        <button type="button" aria-pressed="false" aria-controls="s49">When the 9B is wrong</button>
+        <button type="button" aria-pressed="false" aria-controls="s49">Request under a push</button>
+      </div>
+      <p class="note">Verdict: prompts where the readout agrees with the 9B's own verdict, of 215. When the 9B is wrong: decided descriptions siding with its answer or with the key; shuffled descriptions come from another prompt. Request: descriptions matched to the right request out of four (chance 48 of 192), 48 prompts × 4 descriptions.</p>
+      <div class="ex"><p>Under the push, beach packing list: the description reads "You ask for a perfect packing list … but first, let us ponder". The answer opens "A beach day is not merely about what you carry".</p></div>
+    </div>
+  </section>
+  </details>
   <section class="chapter" id="todo">
     <div>
       <div class="num">Still to try</div>
@@ -1466,6 +1489,7 @@ details.exp > section.chapter { border-top: 0; padding-top: 12px; }
         <dt>p50</dt><dd>The median length of the hidden state at a layer, measured on the plain answers. It sets the scale of a push.</dd>
         <dt>α</dt><dd>Push size as a fraction of p50.</dd>
         <dt>Dose</dt><dd>The size and sign of one neuron's push: we add <code>dose × p50 × unit(column)</code>.</dd>
+        <dt>Natural-language autoencoder (NLA)</dt><dd>A pair of model copies: one describes a hidden state in words, the other rebuilds the state from the words. The rebuild checks that the description is about the state.</dd>
         <dt>Cosine</dt><dd>Alignment between two vectors, ignoring length: 1 means the same direction, 0 means perpendicular.</dd>
         <dt>t-statistic, consistency</dt><dd>Read-side statistics: how much more a neuron fires on philosophical answers than on plain ones, relative to the noise, and in what share of pairs.</dd>
         <dt>OMP (orthogonal matching pursuit)</dt><dd>A greedy method that picks k columns and refits their weights with least squares to approximate a target vector.</dd>
@@ -2896,6 +2920,14 @@ experimentChart("s48", [
   [["2B", 56, 87, "var(--ink-3)"], ["4B", 71, 87, "var(--pos)"], ["4B (4-bit)", 69, 87, "var(--pos)"], ["9B (4-bit)", 70, 87, "var(--s3)"]],
   [["2B base", 61, 80, "var(--ink-3)"], ["4B base", 73, 80, "var(--pos)"], ["9B base (4-bit)", 74, 80, "var(--s3)"], ["Claude-taught student", 72, 80, "var(--s3)"], ["B push 0.6", 52, 80, "var(--neg)"], ["Random push, seed 0", 60, 80, "var(--ink-3)"]]
 ], experimentCountRow);
+
+/* ---------- 49: NLA readout (saved evidence: docs/reviews/nla-pilot/) ---------- */
+experimentChart("s49", [
+  [["Linear probe", 167, 215, "var(--ink-3)"], ["Descriptions, majority of 4", 145, 215, "var(--pos)"], ["Always the usual verdict", 117, 215, "var(--ink-3)"], ["Shuffled descriptions", 88, 215, "var(--neg)"], ["Last 80 characters", 17, 215, "var(--neg)"]],
+  [["Descriptions: side with the 9B", 66, 86, "var(--pos)"], ["Descriptions: side with the key", 20, 86, "var(--s3)"], ["Shuffled: side with the 9B", 44, 88, "var(--ink-3)"], ["Shuffled: side with the key", 44, 88, "var(--ink-3)"]],
+  [["Base", 190, 192, "var(--ink-3)"], ["Woven prompt", 167, 192, "var(--pos)"], ["Diff-means push, layer 8", 192, 192, "var(--neg)"], ["Random push", 183, 192, "var(--ink-3)"]]
+], experimentCountRow);
+
 
 
 /* ---------- collapsed experiments ---------- */

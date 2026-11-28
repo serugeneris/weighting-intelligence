@@ -1,0 +1,42 @@
+{
+ "pre:model_letter": {
+  "acc": 0.833,
+  "n": 215,
+  "majority": 0.535
+ },
+ "pre:key_letter": {
+  "acc": 0.784,
+  "n": 218,
+  "majority": 0.5
+ },
+ "pre:model_follows": {
+  "acc": 0.8,
+  "n": 215,
+  "majority": 0.544
+ },
+ "pre:key_follows": {
+  "acc": 0.743,
+  "n": 218,
+  "majority": 0.798
+ },
+ "passage:model_letter": {
+  "acc": 0.502,
+  "n": 215,
+  "majority": 0.535
+ },
+ "passage:key_letter": {
+  "acc": 0.523,
+  "n": 218,
+  "majority": 0.5
+ },
+ "passage:model_follows": {
+  "acc": 0.777,
+  "n": 215,
+  "majority": 0.544
+ },
+ "passage:key_follows": {
+  "acc": 0.789,
+  "n": 218,
+  "majority": 0.798
+ }
+}

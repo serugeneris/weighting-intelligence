@@ -1,0 +1,84 @@
+{
+ "geometry": {
+  "cos(ar, dm21)": 0.4060080647468567,
+  "cos(ar, stage2 woven-base at L21)": 0.2666606605052948,
+  "cos(ar, stage2 push-base at L21)": 0.33212512731552124,
+  "cos(dm21, stage2 woven-base at L21)": 0.22068673372268677,
+  "cos(dm21, stage2 push-base at L21)": 0.36864086985588074,
+  "cos(ar, random21)": 0.017257900742763847
+ },
+ "configs": {
+  "base": {
+   "n": 16,
+   "philo": 0.0,
+   "coherence": 9.0,
+   "helpful": 8.94,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "ar@0.25": {
+   "n": 16,
+   "philo": 0.06,
+   "coherence": 9.0,
+   "helpful": 8.94,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "ar@0.5": {
+   "n": 16,
+   "philo": 0.12,
+   "coherence": 8.75,
+   "helpful": 8.62,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "ar@1.0": {
+   "n": 16,
+   "philo": 0.94,
+   "coherence": 2.31,
+   "helpful": 1.06,
+   "degenerate": 16,
+   "philo_and_helpful_ge5": 0
+  },
+  "dm21@0.25": {
+   "n": 16,
+   "philo": 0.06,
+   "coherence": 9.0,
+   "helpful": 8.75,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "dm21@0.5": {
+   "n": 16,
+   "philo": 0.5,
+   "coherence": 8.5,
+   "helpful": 8.25,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "dm21@1.0": {
+   "n": 16,
+   "philo": 1.62,
+   "coherence": 2.25,
+   "helpful": 1.12,
+   "degenerate": 14,
+   "philo_and_helpful_ge5": 0
+  },
+  "random21@1.0": {
+   "n": 16,
+   "philo": 0.0,
+   "coherence": 7.5,
+   "helpful": 7.19,
+   "degenerate": 0,
+   "philo_and_helpful_ge5": 0
+  },
+  "dm8@0.5 (stage 2 push)": {
+   "n": 16,
+   "philo": 3.25,
+   "coherence": 5.12,
+   "helpful": 2.06,
+   "degenerate": 6,
+   "philo_and_helpful_ge5": 1
+  }
+ }
+}

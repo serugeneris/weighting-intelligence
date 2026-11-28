@@ -15,6 +15,7 @@
 | [AI](#exp-ai) | Does skill on judge-free philosophy tasks rise with the register? | No. Moving the register from 0 to 3.8 predicts no skill measure. Prompts and students keep base-level skill; constant pushes lose up to 46 points, mostly to position bias. |
 | [AI2](#exp-ai2) | If the register is not the skill, where does skill come from? | From model size, on base models where the register is zero: validity 57 → 83 of 96 from 2B to 4B (z 5.2), and +7 from 4B to 9B (z 1.7). |
 | [AL](#exp-al) | Does the split hold on real philosophical texts? | Yes for register, partly for scale. On single-passage validity from eight historical sources, 2B → 4B gains 17 points (z 3.0) and 4B → 9B gains 1; prompts and students stay at base, constant pushes lose 16–22. |
+| [AM](#exp-am) | What does the 9B's own state say about validity and the task? | Read with a natural-language autoencoder at layer 21: the model's verdict, not the key (on its errors 63:25 for its wrong answer), as a lean without reasons. A philosophy push leaves the request readable at the first token and adds a plan to philosophize; steering at layer 21 fails. |
 
 ## Experiments
 
@@ -336,3 +337,78 @@ What this says:
 The limits: `verdict` and the extra corruptions were added after the first run, in response to the letter bias, so the predictions came first but the main measure did not. Claude wrote every corruption and paraphrase, and the author has checked only the 20-item packet, not the 132 single passages. The 87 units come from 22 arguments; treating the 22 as the units leaves every conclusion unchanged (2B → 4B +17, z 2.9; constant pushes −16 to −22, z −2.4 to −3.8). `objreply` is near ceiling at 4B, and a blind judge noted that keyword matching rules out many distractors. The 9B is 4-bit, so 4B → 9B is compared within the 4-bit stack.
 
 [Saved outputs, baseline packets and full write-up](../docs/reviews/real-text-skill/results.md)
+
+<a id="exp-am"></a>
+
+### AM · What does the 9B's own state say about validity and the task?
+
+> **Question.** A natural-language autoencoder (NLA) turns one residual-stream activation into text and checks the text by reconstructing the activation from it. Read with a community NLA for Qwen3.5-9B at layer 21 of 32: does the state hold the model's verdict on an argument, and does a philosophy push erase the user's request from the state?  
+> **Result.** The explanations carry the 9B's **verdict, not the correct answer**. When the 9B is wrong they side with its wrong answer 63:25 (shuffled: 43:45). A linear probe reads more (0.78–0.83 against 0.62–0.67), and no explanation names the flaw. Under the layer-8 philosophy push, the explanation at the first assistant token still names the request every time, and adds a plan to philosophize first. The generation drops the task only later. Steering at layer 21 with a direction built from NLA text, or with diff-means, gives no usable philosophy before the model breaks.  
+> 2026-11-23 · [plan](../docs/plans/nla-pilot.md)
+
+**Why.** Every skill measure so far scored outputs. [AI](#exp-ai) and [AL](#exp-al) showed that register and skill come apart in behaviour; the NLA asks what the state itself holds. Anthropic published the method on Transformer Circuits (2026-05-07), with code at `kitft/natural_language_autoencoders`. It has two parts. The **verbalizer** (AV) is a copy of the model that gets the activation injected at a marker token and writes an explanation. The **reconstructor** (AR) is the model cut at the read layer with a value head; it predicts the activation from the explanation. Both are trained with reinforcement learning on reconstruction error. Official releases cover Llama-3.3-70B, Gemma-3 and Qwen2.5-7B. For our family, the only usable pair is a community one, `therem/qwen3.5-9b-nla-L21-{av,ar}-rl`, trained with EasyNLA and reading the 9B's layer 21. The 4B release declares itself unusable, and the 2B students read another model's activations. So this pilot reads only the 9B, and Q2 pushes at layer 8 and reads the effect at 21.
+
+**Method** (`wi/nla.py`, `scripts/exp_nla.py`, `scripts/exp_nla_validity.py`, `scripts/exp_nla_retention.py`, `scripts/exp_nla_steer.py`).
+- **Port.** Both checkpoints run in MLX: the target as bf16 blocks 0–21, the AV in 4 bits, the AR in bf16. The MLX target matches PyTorch at cosine ≥ 0.9998.
+- **Stage 0, gate.** On 128 held-out rows of the NLA's own corpus, the round trip reaches FVE **0.799** [0.779, 0.816], against 0.786 on the model card. Removing the copied spans gives 0.515; the training explanations written by Claude give 0.700; the last 80 characters of the text give 0.236; shuffled explanations give −0.951. FVE is the fraction of variance explained in the normalized activation.
+- **Stage 1, Q1.** 215 AL single-passage validity prompts: originals and corruptions, both answer orders. Activations were read at two positions: the end of the passage, and the `Answer:` token just before the letter. Each activation got four explanations (one greedy, three sampled). A blind Sonnet judge, who never saw the passage, read each explanation and said which verdict it points to. Controls: shuffled explanations, the context tail, quote-stripped explanations, and the 9B's most common verdict. A logistic probe on the same activations, cross-validated with arguments held out, gives the ceiling.
+- **Stage 2, Q2.** The 48 confirmation prompts, read at the first assistant token under four configurations:
+  - base;
+  - the woven prompt;
+  - diff-means at 9B layer 8, α 0.5, built with the 4B recipe;
+  - a random direction of the same norm.
+
+  The judge matched each explanation to its request among four (chance 25%) and flagged reflective content. Greedy generations from the 4-bit 9B show what the same push does to answers.
+- **Stage 3, Q3.** Sonnet rewrote 16 Stage 2 base explanations so that the model "then connects the answer to a philosophical idea". The direction is the mean AR difference between rewritten and original. It was compared at layer 21 with diff-means and a random direction at α 0.25/0.5/1, plus the layer-8 push as reference. The 16 eval and held-out prompts were judged with the usual rubric.
+
+**Q1: the state holds the verdict, not the truth.** The table shows agreement with the 9B's own verdict, n = 215:
+
+| Readout | Before the letter | End of passage (follows / not) |
+|---|---:|---:|
+| Linear probe | 0.833 | 0.777 |
+| Explanations, majority of 4 | **0.623** | **0.674** |
+| Quote-stripped explanations | 0.628 | 0.647 |
+| Shuffled explanations | 0.479 | 0.409 |
+| Most common verdict | 0.535 | 0.544 |
+| Last 80 characters | 0.000 | 0.079 |
+
+- **Explanations follow the model, not the correct answer.** On the 94 prompts the 9B gets wrong, decided explanations agree with its wrong verdict 63:25 before the letter and 66:20 at the end of the passage. Shuffled explanations split 43:45 and 44:44. Agreement with the key is at chance, 0.48–0.52.
+- **The verdict is formed before the question is read.** At the end of the passage both the probe and the explanations already predict whether the model will say "follows". Neither predicts whether the argument really follows: the probe scores 0.789 against 0.798 for always saying "does not follow".
+- **The explanations give a lean, not a reason.** They reconstruct the argument's topic with invented quotes and never name the swapped quantifier or dropped premise.
+
+**Q2: the push adds a plan, it does not erase the task.**
+
+| Configuration | Request matched (of 4) | Reflective | Layer-21 cos to base |
+|---|---:|---:|---:|
+| base | 0.99 | 0.00 | — |
+| woven prompt | 0.87 | 0.97 | 0.80 |
+| diff-means push, layer 8 | **1.00** | 0.97 | 0.71 |
+| random push | 0.95 | 0.00 | 0.92 |
+
+- **The push moves the state furthest but still names the request every time,** together with the move the answer then makes. On the beach prompt the explanation reads "You ask for a perfect packing list … but first, let us ponder". Its 100-token answer abandons the task ("A beach day is not merely about what you carry"). The displacement seen in [B](2-the-steering-tradeoff.md#exp-b) and [AI](#exp-ai) therefore builds up while the answer is written, or is a choice about a task the model still holds. It is not in the state at the first token.
+- **The woven prompt blurs specifics more than the push does** (the beach list became "rainy-day gardening philosophy"). Yet its answers stay on task, so losing detail in this reading does not predict going off task.
+- **The NLA reads the register lever cleanly:** 97% reflective under prompt and push, 0% under base and random.
+
+**Q3: layer 21 is too late to steer.**
+
+| Arm | philo | helpful | degenerate /16 |
+|---|---:|---:|---:|
+| base | 0.00 | 8.94 | 0 |
+| AR direction α 0.25 / 0.5 / 1 | 0.06 / 0.12 / 0.94 | 8.94 / 8.62 / 1.06 | 0 / 0 / 16 |
+| diff-means L21 α 0.25 / 0.5 / 1 | 0.06 / 0.50 / 1.62 | 8.75 / 8.25 / 1.12 | 0 / 0 / 14 |
+| random L21 α 1 | 0.00 | 7.19 | 0 |
+| diff-means L8 α 0.5 (reference) | 3.25 | 2.06 | 6 |
+
+The AR direction is real: at α 1 it breaks the model where a random direction does not, and it points partly the same way as diff-means (cosine 0.41). It is slightly weaker than diff-means at every α, and neither direction yields philosophy before the model collapses. This repeats [E](2-the-steering-tradeoff.md#exp-e)'s finding at 4B: by two-thirds depth the register no longer steers.
+
+**What this says.** Inside the 9B, the verdict on an argument is a state the model holds before it is asked, and it is the model's verdict, mistakes included. The NLA reads it as a lean, at about three-quarters of what a linear probe recovers, and offers no reasons. The philosophy push does not wipe the task from the state at the start of the answer. It adds a plan to philosophize first, so the cost to helpfulness comes during generation. Text-to-direction through the AR works mechanically but adds nothing over diff-means at this layer.
+
+The limits:
+- **One community NLA, one layer.** The AV runs in 4 bits (5 of 128 corpus explanations slip into Chinese words).
+- **Precision mismatch.** Activations are bf16 while the AL verdicts come from the 4-bit model; the two agree at cosine 0.97 on average, minimum 0.87.
+- **Non-independent prompts.** Q1's 215 prompts repeat 22 arguments, so prompt-level intervals are too narrow.
+- **Single judge.** One judge (Sonnet), no human check of its labels.
+- **Easy matching.** In Q2, random distractors put base at the ceiling, so a small loss of detail would not show. Only the first assistant token was read.
+- **Coarse grid.** In Q3, α steps of 0.25 / 0.5 / 1 on 16 prompts could miss a narrow working window.
+
+[Saved outputs and stage-by-stage notes](../docs/reviews/nla-pilot/README.md)

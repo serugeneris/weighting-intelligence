@@ -1,0 +1,153 @@
+{
+ "n_prompts": 48,
+ "alpha": 0.5,
+ "push_layer": 8,
+ "chance_match": 0.25,
+ "base": {
+  "expl": {
+   "per_sample": 0.99,
+   "per_sample_ci95": [
+    0.974,
+    1.0
+   ],
+   "vote": 1.0,
+   "greedy": 1.0
+  },
+  "stripped": {
+   "per_sample": 0.995,
+   "per_sample_ci95": [
+    0.984,
+    1.0
+   ],
+   "vote": 1.0,
+   "greedy": 1.0
+  },
+  "reflect_rate": 0.0,
+  "reflect_ci95": [
+   0.0,
+   0.0
+  ]
+ },
+ "woven": {
+  "expl": {
+   "per_sample": 0.87,
+   "per_sample_ci95": [
+    0.797,
+    0.932
+   ],
+   "vote": 0.938,
+   "greedy": 0.875
+  },
+  "stripped": {
+   "per_sample": 0.818,
+   "per_sample_ci95": [
+    0.729,
+    0.901
+   ],
+   "vote": 0.792,
+   "greedy": 0.812
+  },
+  "reflect_rate": 0.969,
+  "reflect_ci95": [
+   0.922,
+   1.0
+  ],
+  "l21_cos_to_base": 0.795
+ },
+ "push": {
+  "expl": {
+   "per_sample": 1.0,
+   "per_sample_ci95": [
+    1.0,
+    1.0
+   ],
+   "vote": 1.0,
+   "greedy": 1.0
+  },
+  "stripped": {
+   "per_sample": 0.995,
+   "per_sample_ci95": [
+    0.984,
+    1.0
+   ],
+   "vote": 1.0,
+   "greedy": 1.0
+  },
+  "reflect_rate": 0.969,
+  "reflect_ci95": [
+   0.922,
+   1.0
+  ],
+  "l21_cos_to_base": 0.706
+ },
+ "random": {
+  "expl": {
+   "per_sample": 0.953,
+   "per_sample_ci95": [
+    0.917,
+    0.984
+   ],
+   "vote": 0.958,
+   "greedy": 0.938
+  },
+  "stripped": {
+   "per_sample": 0.969,
+   "per_sample_ci95": [
+    0.938,
+    0.995
+   ],
+   "vote": 0.979,
+   "greedy": 1.0
+  },
+  "reflect_rate": 0.0,
+  "reflect_ci95": [
+   0.0,
+   0.0
+  ],
+  "l21_cos_to_base": 0.915
+ },
+ "paired_vs_base": {
+  "woven-base:expl": {
+   "mean": -0.12,
+   "ci95": [
+    -0.198,
+    -0.057
+   ]
+  },
+  "woven-base:reflect": {
+   "mean": 0.969,
+   "ci95": [
+    0.917,
+    1.0
+   ]
+  },
+  "push-base:expl": {
+   "mean": 0.01,
+   "ci95": [
+    0.0,
+    0.026
+   ]
+  },
+  "push-base:reflect": {
+   "mean": 0.969,
+   "ci95": [
+    0.922,
+    1.0
+   ]
+  },
+  "random-base:expl": {
+   "mean": -0.036,
+   "ci95": [
+    -0.073,
+    -0.005
+   ]
+  },
+  "random-base:reflect": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  }
+ }
+}
